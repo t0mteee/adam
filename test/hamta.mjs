@@ -31,11 +31,12 @@ const kalla = [
   block(/function nivaForSkill\(p\)\{[\s\S]*?\n\}/, "nivaForSkill"),
   block(/function buildStigandeRound\(p, count, undvik\)\{[\s\S]*?\n  return out;\n\}/, "buildStigandeRound"),
   block(/const TRAM_LINES = \[[\s\S]*?\n\];/, "TRAM_LINES"),
+  block(/const STOP_PHOTOS = \{[\s\S]*?\n\};/, "STOP_PHOTOS"),
 ].join("\n");
 
 const modul = await import(
   "data:text/javascript;base64," +
-  Buffer.from(kalla + "\nexport { REGIONS, LEVELS, MAKE, SHOWN, buildRound, makeOptions, qNyckel, TRAM_LINES, skillNu, justeraSkill, nivaForSkill, buildStigandeRound };").toString("base64")
+  Buffer.from(kalla + "\nexport { REGIONS, LEVELS, MAKE, SHOWN, buildRound, makeOptions, qNyckel, TRAM_LINES, STOP_PHOTOS, skillNu, justeraSkill, nivaForSkill, buildStigandeRound };").toString("base64")
 );
-export const { REGIONS, LEVELS, MAKE, SHOWN, buildRound, makeOptions, qNyckel, TRAM_LINES,
+export const { REGIONS, LEVELS, MAKE, SHOWN, buildRound, makeOptions, qNyckel, TRAM_LINES, STOP_PHOTOS,
   skillNu, justeraSkill, nivaForSkill, buildStigandeRound } = modul;

@@ -678,9 +678,10 @@ body.on-tram .world{ display: none; }
    ser platsen och sedan spelets egen bild av den. Saknas fotot – eller går det
    inte att hämta – syns teckningen direkt utan att något hoppar till. */
 .scen-wrap{ position: relative; line-height: 0; }
+.scen-wrap.har-foto{ cursor: pointer; }
 .scen-wrap .foto{
   position: absolute; inset: 0; width: 100%; height: 100%;
-  object-fit: cover; opacity: 1; cursor: pointer;
+  object-fit: cover; opacity: 1;
   transition: opacity 1.1s ease;
 }
 .scen-wrap .foto.borta{ opacity: 0; pointer-events: none; }
@@ -1535,22 +1536,29 @@ function sceneSVG(namn){
    Hållplatser utan foto visar bara den tecknade scenen.
    ──────────────────────────────────────────────────────────────── */
 const STOP_PHOTOS = {
+  "Allhelgonakyrkan": { f:"allhelgonakyrkan", by:"Bulver", lic:"CC BY-SA 4.0" },
   "Almedal": { f:"almedal", by:"okänd", lic:"CC0" },
   "Angered Centrum": { f:"angered-centrum", by:"Albin Olsson", lic:"CC BY-SA 3.0" },
+  "Axel Dahlströms Torg": { f:"axel-dahlstroms-torg", by:"Bo Randstedt", lic:"CC BY-SA 3.0" },
   "Bellevue": { f:"bellevue", by:"Bulver", lic:"CC BY-SA 4.0" },
   "Berzeliigatan": { f:"berzeliigatan", by:"Mattias Blomgren", lic:"CC BY-SA 3.0" },
   "Botaniska Trädgården": { f:"botaniska-tradgarden", by:"Björn Reilund", lic:"CC BY-SA 4.0" },
   "Brunnsgatan": { f:"brunnsgatan", by:"BoneheadElsewhere", lic:"CC BY-SA 4.0" },
   "Bögatan": { f:"bogatan", by:"Mattias Blomgren", lic:"CC BY-SA 4.0" },
+  "Chalmers": { f:"chalmers", by:"Leif Jørgensen", lic:"CC BY-SA 4.0" },
   "Chapmans Torg": { f:"chapmans-torg", by:"Fluff", lic:"CC BY-SA 3.0" },
-  "Dr. Sydows Gata": { f:"dr-sydows-gata", by:"Mangan2002", lic:"CC BY 3.0" },
+  "Domkyrkan": { f:"domkyrkan", by:"AleWi", lic:"CC BY-SA 4.0" },
   "Drottningtorget": { f:"drottningtorget", by:"Björn Reilund", lic:"CC BY-SA 4.0" },
+  "Dr. Fries Torg": { f:"dr-fries-torg", by:"Björn Reilund", lic:"CC BY-SA 4.0" },
+  "Dr. Sydows Gata": { f:"dr-sydows-gata", by:"Mangan2002", lic:"CC BY 3.0" },
   "Ejdergatan": { f:"ejdergatan", by:"Bo Randstedt", lic:"CC BY-SA 3.0" },
   "Eketrägatan": { f:"eketragatan", by:"Bo Randstedt", lic:"CC BY-SA 3.0" },
   "Ekmanska": { f:"ekmanska", by:"Mattias Blomgren", lic:"CC BY-SA 4.0" },
   "Elisedal": { f:"elisedal", by:"Vogler", lic:"CC BY-SA 4.0" },
+  "Fjällgatan": { f:"fjallgatan", by:"Alexmar983", lic:"CC BY-SA 4.0" },
   "Frihamnen": { f:"frihamnen", by:"ArildV", lic:"CC BY-SA 4.0" },
   "Friskväderstorget": { f:"friskvaderstorget", by:"Alicia Fagerving", lic:"CC BY-SA 3.0" },
+  "Frölunda Torg": { f:"frolunda-torg", by:"Albin Olsson", lic:"CC BY-SA 3.0" },
   "Galileis Gata": { f:"galileis-gata", by:"Bulver", lic:"CC BY-SA 4.0" },
   "Gamlestads Torg": { f:"gamlestads-torg", by:"AleWi", lic:"CC BY-SA 4.0" },
   "Gropegårdsgatan": { f:"gropegardsgatan", by:"Alicia Fagerving", lic:"CC BY-SA 3.0" },
@@ -1559,12 +1567,16 @@ const STOP_PHOTOS = {
   "Hagen": { f:"hagen", by:"Mattias Blomgren", lic:"CC BY-SA 4.0" },
   "Hammarkullen": { f:"hammarkullen", by:"Kaakkuri86", lic:"CC BY-SA 4.0" },
   "Handelshögskolan": { f:"handelshogskolan", by:"Albin Olsson", lic:"CC BY-SA 3.0" },
+  "Hjällbo": { f:"hjallbo", by:"Bulver", lic:"CC BY-SA 4.0" },
+  "Härlanda": { f:"harlanda", by:"Lars Mongs, Arxfoto", lic:"CC BY 4.0" },
   "Högsbogatan": { f:"hogsbogatan", by:"Roy Olsen", lic:"CC BY-SA 4.0" },
   "Jaegerdorffsplatsen": { f:"jaegerdorffsplatsen", by:"Paracel63", lic:"CC BY-SA 3.0" },
   "Jubileumsparken": { f:"jubileumsparken", by:"Phyrexian", lic:"CC BY-SA 4.0" },
+  "Järntorget": { f:"jarntorget", by:"Florent Pécassou", lic:"CC BY-SA 4.0" },
   "Kaggeledstorget": { f:"kaggeledstorget", by:"Mattias Blomgren", lic:"CC BY-SA 4.0" },
   "Kapellplatsen": { f:"kapellplatsen", by:"Harri Blomberg", lic:"CC BY-SA 3.0" },
   "Kaptensgatan": { f:"kaptensgatan", by:"Wikigabriel11", lic:"CC BY-SA 3.0" },
+  "Klintens Väg": { f:"klintens-vag", by:"Historiker", lic:"CC BY-SA 3.0" },
   "Komettorget": { f:"komettorget", by:"Kaakkuri86", lic:"CC BY-SA 4.0" },
   "Korsvägen": { f:"korsvagen", by:"AleWi", lic:"CC BY-SA 4.0" },
   "Kortedala Torg": { f:"kortedala-torg", by:"Alicia Fagerving", lic:"CC BY-SA 3.0" },
@@ -1573,33 +1585,42 @@ const STOP_PHOTOS = {
   "Kungssten": { f:"kungssten", by:"Bo Randstedt", lic:"CC BY-SA 3.0" },
   "Kviberg": { f:"kviberg", by:"Joshua06", lic:"CC BY-SA 4.0" },
   "Käringberget": { f:"karingberget", by:"Göta lejon", lic:"CC BY-SA 3.0" },
+  "Lilla Bommen": { f:"lilla-bommen", by:"AleWi", lic:"CC BY-SA 4.0" },
   "Lindholmen": { f:"lindholmen", by:"Johan Jönsson (Julle)", lic:"CC BY-SA 4.0" },
   "Linnéplatsen": { f:"linneplatsen", by:"Liberaler Humanist", lic:"CC BY-SA 3.0" },
   "Liseberg Station": { f:"liseberg-station", by:"AleWi", lic:"CC BY-SA 4.0" },
+  "Liseberg Södra": { f:"liseberg-sodra", by:"Albin Olsson", lic:"CC BY-SA 3.0" },
   "Majvallen": { f:"majvallen", by:"Leif Skoog", lic:"CC BY-SA 4.0" },
   "Mariaplan": { f:"mariaplan", by:"Per A J Andersson", lic:"CC BY-SA 3.0" },
+  "Marklandsgatan": { f:"marklandsgatan", by:"Albin Olsson", lic:"CC BY-SA 3.0" },
+  "Masthuggstorget": { f:"masthuggstorget", by:"Fluff", lic:"CC BY-SA 3.0" },
   "Medicinaregatan": { f:"medicinaregatan", by:"Mattias Blomgren", lic:"CC BY-SA 3.0" },
   "Mildvädersgatan": { f:"mildvadersgatan", by:"Bo Randstedt", lic:"CC BY-SA 3.0" },
   "Munkebäckstorget": { f:"munkebackstorget", by:"Raphael Saulus", lic:"Public domain" },
   "Musikvägen": { f:"musikvagen", by:"BoneheadElsewhere", lic:"CC BY-SA 4.0" },
   "Mölndals Innerstad": { f:"molndals-innerstad", by:"AleWi", lic:"CC BY-SA 4.0" },
+  "Mölndals sjukhus": { f:"molndals-sjukhus", by:"AleWi", lic:"CC BY-SA 4.0" },
   "Nymånegatan": { f:"nymanegatan", by:"ilex se", lic:"CC BY-SA 4.0" },
   "Olivedalsgatan": { f:"olivedalsgatan", by:"Vogler", lic:"CC BY-SA 4.0" },
   "Olskrokstorget": { f:"olskrokstorget", by:"Raphael Saulus", lic:"Public domain" },
   "Opaltorget": { f:"opaltorget", by:"Eva Ekeblad", lic:"CC BY-SA 3.0" },
+  "Ostindiegatan": { f:"ostindiegatan", by:"Andersreilund", lic:"CC BY-SA 4.0" },
   "Positivgatan": { f:"positivgatan", by:"Albin Olsson", lic:"CC BY-SA 3.0" },
   "Prinsgatan": { f:"prinsgatan", by:"BoneheadElsewhere", lic:"CC BY-SA 4.0" },
   "Rambergsvallen": { f:"rambergsvallen", by:"Bo Randstedt", lic:"CC BY-SA 4.0" },
   "Redbergsplatsen": { f:"redbergsplatsen", by:"Liberaler Humanist", lic:"CC BY-SA 3.0" },
   "Runstavsgatan": { f:"runstavsgatan", by:"Harri Blomberg", lic:"CC BY-SA 3.0" },
   "Rymdtorget": { f:"rymdtorget", by:"Harri Blomberg", lic:"CC BY-SA 3.0" },
-  "SKF": { f:"skf", by:"Harri Blomberg", lic:"CC BY-SA 3.0" },
   "Sahlgrenska Huvudentré": { f:"sahlgrenska-huvudentre", by:"Liv Lovisa", lic:"CC BY 4.0" },
   "Saltholmen": { f:"saltholmen", by:"murizvo57", lic:"CC BY 3.0" },
+  "Sandarna": { f:"sandarna", by:"DavidIvar", lic:"CC BY-SA 4.0" },
   "Sankt Sigfrids Plan": { f:"sankt-sigfrids-plan", by:"Historiker", lic:"CC BY-SA 3.0" },
   "Sannaplan": { f:"sannaplan", by:"Bo Randstedt", lic:"CC BY-SA 4.0" },
+  "Scandinavium": { f:"scandinavium", by:"AleWi", lic:"CC BY-SA 4.0" },
   "Seminariegatan": { f:"seminariegatan", by:"Leo Bonsdorff, 1878 - 1937", lic:"Public domain" },
+  "SKF": { f:"skf", by:"Harri Blomberg", lic:"CC BY-SA 3.0" },
   "Stenpiren": { f:"stenpiren", by:"AleWi", lic:"CC BY-SA 4.0" },
+  "Stigbergstorget": { f:"stigbergstorget", by:"Wikigabriel11", lic:"CC BY-SA 3.0" },
   "Stockholmsgatan": { f:"stockholmsgatan", by:"Roy Olsen", lic:"CC BY-SA 4.0" },
   "Storås": { f:"storas", by:"elysia", lic:"CC BY 4.0" },
   "Svingeln": { f:"svingeln", by:"Paxxen", lic:"CC BY-SA 4.0" },
@@ -1608,12 +1629,14 @@ const STOP_PHOTOS = {
   "Temperaturgatan": { f:"temperaturgatan", by:"Photo by Harri Blomberg.", lic:"CC BY-SA 3.0" },
   "Tingvallsvägen": { f:"tingvallsvagen", by:"Bo Randstedt", lic:"CC BY-SA 4.0" },
   "Vagnhallen Majorna": { f:"vagnhallen-majorna", by:"Albin Olsson", lic:"CC BY-SA 3.0" },
+  "Valand": { f:"valand", by:"Bahnfrend", lic:"CC BY-SA 4.0" },
   "Varbergsgatan": { f:"varbergsgatan", by:"Bo Randstedt", lic:"CC BY-SA 3.0" },
   "Varmfrontsgatan": { f:"varmfrontsgatan", by:"Bo Randstedt", lic:"CC BY-SA 3.0" },
-  "Vasa Viktoriagatan": { f:"vasa-viktoriagatan", by:"Bo Randstedt", lic:"CC BY-SA 3.0" },
   "Vasaplatsen": { f:"vasaplatsen", by:"Henrik Sendelbach", lic:"CC BY-SA 3.0" },
+  "Vasa Viktoriagatan": { f:"vasa-viktoriagatan", by:"Bo Randstedt", lic:"CC BY-SA 3.0" },
   "Vågmästareplatsen": { f:"vagmastareplatsen", by:"Bo Randstedt", lic:"CC BY-SA 3.0" },
   "Vårväderstorget": { f:"varvaderstorget", by:"Bo Randstedt", lic:"CC BY-SA 4.0" },
+  "Väderilsgatan": { f:"vaderilsgatan", by:"Averater", lic:"CC BY-SA 3.0" },
   "Wavrinskys Plats": { f:"wavrinskys-plats", by:"Fluff", lic:"CC BY-SA 3.0" },
   "Wieselgrensplatsen": { f:"wieselgrensplatsen", by:"Vogler", lic:"CC BY-SA 4.0" },
   "Önskevädersgatan": { f:"onskevadersgatan", by:"Bo Randstedt", lic:"CC BY-SA 4.0" },
@@ -2353,7 +2376,7 @@ function renderTrip(animera, visaBilden){
   const foto = fotonAv ? null : STOP_PHOTOS[l.stops[at]];
   el("stopCard").innerHTML = `
     <div class="stop-card">
-      <div class="scen-wrap">
+      <div class="scen-wrap${foto ? " har-foto" : ""}">
         ${sceneSVG(l.stops[at])}
         ${foto ? `<img class="foto" id="stopFoto" src="${fotoSrc(foto)}" alt="Foto på hållplatsen ${l.stops[at]}">` : ""}
       </div>
@@ -2392,8 +2415,8 @@ function renderTrip(animera, visaBilden){
       if(++fotoMissar >= 3) fotonAv = true;
       fotoEl.remove();
       el("stopCard").querySelectorAll(".foto-kred, .foto-knapp").forEach(x => x.remove());
+      el("stopCard").querySelector(".scen-wrap").classList.remove("har-foto");
     }, { once: true });
-    fotoEl.addEventListener("click", () => visaFoto(fotoEl.classList.contains("borta")));
     /* Fotot får stå kvar tills man hunnit titta – sidan rullar upp först. */
     later(() => visaFoto(false), reduceMotion ? 100 : 2800);
   }
@@ -2464,9 +2487,11 @@ function openTramLevelSheet(){
     ${talvalHTML(p)}`);
 }
 el("stopCard").addEventListener("click", (e) => {
-  if(e.target.closest('[data-trip="foto"]')){
-    SFX.tap();
-    visaFoto(!el("stopCard").querySelector(".foto-knapp").classList.contains("på"));
+  /* Både kameraknappen och själva bilden växlar fotot. Fotot självt slutar ta
+     emot klick när det tonat bort, så klicket sitter på omslaget under. */
+  if(e.target.closest('[data-trip="foto"]') || e.target.closest(".scen-wrap.har-foto")){
+    const bild = el("stopFoto");
+    if(bild){ SFX.tap(); visaFoto(bild.classList.contains("borta")); }
     return;
   }
   if(!e.target.closest('[data-trip="say"]')) return;

@@ -1,7 +1,12 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { REGIONS, LEVELS, SHOWN, buildRound, makeOptions, qNyckel, TRAM_LINES,
+import { existsSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+import { REGIONS, LEVELS, SHOWN, buildRound, makeOptions, qNyckel, TRAM_LINES, STOP_PHOTOS,
          justeraSkill, nivaForSkill, buildStigandeRound } from "./hamta.mjs";
+
+const rot = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 const OMGANGAR = 400;
 const talen = (q) => [q.a, q.b, q.c, q.sum, q.count, q.answer].filter(v => v != null);
@@ -145,5 +150,19 @@ test("ingen uppgift upprepas inom samma stigande omgång", () => {
         assert.ok(q.answer >= 0 && q.opts >= 3, `ogiltig uppgift ${JSON.stringify(q)}`);
       }
     }
+  }
+});
+
+
+test("varje hållplatsfoto hör till en riktig hållplats och filen finns", () => {
+  const hallplatser = new Set(TRAM_LINES.flatMap(l => l.stops));
+  const filer = new Set();
+  for(const [namn, foto] of Object.entries(STOP_PHOTOS)){
+    assert.ok(hallplatser.has(namn), `${namn} finns inte på någon linje`);
+    assert.ok(existsSync(join(rot, "bilder", foto.f + ".jpg")),
+      `bilden bilder/${foto.f}.jpg saknas för ${namn}`);
+    assert.ok(!filer.has(foto.f), `bilden ${foto.f} används till två hållplatser`);
+    filer.add(foto.f);
+    assert.ok(foto.by && foto.lic, `${namn} saknar fotograf eller licens`);
   }
 });

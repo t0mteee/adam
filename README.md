@@ -64,11 +64,11 @@ låter som ett utrop och inte som en lekkamrat.
   är vit, tvåan gul, trean blå, fyran grön och femman röd, precis som sedan
   1902. Linje 6 har 46 hållplatser, linje 10 bara 13 – bra att veta när man
   väljer hur lång resa det ska bli.
-- **Riktiga foton som tonar över i teckningen.** 83 av hållplatserna visar först
+- **Riktiga foton som tonar över i teckningen.** 105 av hållplatserna visar först
   ett riktigt foto från platsen, som efter knappt tre sekunder tonar över i
   spelets egen tecknade bild. Kameraknappen bredvid hållplatsnamnet visar att det
   finns ett foto och tar tillbaka det hur många gånger som helst; den syns bara på
-  hållplatser som har ett. Nästa hållplats foto hämtas redan medan man räknar, så
+  hållplatser som har ett, och ett tryck på själva bilden gör samma sak. Nästa hållplats foto hämtas redan medan man räknar, så
   det står färdigt vid framkomsten. Foton och fotografer listas under *Bilderna och
   fotograferna* i inställningarna.
 - **Varje hållplats syns.** Alla 132 hållplatser har en egen liten bild, ritad
@@ -148,7 +148,7 @@ tecknade scenerna i stället. Behövs en enda fil som bär med sig allt:
 python3 verktyg/bygg-fristaende.py
 ```
 
-Den skriver `fristaende.html` med alla 83 fotona inbakade i filen (drygt 3 MB).
+Den skriver `fristaende.html` med alla 105 fotona inbakade i filen (drygt 3 MB).
 Spelet i övrigt är identiskt.
 
 **Lägg till på iPhone eller iPad.** Öppna adressen i **Safari** (det måste vara
@@ -205,14 +205,14 @@ Hållplatsfotona i mappen `bilder/` kommer från Wikimedia Commons och används
 enligt sina licenser, till största delen CC BY-SA 3.0 och 4.0, några under CC BY,
 CC0 eller public domain. Fotograf och licens visas under varje bild i spelet och
 i listan under *Bilderna och fotograferna*. Bilderna är nedskalade till 640×300
-och beskurna i mitten. Av 132 hållplatser hittades en användbar bild för 83; de
+och beskurna i mitten. Av 132 hållplatser hittades en användbar bild för 105; de
 övriga visar bara den tecknade scenen. Går en enstaka bild inte att hämta hoppar
 spelet över just den; först efter tre bommar slutar det be om foton alls, så ett
 hack i nätet släcker inte resten av resan.
 
 ## Tester
 
-`node --test` kör tolv tester som plockar ut spelets rena funktioner direkt
+`node --test` kör tretton tester som plockar ut spelets rena funktioner direkt
 ur `index.html`, så att de aldrig testar en kopia som glidit isär från källan. De
 täcker att uppgifterna håller sig inom banans tal och aldrig blir negativa, att
 rätt svar alltid finns bland alternativen, att samma sorts tal aldrig kommer mer
