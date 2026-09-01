@@ -26,6 +26,7 @@ spårvagnsvärlden – och klarade banor går att spela om.
 | Grottan | 7–9 | Dubbelt, tiokompisar, vad fattas |
 | Berget | 10–12 | Plus till 20, minus till 20, plus och minus till 20 |
 | Molnen | 13–15 | Tre tal, blandat till 20, mästarprovet |
+| Stjärnhimlen | 16–19 | Räkna till 25, 50, 75 och 100 |
 
 Varje bana är tio uppgifter och kan spelas på två sätt: **välj svar** (tre eller
 fyra rutor att trycka på) eller **skriv svar** (stor knappsats; fysiskt
@@ -44,7 +45,7 @@ en omgång förrän alla möjliga varianter på banan är använda.
 Rätt på första försöket ger 10 guldmynt; tre rätt i rad dubblar och sex rätt i
 rad tredubblar. Rätt efter ett feltryck ger 5 mynt – aldrig minuspoäng. Efter
 varje omgång delas upp till tre stjärnor ut (4 rätt direkt ger en, 7 ger två, 9
-ger tre), och minst en stjärna öppnar nästa bana. Totalt finns 45 stjärnor och 17
+ger tre), och minst en stjärna öppnar nästa bana. Totalt finns 57 stjärnor och 19
 märken att samla, från *Första stjärnan* och *Ändstation* till *Hela landet*.
 
 ## Spårvagn — Göteborgs linjenät
@@ -74,11 +75,11 @@ hållplats på linjekartan medan rösten ropar ut namnet.
   skrivas. **Blandat** drar uppgifter ur allt barnet har låst upp och ger mest
   omväxling på en lång linje. Valet går att ändra mitt i resan med *byt* i
   toppen.
-- **Spårvagnen för spelaren framåt.** En hållplats klarad helt utan fel, på
+- **Spårvagnen för spelaren framåt.** Fyra rätt av fem på en hållplats, på
   Blandat eller på den svåraste öppna banan, öppnar nästa bana – samma banor som
   i Räknelandet. Man kan alltså börja med spårvagnen och aldrig röra kartan; ett
   barn som bara åker linje 10 går från *Räkna till 5* till *Plus och minus till
-  10* på fem felfria hållplatser.
+  10* på fem hållplatser.
 - **Inga upprepningar mellan hållplatserna.** Eftersom en hållplats bara är fem
   uppgifter minns spelet de senaste tjugofyra talen och undviker dem, så två
   hållplatser i rad aldrig känns likadana.
@@ -95,15 +96,21 @@ karta visar ingen hållplats däremellan. 28 gäller.
 
 ## Tänkt för små barn
 
-- **Ingen läskunnighet krävs.** Varje fråga läses upp på svenska, och rösten
-  hälsar med namn vid start. Hastigheten går att ställa i tre steg.
+- **Uppgifterna kräver ingen läskunnighet.** Varje fråga läses upp på svenska,
+  rösten hälsar med namn vid start och läser även upp de val som betyder mest –
+  vilken värld, vilken spårvagnslinje och vilka tal man valt. Hastigheten går att
+  ställa i tre steg. Menyerna är däremot text: räkna med att en vuxen hjälper till
+  första gången, sedan hittar barnet oftast tillbaka på färg och figur.
 - **Prickar att räkna.** Talen visas som saker, fem i rad som i en tiobasram, så
   att `6 + 4` går att räkna sig fram till. Kan stängas av när det sitter.
   Storleken följer antalet: tre saker ritas stora och tydliga, tio krymper lagom
-  så att de får plats i två rader om fem.
+  så att de får plats i två rader om fem. Över tio grupperas de i hela tioramar –
+  76 syns som sju fulla ramar och sex lösa, inte som 76 utspridda figurer. Hjälpen
+  räcker hela vägen till tjugo, så den finns kvar även på de svåraste talen.
 - **Fel svar gör inte ont.** Figuren blir lite ledsen, hjälpprickarna tänds
-  automatiskt och barnet får försöka igen. Efter tre försök visas svaret vänligt
-  och spelet går vidare. Banan markeras då som klarad med hjälp, inte som
+  automatiskt och barnet får försöka igen. Efter tre försök skrivs svaret in där
+  barnet letade efter det – i svarsrutan, på rätt ruta och i själva talet – innan
+  spelet går vidare. Uppgiften markeras som klarad med hjälp, inte som
   misslyckad.
 - **Stora tryckytor** och knappar som trycks ihop när man rör dem.
 
@@ -141,6 +148,15 @@ annan. Alla 132 hållplatsnamn återfinns ordagrant på Västtrafiks karta.
 
 Ingen kartbild eller bild på hållplatserna är hämtad någonstans ifrån – allt är
 ritat i SVG i den här filen.
+
+## Tester
+
+`node --test test/` kör åtta tester som plockar ut spelets rena funktioner direkt
+ur `index.html`, så att de aldrig testar en kopia som glidit isär från källan. De
+täcker att uppgifterna håller sig inom banans tal och aldrig blir negativa, att
+rätt svar alltid finns bland alternativen, att samma sorts tal aldrig kommer mer
+än två gånger i rad, att undvik-listan hindrar upprepning mellan hållplatser, och
+att ingen spårvagnslinje motsäger en annan om hållplatsernas ordning.
 
 ## Teknik
 
