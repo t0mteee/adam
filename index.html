@@ -289,6 +289,13 @@ h1, h2, h3{ font-family: "Baloo 2", "Baloo 2 Fallback", system-ui, sans-serif; f
 .banval details[open] summary::after{ content: "▾"; }
 .banval summary .prick{ width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--ink); flex: none; }
 .banval details .seg{ padding: 0 8px 8px; }
+.ny-version{
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(14px + env(safe-area-inset-bottom));
+  z-index: 60; background: var(--sun); color: var(--ink); border: var(--stroke); border-radius: 999px;
+  padding: 10px 18px; font-family: inherit; font-weight: 800; font-size: var(--t-sm);
+  box-shadow: var(--lift-sm); cursor: pointer; animation: ny-version-in .4s cubic-bezier(.3,1.4,.5,1);
+}
+@keyframes ny-version-in{ from{ transform: translate(-50%, 30px); opacity: 0; } }
 .region-band.sidospar{ border-style: dashed; }
 .sidospar-text{
   position: absolute; right: 12px; white-space: nowrap;
@@ -3887,9 +3894,29 @@ el("speakBtn").addEventListener("click", () => {
    ═══════════════════════════════════════════ */
 /* Ligger spelet på en egen adress med manifest sparas det för spel utan nät.
    I artifact-visaren finns inget manifest, och då hoppas registreringen över. */
+/* Hemskärmsappen kan ligga kvar i minnet i dagar med en gammal sida uppe.
+   När en ny version har hämtats i bakgrunden visas en knapp som laddar om,
+   och varje gång appen kommer tillbaka i förgrunden letas efter en nyare. */
+function visaNyVersion(){
+  if(el("nyVersion")) return;
+  const k = document.createElement("button");
+  k.id = "nyVersion"; k.type = "button"; k.className = "ny-version";
+  k.textContent = "Ny version – tryck för att ladda om";
+  k.addEventListener("click", () => location.reload());
+  document.body.appendChild(k);
+}
 if("serviceWorker" in navigator && location.protocol.startsWith("http")
    && document.querySelector('link[rel="manifest"]')){
-  addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+  addEventListener("load", () => navigator.serviceWorker.register("./sw.js").then(reg => {
+    const bevaka = (w) => w && w.addEventListener("statechange", () => {
+      if(w.state === "installed" && navigator.serviceWorker.controller) visaNyVersion();
+    });
+    bevaka(reg.installing);
+    reg.addEventListener("updatefound", () => bevaka(reg.installing));
+    document.addEventListener("visibilitychange", () => {
+      if(document.visibilityState === "visible") reg.update().catch(() => {});
+    });
+  }).catch(() => {}));
 }
 
 /* Räknebanorna 16–19 låg mitt i kedjan och spärrade Vagnhallen. Nu är de
