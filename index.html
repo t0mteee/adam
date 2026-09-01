@@ -762,6 +762,44 @@ body.on-tram .world{ display: none; }
 .stop-card .stop-sub{ font-size: var(--t-xs); color: var(--ink-2); }
 
 /* Linjediagram i kollektivtrafikstil */
+/* Nätkartan: hela nätet, inzoomat kring hållplatsen man står vid */
+.natkarta{
+  width: 100%; aspect-ratio: 1 / 1; max-height: 48vh;
+  background: #F4F1FA; border: var(--stroke); border-radius: 24px;
+  box-shadow: var(--lift); overflow: hidden; margin-bottom: 14px;
+  position: relative;
+}
+.natkarta svg{ width: 100%; height: 100%; display: block; touch-action: manipulation; }
+.natkarta .nat-linje{ fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.natkarta .nat-linje.annan{ opacity: .28; }
+.natkarta .nat-stopp{ cursor: pointer; }
+.natkarta .nat-namn{
+  font-family: "Nunito", "Trebuchet MS", system-ui, sans-serif; font-weight: 800;
+  fill: var(--ink); paint-order: stroke; stroke: #F4F1FA; stroke-width: 4px; stroke-linejoin: round;
+  pointer-events: none;
+}
+.natkarta .nat-namn.har{ font-family: "Baloo 2", system-ui, sans-serif; }
+.natkarta .nat-ring{ transform-box: fill-box; transform-origin: center; animation: nat-puls 1.6s ease-in-out infinite; }
+@keyframes nat-puls{ 0%,100%{ transform: scale(1); opacity: .55; } 50%{ transform: scale(1.45); opacity: .15; } }
+.natkarta .nat-rundel text{
+  font-family: "Baloo 2", system-ui, sans-serif; font-weight: 800; text-anchor: middle;
+  dominant-baseline: central; pointer-events: none;
+}
+.natkarta .nat-hint{
+  position: absolute; left: 10px; bottom: 8px; font-size: 10px; font-weight: 800;
+  color: var(--ink-2); background: rgba(255,253,247,.85); border-radius: 999px; padding: 2px 9px;
+  pointer-events: none;
+}
+.alla-stopp{ margin-bottom: 14px; }
+.alla-stopp summary{
+  cursor: pointer; list-style: none; font-weight: 800; font-size: var(--t-sm); color: var(--ink-2);
+  padding: 8px 14px; background: var(--paper); border: 2.5px solid var(--ink); border-radius: 999px;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.alla-stopp summary::-webkit-details-marker{ display: none; }
+.alla-stopp summary::before{ content: "▸"; }
+.alla-stopp[open] summary::before{ content: "▾"; }
+.alla-stopp[open] summary{ margin-bottom: 10px; }
 .route{ position: relative; padding-left: 4px; }
 .route-line{
   position: absolute; left: 30px; top: 26px; bottom: 26px; width: 12px;
@@ -943,7 +981,11 @@ body.on-tram .world{ display: none; }
   <section id="screen-trip" class="screen">
     <div class="trip-head" id="tripHead"></div>
     <div id="stopCard"></div>
-    <div class="route" id="route"></div>
+    <div class="natkarta" id="natkarta" aria-label="Spårvagnskarta"></div>
+    <details class="alla-stopp" id="allaStopp">
+      <summary>Alla hållplatser på linjen</summary>
+      <div class="route" id="route"></div>
+    </details>
     <button class="btn go-btn" id="goBtn" type="button">Åk till nästa hållplats!</button>
   </section>
 
@@ -2613,6 +2655,274 @@ function openLineSheet(l){
   speak(`Linje ${l.ref}, mot ${l.b}`);
 }
 
+/* ── Nätkartan ──────────────────────────────────────────────────────────
+   Hållplatsernas lägen kommer från OpenStreetMap, omräknade till en platt karta
+   där centrum dragits isär: avståndet från Brunnsparken tas upphöjt till 0,62.
+   Så får Brunnsparken–Valand lika mycket plats som Saltholmen–Långedrag, och
+   kartan liknar ändå staden – Angered uppe till höger, Saltholmen nere till
+   vänster, Hisingen uppe till vänster. */
+const STOP_XY = {
+  "Allhelgonakyrkan":[744,210],
+  "Almedal":[631,792],
+  "Angered Centrum":[740,30],
+  "Aprilgatan":[753,193],
+  "Axel Dahlströms Torg":[281,884],
+  "Bellevue":[735,358],
+  "Berzeliigatan":[573,705],
+  "Beväringsgatan":[738,309],
+  "Bokekullsgatan":[295,857],
+  "Botaniska Trädgården":[349,840],
+  "Briljantgatan":[222,1002],
+  "Brunnsgatan":[407,756],
+  "Brunnsparken":[472,583],
+  "Bögatan":[734,645],
+  "Chalmers":[499,789],
+  "Chapmans Torg":[212,708],
+  "Domkyrkan":[415,642],
+  "Drottningtorget":[533,567],
+  "Dr. Fries Torg":[496,829],
+  "Dr. Sydows Gata":[509,852],
+  "Ejdergatan":[683,435],
+  "Ekedal":[260,783],
+  "Eketrägatan":[175,492],
+  "Ekmanska":[707,663],
+  "Elisedal":[639,814],
+  "Fjällgatan":[279,724],
+  "Frihamnen":[412,409],
+  "Friskväderstorget":[129,443],
+  "Frölunda Torg":[245,986],
+  "Galileis Gata":[787,202],
+  "Gamlestads Torg":[666,376],
+  "Godhemsgatan":[253,794],
+  "Gropegårdsgatan":[208,471],
+  "Grönsakstorget":[427,670],
+  "Hagakyrkan":[421,703],
+  "Hagen":[121,833],
+  "Hammarkullen":[715,95],
+  "Handelshögskolan":[425,735],
+  "Hinsholmen":[62,862],
+  "Hjalmar Brantingsplatsen":[366,414],
+  "Hjällbo":[677,137],
+  "Härlanda":[741,473],
+  "Högsbogatan":[279,834],
+  "Jaegerdorffsplatsen":[200,730],
+  "Januarigatan":[753,196],
+  "Jubileumsparken":[421,429],
+  "Järntorget":[351,683],
+  "Kaggeledstorget":[780,442],
+  "Kapellplatsen":[505,765],
+  "Kaptensgatan":[237,689],
+  "Klintens Väg":[266,816],
+  "Komettorget":[859,270],
+  "Korsvägen":[598,715],
+  "Kortedala Torg":[735,232],
+  "Krokslätts Fabriker":[663,886],
+  "Krokslätts torg":[659,867],
+  "Kungsportsplatsen":[484,653],
+  "Kungssten":[170,807],
+  "Kviberg":[736,330],
+  "Käringberget":[91,859],
+  "Lackarebäck":[661,923],
+  "Lana":[648,851],
+  "Lantmilsgatan":[277,915],
+  "Lilla Bommen":[445,528],
+  "Lindholmen":[270,570],
+  "Linnéplatsen":[368,780],
+  "Liseberg Station":[639,700],
+  "Liseberg Södra":[615,758],
+  "Långedrag":[41,854],
+  "Majvallen":[282,754],
+  "Mariaplan":[228,776],
+  "Marklandsgatan":[313,878],
+  "Masthuggstorget":[300,679],
+  "Medicinaregatan":[446,823],
+  "Mildvädersgatan":[115,509],
+  "Munkebäckstorget":[763,475],
+  "Musikvägen":[271,958],
+  "Mölndals Innerstad":[670,972],
+  "Mölndals sjukhus":[663,946],
+  "Nils Ericsonsplatsen":[504,530],
+  "Nya Varvsallén":[150,820],
+  "Nymilsgatan":[284,941],
+  "Nymånegatan":[739,292],
+  "Olivedalsgatan":[370,764],
+  "Olskrokstorget":[665,492],
+  "Opaltorget":[218,1030],
+  "Ostindiegatan":[207,762],
+  "Positivgatan":[262,969],
+  "Prinsgatan":[350,719],
+  "Pumpgatan":[303,518],
+  "Rambergsvallen":[241,453],
+  "Redbergsplatsen":[687,479],
+  "Runstavsgatan":[732,259],
+  "Rymdtorget":[841,240],
+  "Sahlgrenska Huvudentré":[429,833],
+  "Saltholmen":[30,895],
+  "Sandarna":[194,796],
+  "Sankt Sigfrids Plan":[665,682],
+  "Sannaplan":[217,791],
+  "Scandinavium":[602,676],
+  "Seminariegatan":[396,767],
+  "SKF":[699,373],
+  "Smaragdgatan":[211,1016],
+  "Solrosgatan":[761,493],
+  "Stenpiren":[366,605],
+  "Stigbergstorget":[264,677],
+  "Stockholmsgatan":[721,479],
+  "Storås":[741,76],
+  "Svingeln":[633,501],
+  "Sälöfjordsgatan":[148,523],
+  "Teleskopgatan":[815,215],
+  "Temperaturgatan":[147,371],
+  "Tingvallsvägen":[806,432],
+  "Tranered":[110,845],
+  "Töpelsgatan":[756,629],
+  "Ullevi Norra":[614,567],
+  "Ullevi Södra":[606,624],
+  "Vagnhallen Majorna":[195,749],
+  "Valand":[524,694],
+  "Varbergsgatan":[645,839],
+  "Varmfrontsgatan":[157,341],
+  "Vasaplatsen":[482,711],
+  "Vasa Viktoriagatan":[455,720],
+  "Virginsgatan":[760,547],
+  "Vågmästareplatsen":[324,424],
+  "Vårväderstorget":[120,531],
+  "Väderilsgatan":[133,418],
+  "Wavrinskys Plats":[470,798],
+  "Welandergatan":[763,594],
+  "Wieselgrensplatsen":[278,434],
+  "Önskevädersgatan":[125,470],
+  "Östra Sjukhuset":[826,453]
+};
+
+/* Vilka linjer delar en sträcka mellan två hållplatser. Där flera går
+   parallellt ritas de bredvid varandra, som på en riktig linjekarta. */
+const NAT_SEGMENT = {};
+const segNyckel = (a, b) => a < b ? a + "|" + b : b + "|" + a;
+TRAM_LINES.forEach(l => {
+  for(let i = 0; i + 1 < l.stops.length; i++){
+    const k = segNyckel(l.stops[i], l.stops[i + 1]);
+    (NAT_SEGMENT[k] = NAT_SEGMENT[k] || []).push(l.ref);
+  }
+});
+Object.values(NAT_SEGMENT).forEach(refs => refs.sort((a, b) => Number(a) - Number(b)));
+
+/* En linjes väg som SVG-path, med sidoförskjutning på delade sträckor */
+function natLinjePath(l){
+  const bitar = [];
+  for(let i = 0; i + 1 < l.stops.length; i++){
+    const A = STOP_XY[l.stops[i]], B = STOP_XY[l.stops[i + 1]];
+    if(!A || !B) continue;
+    const refs = NAT_SEGMENT[segNyckel(l.stops[i], l.stops[i + 1])] || [l.ref];
+    const plats = refs.indexOf(l.ref), mitt = (refs.length - 1) / 2;
+    const dx = B[0] - A[0], dy = B[1] - A[1], len = Math.hypot(dx, dy) || 1;
+    const nx = -dy / len * 4.5 * (plats - mitt), ny = dx / len * 4.5 * (plats - mitt);
+    bitar.push(`M${(A[0] + nx).toFixed(1)} ${(A[1] + ny).toFixed(1)}L${(B[0] + nx).toFixed(1)} ${(B[1] + ny).toFixed(1)}`);
+  }
+  return bitar.join("");
+}
+
+/* Fönstret kring en hållplats: så stort att grannhållplatserna får plats,
+   men aldrig så litet att kartan blir en tom yta. */
+function natFonster(l, i){
+  const P = STOP_XY[l.stops[i]] || [530, 530];
+  let r = 0;
+  for(const j of [i - 1, i + 1]){
+    const Q = l.stops[j] && STOP_XY[l.stops[j]];
+    if(Q) r = Math.max(r, Math.hypot(Q[0] - P[0], Q[1] - P[1]));
+  }
+  const bredd = Math.max(200, Math.min(420, r * 2.7));
+  /* Kartan tittar lite framåt i färdriktningen – vid ändstationen bakåt –
+     så fönstret inte är halvtomt när man står i kanten av nätet. */
+  const N = STOP_XY[l.stops[i + 1]] || STOP_XY[l.stops[i - 1]] || P;
+  const cx = P[0] + (N[0] - P[0]) * 0.3, cy = P[1] + (N[1] - P[1]) * 0.3;
+  return { x: cx - bredd / 2, y: cy - bredd / 2, w: bredd, h: bredd };
+}
+const viewBoxStr = (f) => `${f.x.toFixed(1)} ${f.y.toFixed(1)} ${f.w.toFixed(1)} ${f.h.toFixed(1)}`;
+
+function natkartaSVG(l, at){
+  const f = natFonster(l, at);
+  const skala = f.w / 260;                     /* 1 vid normalt fönster */
+  const stopp = new Set(l.stops);
+  const andra = TRAM_LINES.filter(x => x.ref !== l.ref);
+  let html = "";
+  /* De andra linjerna, dämpade */
+  html += andra.map(x => `<path class="nat-linje annan" d="${natLinjePath(x)}" stroke="${x.col.toLowerCase() === "#ffffff" ? "#B9B2CC" : x.col}" stroke-width="${(5 * skala).toFixed(1)}"/>`).join("");
+  /* Den egna linjen */
+  html += `<path class="nat-linje" d="${natLinjePath(l)}" stroke="${INK}" stroke-width="${(9.5 * skala).toFixed(1)}"/>`;
+  html += `<path class="nat-linje" d="${natLinjePath(l)}" stroke="${l.col}" stroke-width="${(6 * skala).toFixed(1)}"/>`;
+  /* Andra linjers hållplatser som små prickar */
+  for(const [namn, P] of Object.entries(STOP_XY)){
+    if(stopp.has(namn)) continue;
+    html += `<circle cx="${P[0]}" cy="${P[1]}" r="${(3 * skala).toFixed(1)}" fill="#FFFDF7" stroke="#B9B2CC" stroke-width="${(1.5 * skala).toFixed(1)}"/>`;
+  }
+  /* Den egna linjens hållplatser: åkta fyllda, kommande vita */
+  l.stops.forEach((namn, i) => {
+    const P = STOP_XY[namn]; if(!P) return;
+    if(i === at) return;
+    const akt = i < at;
+    html += `<circle class="nat-stopp" data-stopp="${i}" cx="${P[0]}" cy="${P[1]}" r="${(6 * skala).toFixed(1)}"
+      fill="${akt ? INK : "#FFFDF7"}" stroke="${INK}" stroke-width="${(2.6 * skala).toFixed(1)}"/>`;
+  });
+  /* Namn på hållplatsen, grannarna och ändstationerna. Varje namn prövar
+     fyra lägen – höger, vänster, över, under – och tar det första som inte
+     krockar med ett annat namn eller en hållplatsring; hittas inget hoppas
+     namnet över. Den egna hållplatsen läggs alltid först, ovanför ringen. */
+  const upptaget = [];
+  const krockar = (b) => upptaget.some(u => b.x < u.x + u.w && b.x + b.w > u.x && b.y < u.y + u.h && b.y + b.h > u.y);
+  l.stops.forEach((namn, i) => { const P = STOP_XY[namn]; if(P) upptaget.push({ x:P[0] - 7 * skala, y:P[1] - 7 * skala, w:14 * skala, h:14 * skala }); });
+  const ordning = [at, at - 1, at + 1, 0, l.stops.length - 1, at - 2, at + 2]
+    .filter((i, k, arr) => i >= 0 && i < l.stops.length && arr.indexOf(i) === k);
+  ordning.forEach(i => {
+    const P = STOP_XY[l.stops[i]]; if(!P) return;
+    const har = i === at, namn = l.stops[i];
+    /* Bredden uppskattas grovt – fet Nunito är bred – hellre för stor än för liten */
+    const px = (har ? 13 : 11) * skala, w = namn.length * px * 0.7 + 4 * skala, h = px * 1.2;
+    const lagen = har
+      ? [{ x:P[0] - w / 2, y:P[1] - 20 * skala - h, anchor:"middle", tx:P[0], ty:P[1] - 20 * skala }]
+      : [{ x:P[0] + 9 * skala,     y:P[1] - h / 2, anchor:"start",  tx:P[0] + 9 * skala, ty:P[1] + px * 0.35 },
+         { x:P[0] - 9 * skala - w, y:P[1] - h / 2, anchor:"end",    tx:P[0] - 9 * skala, ty:P[1] + px * 0.35 },
+         { x:P[0] - w / 2, y:P[1] - 10 * skala - h, anchor:"middle", tx:P[0], ty:P[1] - 10 * skala },
+         { x:P[0] - w / 2, y:P[1] + 10 * skala,     anchor:"middle", tx:P[0], ty:P[1] + 10 * skala + px }];
+    lagen.forEach(b => { b.w = w; b.h = h; });
+    const lage = lagen.find(b => !krockar(b)) || (har ? lagen[0] : null);
+    if(!lage) return;
+    upptaget.push(lage);
+    html += `<text class="nat-namn ${har ? "har" : ""}" x="${lage.tx.toFixed(1)}" y="${lage.ty.toFixed(1)}" font-size="${px.toFixed(1)}" text-anchor="${lage.anchor}">${namn}</text>`;
+  });
+  /* Här är vi: pulserande ring och linjens rundel */
+  const H = STOP_XY[l.stops[at]] || [530, 530];
+  const text = ljusFarg(l.col) ? INK : "#FFFDF7";
+  html += `<g id="natHar" transform="translate(${H[0]},${H[1]})">
+    <circle class="nat-ring" r="${(15 * skala).toFixed(1)}" fill="${l.col}" opacity=".5"/>
+    <g class="nat-rundel"><circle r="${(11 * skala).toFixed(1)}" fill="${l.col}" stroke="${INK}" stroke-width="${(2.6 * skala).toFixed(1)}"/>
+    <text font-size="${(11 * skala).toFixed(1)}" fill="${text}">${l.ref}</text></g>
+  </g>`;
+  return `<svg viewBox="${viewBoxStr(f)}" xmlns="http://www.w3.org/2000/svg" id="natSvg" role="img" aria-label="Linje ${l.ref} vid ${l.stops[at]}">${html}</svg>
+    <span class="nat-hint">Tryck på en hållplats så säger jag namnet</span>`;
+}
+
+/* Vagnen rullar från en hållplats till nästa och kartan följer med */
+function animeraNatkarta(l, fran, till, ms){
+  const svg = el("natSvg"), har = el("natHar");
+  if(!svg || !har) return;
+  const f0 = natFonster(l, fran), f1 = natFonster(l, till);
+  const A = STOP_XY[l.stops[fran]], B = STOP_XY[l.stops[till]];
+  if(!A || !B) return;
+  const start = performance.now();
+  const mjuk = (t) => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+  function steg(nu){
+    const t = mjuk(Math.min(1, (nu - start) / ms));
+    svg.setAttribute("viewBox", viewBoxStr({
+      x: f0.x + (f1.x - f0.x) * t, y: f0.y + (f1.y - f0.y) * t,
+      w: f0.w + (f1.w - f0.w) * t, h: f0.h + (f1.h - f0.h) * t }));
+    har.setAttribute("transform", `translate(${(A[0] + (B[0] - A[0]) * t).toFixed(1)},${(A[1] + (B[1] - A[1]) * t).toFixed(1)})`);
+    if(t < 1) requestAnimationFrame(steg);
+  }
+  requestAnimationFrame(steg);
+}
+
 /* ── Resan längs linjen ─────────────────── */
 let tripRef = null, tripFrom = null;
 /* Kan bilderna inte hämtas alls – i en visare där bildmappen saknas – slutar vi
@@ -2701,6 +3011,7 @@ function renderTrip(animera, visaBilden){
     </div>`;
 
   const visaFrån = animera && tripFrom != null ? tripFrom : at;
+  el("natkarta").innerHTML = natkartaSVG(l, visaFrån);
   el("route").style.setProperty("--linecol", l.col);
   el("route").innerHTML =
     `<div class="route-line"><div class="done-part" style="height:${visaFrån * 52}px"></div></div>` +
@@ -2738,7 +3049,7 @@ function renderTrip(animera, visaBilden){
     if(visaBilden){
       /* Nyss framme: bilden på hållplatsen är belöningen, visa den */
       window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
-    }else{
+    }else if(el("allaStopp").open){
       const rad = el("route").querySelector(".stop-row.här");
       if(rad) later(() => rad.scrollIntoView({ block: "center", behavior: reduceMotion ? "auto" : "smooth" }), 120);
     }
@@ -2760,8 +3071,11 @@ function rullaFram(till){
     r.classList.toggle("done", i < till);
     r.classList.toggle("här", i === till);
   });
+  if(!reduceMotion) animeraNatkarta(l, till - 1, till, 900);
+  /* Kartan är det man tittar på när vagnen rullar */
+  el("natkarta").scrollIntoView({ block: "center", behavior: reduceMotion ? "auto" : "smooth" });
   const rad = rader[till];
-  if(rad) rad.scrollIntoView({ block: "center", behavior: reduceMotion ? "auto" : "smooth" });
+  if(rad && el("allaStopp").open) rad.scrollIntoView({ block: "center", behavior: reduceMotion ? "auto" : "smooth" });
   later(() => {
     vagn.classList.remove("rullar");
     tripFrom = null;
@@ -2800,6 +3114,13 @@ el("stopCard").addEventListener("click", (e) => {
   const l = lineByRef(tripRef), p = P();
   SFX.utrop();
   later(() => speakUtrop("Hållplats " + l.stops[tramAt(p, tripRef)]), 620);
+});
+
+el("natkarta").addEventListener("click", (e) => {
+  const c = e.target.closest("[data-stopp]"); if(!c) return;
+  const l = lineByRef(tripRef), namn = l.stops[Number(c.dataset.stopp)];
+  SFX.tap();
+  speakUtrop(namn);
 });
 
 el("goBtn").addEventListener("click", () => {

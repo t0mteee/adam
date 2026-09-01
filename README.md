@@ -137,6 +137,17 @@ låter som ett utrop och inte som en lekkamrat.
   Briljantgatan), sol och moln i Biskopsgården (Väderilsgatan,
   Vårväderstorget), hav vid Saltholmen, pariserhjul vid Liseberg, vagnhall vid
   Vagnhallen Majorna. Övriga får sin bild av namnets ändelse.
+- **Nätkartan.** Under hållplatsens bild ligger hela spårvagnsnätet, inzoomat
+  kring hållplatsen man står vid: den egna linjen i sin färg ovanpå de andra,
+  dämpade, en pulserande ring och linjens nummer där man är, åkta hållplatser
+  fyllda och kommande vita. Namn visas på hållplatsen, grannarna och
+  ändstationerna, och lägger sig där de inte krockar. När vagnen rullar
+  panorerar kartan med till nästa hållplats. Ett tryck på en hållplats säger
+  namnet. Hållplatsernas lägen kommer från OpenStreetMap, omräknade så att
+  centrum dragits isär – avståndet från Brunnsparken tas upphöjt till 0,62 –
+  så Brunnsparken–Valand får lika mycket plats som Saltholmen–Långedrag medan
+  kartan ändå liknar staden. Där flera linjer delar sträcka ritas de bredvid
+  varandra. Listan med alla hållplatser finns kvar, hopfälld under kartan.
 - **Kort summering.** När hållplatsen är avklarad visas bara mynten och en enda
   knapp: *Åk vidare!* Sedan rullar vagnen in på nästa hållplats.
 - **Svårigheten anpassar sig.** Standardläget **Stigande** håller reda på var
@@ -259,8 +270,10 @@ Hela nätet är dessutom korsvaliderat internt: av 319 hållplatspar bekräftas 
 av minst en annan linje som kör samma sträcka, och ingen linje motsäger en
 annan. Alla 132 hållplatsnamn återfinns ordagrant på Västtrafiks karta.
 
-Kartbilden är inte hämtad någonstans ifrån – landskap, figurer och hållplatsernas
-tecknade scener är ritade i SVG i den här filen.
+Kartbilden över Räknelandet är inte hämtad någonstans ifrån – landskap, figurer
+och hållplatsernas tecknade scener är ritade i SVG i den här filen. Nätkartans
+hållplatslägen kommer från OpenStreetMap (© OpenStreetMaps bidragsgivare, ODbL)
+och är omräknade som beskrivet ovan.
 
 Hållplatsfotona i mappen `bilder/` kommer från Wikimedia Commons och används
 enligt sina licenser, till största delen CC BY-SA 3.0 och 4.0, några under CC BY,
