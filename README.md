@@ -11,7 +11,7 @@ Barnet skapar en egen spelare med namn och kompisfigur. Spelet har två
 världar, **Räknelandet** och **Spårvagn**; vilken som spelas väljs överst i
 inställningarna (kugghjulet), så huvudskärmen slipper en växlare. Båda öppnar
 nya banor, så man kan börja i vilken som helst. Pillen i topplisten visar
-stjärnor i Räknelandet och åkta linjer i spårvagnen.
+stjärnor i Räknelandet och besökta hållplatser i spårvagnen.
 
 ### Räknelandet
 
@@ -102,7 +102,7 @@ bland svarsalternativen ligger de vanligaste feltankarna – siffrorna omkastade
 Rätt på första försöket ger 10 guldmynt; tre rätt i rad dubblar och sex rätt i
 rad tredubblar. Rätt efter ett feltryck ger 5 mynt – aldrig minuspoäng. Efter
 varje omgång delas upp till tre stjärnor ut (4 rätt direkt ger en, 7 ger två, 9
-ger tre), och minst en stjärna öppnar nästa bana. Totalt finns 93 stjärnor och 22
+ger tre), och minst en stjärna öppnar nästa bana. Totalt finns 93 stjärnor och 25
 märken att samla, från *Första stjärnan* och *Ändstation* till *Hela landet*.
 
 Mynten går att göra av med. Myntraden i topplisten öppnar **skattkistan** med
@@ -110,10 +110,12 @@ två hyllor. *Till kompisen*: keps (60 mynt), rosett (100), förarmössa (150),
 partyhatt (200), krona (300) och stjärnpannband (450). Den man köper tas på
 direkt och syns på kompisen överallt – i topplisten, på kartan, på spelskärmen
 och på resultatskärmen, i båda världarna – och går att ta av och på i kistan.
-*Saker att räkna*: spårvagn (50), katt (80), glass (120), raket (170), hjärta
-(230) och måne (300). De blandas in bland de sex som finns från start och syns
-där saker räknas: på räknebanorna, som räknehjälp till och med Grottan, och när
-svaret visas efter tre fel på vilken bana som helst. De är billiga med flit, så
+*Leksaker*: spårvagn (50), katt (80), glass (120), raket (170), hjärta (230)
+och måne (300). De står på marken bredvid kompisen på spelskärmen och
+resultatskärmen, senast köpta närmast, och blandas dessutom in bland de sex
+sakerna som finns från start där saker räknas: på räknebanorna, som räknehjälp
+till och med Grottan, och när svaret visas efter tre fel på vilken bana som
+helst. De är billiga med flit, så
 de hinner köpas medan de gör nytta. Köpen hör till spelaren, precis som stjärnor
 och märken.
 
@@ -126,9 +128,10 @@ och väljer vagn och riktning bland dem som går därifrån – varje avgång vi
 som en vagnsfront i linjens färg med skylten *mot Angered* och nästa hållplats.
 Sedan åker man en hållplats i taget och kan vid varje hållplats byta vagn,
 vända eller hoppa av och börja någon annanstans. Vid en ändstation frågar
-spelet vilken vagn man tar nu. *Mina linjer* på startskärmen visar hur stor del
-av varje linje som är åkt, och en linje räknas som klar när alla hållplatser
-är besökta. Varje hållplats
+spelet vilken vagn man tar nu. Målet är nätet: att ha stått vid alla 132
+hållplatser. Pillen i topplisten räknar dem, startskärmen har en mätare för
+hela nätet och under den *Mina linjer* med hur stor del av varje linje som är
+åkt. Märken delas ut vid 33, 66 och 132 hållplatser, och för hela linjer. Varje hållplats
 kostar fem uppgifter, och när de är klara rullar vagnen fram till nästa
 hållplats på linjekartan medan rösten ropar ut namnet. Utropet föregås av två
 mjuka toner, och läses lugnare och i lägre tonläge än matteuppgifterna så att det

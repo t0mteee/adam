@@ -481,7 +481,14 @@ h1, h2, h3{ font-family: "Baloo 2", "Baloo 2 Fallback", system-ui, sans-serif; f
 /* ── Scenen ─────────────────────────────── */
 .play-area{ flex: 1 1 auto; display: flex; flex-direction: column; justify-content: center; gap: clamp(6px, 2vw, 14px); }
 .stage{ display: block; }
-.buddy-rad{ margin-top: auto; padding: 6px 0 0 2px; display: flex; align-items: flex-end; }
+.buddy-rad{ margin-top: auto; padding: 6px 0 0 2px; display: flex; align-items: flex-end; gap: 6px; }
+#leksaker{ flex: 1; min-width: 0; }
+.leksaker{ display: flex; align-items: flex-end; gap: 4px; flex-wrap: wrap; max-width: 70%; padding-bottom: 6px; }
+.leksaker span{ width: clamp(26px, 7vw, 36px); display: block; animation: leksak-gung 3s ease-in-out infinite; }
+.leksaker span svg{ width: 100%; height: auto; display: block; filter: drop-shadow(0 3px 2px rgba(46,26,102,.2)); }
+@keyframes leksak-gung{ 0%,100%{ transform: rotate(-4deg); } 50%{ transform: rotate(4deg) translateY(-2px); } }
+.result-buddy .leksaker{ justify-content: center; max-width: none; margin: 4px auto 0; }
+.result-buddy .leksaker span{ width: 30px; }
 .buddy{ position: relative; width: clamp(60px, 17vw, 88px); }
 .buddy svg{ width: 100%; height: auto; display: block; filter: drop-shadow(0 8px 6px rgba(46,26,102,.22)); }
 .buddy.bob svg{ animation: bob 2.6s ease-in-out infinite; }
@@ -1083,7 +1090,7 @@ body.on-tram .world{ display: none; }
       <div class="answer-area" id="answerArea"></div>
     </div>
     <!-- Kompisen står längst ner och hejar; i skrivläget hamnar den under knappsatsen -->
-    <div class="buddy-rad"><div class="buddy bob" id="buddy" aria-hidden="true"></div></div>
+    <div class="buddy-rad"><div class="buddy bob" id="buddy" aria-hidden="true"></div><span id="leksaker"></span></div>
   </section>
 
   <!-- ── RESULTAT ───────────────────────── -->
@@ -1124,7 +1131,7 @@ const pick = (arr) => arr[rnd(arr.length)];
 const INK = "#2E1A66";
 /* Syns under Inställningar, så man kan se vilken version telefonen kör.
    Höjs tillsammans med VERSION i sw.js. */
-const SPELVERSION = "13";
+const SPELVERSION = "14";
 function shuffle(a){ for(let i = a.length - 1; i > 0; i--){ const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
 function store(key, val){
@@ -1272,6 +1279,13 @@ function charSVG(id, mood, hatt){
 }
 /* Spelarens egen kompis, med det den har på sig */
 const kompisSVG = (p, mood) => charSVG(p.char, mood, p.tillbehor);
+/* Räknesakerna man köpt står på marken bredvid kompisen, senast köpta närmast.
+   Så händer det något med figuren när man handlat. */
+function leksakerHTML(p){
+  const mina = ((p && p.kopta) || []).filter(id => THINGS[id]).slice().reverse();
+  if(!mina.length) return "";
+  return `<span class="leksaker" aria-hidden="true">${mina.map((id, i) => `<span style="animation-delay:${i * .35}s">${THINGS[id]}</span>`).join("")}</span>`;
+}
 
 /* ═══════════════════════════════════════════
    Saker att räkna, stjärnor, märken
@@ -1605,7 +1619,10 @@ const BADGES = [
   { id:"tram25",  name:"25 hållplatser",  desc:"Åk 25 hållplatser",      art:"tram",  test:p => (p.stopsRidden || 0) >= 25 },
   { id:"tramline",name:"Ändstation",      desc:"Åk en hel linje",        art:"spar",  test:p => (p.linesDone || []).length >= 1 },
   { id:"tram3",   name:"Tre linjer",      desc:"Åk tre hela linjer",     art:"spar",  test:p => (p.linesDone || []).length >= 3 },
-  { id:"tramfel", name:"Felfri hållplats", desc:"Alla rätt på en hållplats", art:"medal", test:p => (p.tramPerfect || 0) >= 1 }
+  { id:"tramfel", name:"Felfri hållplats", desc:"Alla rätt på en hållplats", art:"medal", test:p => (p.tramPerfect || 0) >= 1 },
+  { id:"nat33",   name:"En fjärdedel",    desc:"Stå vid 33 hållplatser",  art:"tram",  test:p => besoktaAlla(p).size >= 33 },
+  { id:"nat66",   name:"Halva nätet",     desc:"Stå vid 66 hållplatser",  art:"tram",  test:p => besoktaAlla(p).size >= 66 },
+  { id:"nat132",  name:"Hela nätet",      desc:"Alla 132 hållplatser",    art:"crown", test:p => besoktaAlla(p).size >= 132 }
 ];
 
 
@@ -2366,8 +2383,7 @@ function renderHeader(){
   el("whoCoins").innerHTML = COIN_SVG + " " + p.coins + " mynt";
   /* Stjärnor hör till Räknelandets banor; i spårvagnen räknas linjerna */
   if(p.world === "tram"){
-    const klara = TRAM_LINES.filter(l => linjeKlar(p, l.ref)).length;
-    el("starTrack").innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3.5" width="14" height="14" rx="3.5"/><path d="M5 9h14M8 21l2-3.5M16 21l-2-3.5"/><circle cx="9" cy="13.5" r="1.1" fill="currentColor"/><circle cx="15" cy="13.5" r="1.1" fill="currentColor"/></svg> ${klara}/${TRAM_LINES.length} linjer`;
+    el("starTrack").innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3.5" width="14" height="14" rx="3.5"/><path d="M5 9h14M8 21l2-3.5M16 21l-2-3.5"/><circle cx="9" cy="13.5" r="1.1" fill="currentColor"/><circle cx="15" cy="13.5" r="1.1" fill="currentColor"/></svg> ${besoktaAlla(p).size}/${ALLA_STOPP.length}`;
   }else{
     el("starTrack").innerHTML = STAR_ON + " " + totalStars(p) + "/" + MAX_STARS;
   }
@@ -2708,6 +2724,9 @@ function roundel(l, cls){
   return `<span class="roundel ${cls || ""}" style="background:${l.col};color:${text}">${l.ref}</span>`;
 }
 const linjerVid = (namn) => TRAM_LINES.filter(l => l.stops.includes(namn));
+/* Alla hållplatser barnet stått vid, oavsett linje – det är nätet som ska tas */
+const ALLA_STOPP = [...new Set(TRAM_LINES.flatMap(l => l.stops))];
+const besoktaAlla = (p) => new Set(Object.values((p && p.besokta) || {}).flat());
 const besoktaPa = (p, ref) => (p.besokta && p.besokta[ref]) || [];
 function linjeKlar(p, ref){
   const l = lineByRef(ref), b = new Set(besoktaPa(p, ref));
@@ -2763,6 +2782,15 @@ function renderStart(){
           <span>${namn}</span>
           <span class="linjer" style="padding-top:0">${linjerVid(namn).map(l => `<i style="background:${l.col};color:${ljusFarg(l.col) ? INK : "#FFFDF7"}">${l.ref}</i>`).join("")}</span>
         </button>`).join("")}
+    </div>
+    <h2 class="start-rubrik">Hela nätet</h2>
+    <div class="line-row" style="--linecol:var(--grape);cursor:default">
+      <span class="roundel" style="background:var(--grape);color:#FFFDF7">${Math.round(besoktaAlla(p).size / ALLA_STOPP.length * 100)}%</span>
+      <span style="min-width:0">
+        <span class="line-ends">${besoktaAlla(p).size} av ${ALLA_STOPP.length} hållplatser</span>
+        <span class="line-meta" style="display:block">Målet är att ha stått vid alla</span>
+        <span class="line-bar ${besoktaAlla(p).size >= ALLA_STOPP.length ? "klar" : ""}"><span class="${besoktaAlla(p).size ? "pabörjad" : ""}" style="width:${Math.round(besoktaAlla(p).size / ALLA_STOPP.length * 100)}%"></span></span>
+      </span>
     </div>
     <h2 class="start-rubrik">Mina linjer</h2>
     <div class="mina-linjer">
@@ -3386,12 +3414,12 @@ function openBadges(){
     <div class="sheet-head">
       <div>
         <h2>Mina märken</h2>
-        <p class="sheet-sub">${tagna.length} av ${BADGES.length} märken · ${totalStars(p)} av ${MAX_STARS} stjärnor</p>
+        <p class="sheet-sub">${tagna.length} av ${BADGES.length} märken · ${totalStars(p)} av ${MAX_STARS} stjärnor · ${besoktaAlla(p).size} av ${ALLA_STOPP.length} hållplatser</p>
       </div>
       ${CLOSE_BTN}
     </div>
     <p class="sheet-sub" style="margin:0 0 12px">Stjärnor får man på banorna i Räknelandet, upp till tre per bana efter hur många rätt det blev.
-      Spårvagnen ger mynt, märken och nya banor – och varje linje man åkt klart.</p>
+      I spårvagnen är målet att ha stått vid alla ${ALLA_STOPP.length} hållplatser i nätet.</p>
     <div class="badge-grid">
       ${BADGES.map(b => `
         <div class="badge ${tagna.includes(b.id) ? "" : "locked"}">
@@ -3555,7 +3583,7 @@ sheet.addEventListener("click", (e) => {
     openShop();
     const r = sheet.getBoundingClientRect();
     confetti(r.left + r.width / 2, r.top + 90, 26);
-    speak(v.rita ? `Du köpte ${v.ord}! Snyggt!` : `Du köpte ${v.ord}! Nu får du räkna ${v.flera} också.`);
+    speak(v.rita ? `Du köpte ${v.ord}! Snyggt!` : `Du köpte ${v.ord}! Den står bredvid dig när du räknar.`);
     return;
   }
   if(e.target.closest('[data-action="switch"]')){
@@ -3626,7 +3654,7 @@ function openShop(){
     <div class="butik" id="butikLista">
       <p class="sheet-sub" style="margin:0 0 4px"><b>Till kompisen</b> – syns på varje skärm, i båda världarna.</p>
       ${TILLBEHOR.map(v => butikRadHTML(v, p)).join("")}
-      <p class="sheet-sub" style="margin:10px 0 4px"><b>Saker att räkna</b> – syns på räknebanorna, som räknehjälp till och med Grottan, och när svaret visas efter tre fel.</p>
+      <p class="sheet-sub" style="margin:10px 0 4px"><b>Leksaker</b> – står bredvid kompisen när du räknar, och blir saker att räkna på räknebanorna, som räknehjälp till och med Grottan och när svaret visas efter tre fel.</p>
       ${BUTIK.map(v => butikRadHTML(v, p)).join("")}
     </div>`);
 }
@@ -3687,6 +3715,7 @@ function nextQuestion(){
 function setBuddy(mood, anim){
   const p = P();
   buddy.innerHTML = kompisSVG(p, mood);
+  el("leksaker").innerHTML = leksakerHTML(p);
   buddy.className = "buddy " + (anim || "bob");
   if(anim && anim !== "bob"){
     later(() => { buddy.className = "buddy bob"; buddy.innerHTML = kompisSVG(p, "idle"); }, 1300);
@@ -4022,7 +4051,7 @@ function finishRound(){
   saveProfiles();
   const nya = newBadges(p);
 
-  el("resultBuddy").innerHTML = kompisSVG(p, stars ? "happy" : "idle");
+  el("resultBuddy").innerHTML = kompisSVG(p, stars ? "happy" : "idle") + leksakerHTML(p);
   el("resultStars").innerHTML = [0,1,2].map(i => i < stars ? STAR_ON : STAR_OFF).join("");
   const titles = ["Bra kämpat!", "Fint jobbat!", "Superbra!", "Helt fantastiskt!"];
   el("resultTitle").textContent = titles[stars];
