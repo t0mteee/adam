@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { REGIONS, LEVELS, SHOWN, buildRound, makeOptions, qNyckel, TRAM_LINES, STOP_PHOTOS,
+import { REGIONS, LEVELS, SHOWN, buildRound, makeOptions, qNyckel, TRAM_LINES, STOP_PHOTOS, TRAM_PHOTOS, vagnFoto,
          THINGS, BAS_SAKER, BUTIK, sakerFor,
          justeraSkill, nivaForSkill, buildStigandeRound } from "./hamta.mjs";
 
@@ -202,4 +202,64 @@ test("tiotalsuppgifter delar upp talet i tior och ental", () => {
     }
   }
   assert.ok(sedda > 100, `såg bara ${sedda} tiotalsuppgifter`);
+});
+
+test("Vagnhallens sorter räknar rätt och håller sig inom banans tal", () => {
+  const banor = LEVELS.filter(L => L.r === 6);
+  assert.equal(banor.length, 8, "Vagnhallen ska ha åtta banor");
+  let serier = 0, ganger = 0, halvor = 0;
+  for(const L of banor){
+    assert.ok(L.utanHjalp, `${L.name} ska sakna hjälpbilder`);
+    for(let i = 0; i < 120; i++){
+      for(const q of buildRound(L, 10)){
+        assert.ok(q.utanHjalp, "uppgiften ska bära banans regel om hjälpbilder");
+        assert.ok(q.answer >= 0 && q.answer <= L.max, `${q.kind} gav ${q.answer} på ${L.name}`);
+        if(q.kind === "add")   assert.equal(q.a + q.b, q.answer);
+        if(q.kind === "sub"){  assert.equal(q.a - q.b, q.answer); assert.ok(q.b < q.a); }
+        if(q.kind === "mul"){  assert.equal(q.a * q.b, q.answer); ganger++;
+                               assert.ok([2, 5, 10].includes(q.a)); }
+        if(q.kind === "half"){ assert.equal(q.a, q.answer * 2); halvor++; }
+        if(q.kind === "serie"){
+          serier++;
+          assert.equal(q.tal.length, 3, "tre tal ska synas");
+          const steg = q.upp ? q.steg : -q.steg;
+          assert.equal(q.tal[1] - q.tal[0], steg);
+          assert.equal(q.tal[2] - q.tal[1], steg);
+          assert.equal(q.tal[2] + steg, q.answer);
+          assert.ok(q.tal.every(t => t >= 0), `negativt tal i följden ${q.tal}`);
+        }
+        const alt = makeOptions(q, 4);
+        assert.ok(alt.includes(q.answer), `rätt svar saknas för ${q.kind}`);
+        assert.equal(new Set(alt).size, 4, `dubblett bland alternativen för ${q.kind}`);
+      }
+    }
+  }
+  assert.ok(serier > 50 && ganger > 50 && halvor > 50,
+    `för få av någon sort: talföljd ${serier}, gånger ${ganger}, hälften ${halvor}`);
+});
+
+test("banorna med hjälpbilder behåller dem, räknebanorna sina figurer", () => {
+  for(const L of LEVELS){
+    const q = buildRound(L, 10)[0];
+    if(L.id <= 9 || L.r === 5) assert.ok(!q.utanHjalp, `${L.name} ska ha hjälpbilder`);
+    else assert.ok(q.utanHjalp, `${L.name} ska sakna hjälpbilder`);
+  }
+});
+
+test("hållplatser utan eget foto får samma spårvagn varje gång", () => {
+  assert.ok(TRAM_PHOTOS.length >= 8, "för få spårvagnsbilder att välja bland");
+  for(const v of TRAM_PHOTOS){
+    assert.ok(existsSync(join(rot, "bilder", v.f + ".jpg")), `bilder/${v.f}.jpg saknas`);
+    assert.ok(v.by && v.lic, `${v.f} saknar fotograf eller licens`);
+  }
+  const utan = [...new Set(TRAM_LINES.flatMap(l => l.stops))].filter(n => !STOP_PHOTOS[n]);
+  assert.ok(utan.length > 0, "testet förutsätter att någon hållplats saknar foto");
+  for(const namn of utan){
+    const a = vagnFoto(namn), b = vagnFoto(namn);
+    assert.ok(a && a.f, `${namn} fick ingen spårvagn`);
+    assert.equal(a.f, b.f, `${namn} bytte spårvagn mellan besöken`);
+  }
+  const spridning = new Set(utan.map(n => vagnFoto(n).f));
+  assert.ok(spridning.size >= Math.min(6, TRAM_PHOTOS.length),
+    `bara ${spridning.size} olika vagnar över ${utan.length} hållplatser`);
 });

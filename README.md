@@ -13,9 +13,10 @@ två världar högst upp på skärmen: **Räknelandet** eller **Spårvagn**. Bå
 
 ### Räknelandet
 
-Femton banor på en slingrande stig genom fem områden, som var och ett ser ut som
-sitt namn – blommor på Ängen, granar i Skogen, kristaller och droppstenar i
-Grottan, snöklädda toppar på Berget och moln högst upp. En bana i taget låses
+Tjugosju banor på en slingrande stig genom sju områden, som var och ett ser ut
+som sitt namn – blommor på Ängen, granar i Skogen, kristaller och droppstenar i
+Grottan, snöklädda toppar på Berget, moln högre upp, stjärnor i Stjärnhimlen och
+spårvagnar, räls och kontaktledningsstolpar i Vagnhallen. En bana i taget låses
 upp genom att klaras med minst en stjärna – eller genom en felfri hållplats i
 spårvagnsvärlden – och klarade banor går att spela om.
 
@@ -27,6 +28,7 @@ spårvagnsvärlden – och klarade banor går att spela om.
 | Berget | 10–12 | Plus till 20, minus till 20, plus och minus till 20 |
 | Molnen | 13–15 | Tre tal, blandat till 20, mästarprovet |
 | Stjärnhimlen | 16–19 | Räkna till 25, 50, 75 och 100 – i tioramar, tior och ental |
+| Vagnhallen | 20–27 | Över tian, hela tiotal, tiotal och ental, plus till 100, talföljder, gånger och hälften, Vagnhallens prov |
 
 Varje bana är tio uppgifter och kan spelas på två sätt: **välj svar** (tre eller
 fyra rutor att trycka på) eller **skriv svar** (stor knappsats; fysiskt
@@ -39,6 +41,24 @@ tio uppgifterna och läggs sedan i en ordning där samma sorts tal aldrig dyker 
 mer än två gånger i rad. Dubbeltal räknas som plustal i den fördelningen,
 eftersom de ser likadana ut på skärmen. Samma uppgift återkommer inte heller inom
 en omgång förrän alla möjliga varianter på banan är använda.
+
+### Inga figurer att räkna på
+
+Fram till Grottan ritas talen ut som saker man kan räkna: sex äpplen plus tre
+äpplen. Från Berget och uppåt försvinner de. Ett barn som kan räkna prickarna
+snabbt behöver aldrig lära sig talen, och då blir 8 + 9 en fråga om uthållighet
+i stället för huvudräkning. Räknebanorna i Stjärnhimlen är undantaget – där *är*
+sakerna uppgiften. Efter tre fel visas svaret ändå, och nivåbladet skriver ut
+*utan hjälpbilder* så man vet vad man valt.
+
+### Vagnhallen
+
+De åtta sista banorna är byggda för den som redan klarat mästarprovet. Att gå
+över tiotalet (8 + 7), räkna med hela tiotal (70 − 40), lägga ental till ett
+tvåsiffrigt tal (34 + 5), addera två tvåsiffriga (38 + 27), se mönstret i en
+talföljd (40, 50, 60, ?), gångertabellerna 2, 5 och 10 och hälften av ett tal –
+sorter som inte går att räkna sig till på fingrarna. Sista banan, *Vagnhallens
+prov*, blandar alla åtta.
 
 ### Tior och ental
 
@@ -54,7 +74,7 @@ bland svarsalternativen ligger de vanligaste feltankarna – siffrorna omkastade
 Rätt på första försöket ger 10 guldmynt; tre rätt i rad dubblar och sex rätt i
 rad tredubblar. Rätt efter ett feltryck ger 5 mynt – aldrig minuspoäng. Efter
 varje omgång delas upp till tre stjärnor ut (4 rätt direkt ger en, 7 ger två, 9
-ger tre), och minst en stjärna öppnar nästa bana. Totalt finns 57 stjärnor och 19
+ger tre), och minst en stjärna öppnar nästa bana. Totalt finns 81 stjärnor och 21
 märken att samla, från *Första stjärnan* och *Ändstation* till *Hela landet*.
 
 Mynten går att göra av med. Myntraden i topplisten öppnar **skattkistan**, där
@@ -79,12 +99,13 @@ låter som ett utrop och inte som en lekkamrat.
   är vit, tvåan gul, trean blå, fyran grön och femman röd, precis som sedan
   1902. Linje 6 har 46 hållplatser, linje 10 bara 13 – bra att veta när man
   väljer hur lång resa det ska bli.
-- **Riktiga foton som tonar över i teckningen.** 105 av hållplatserna visar först
-  ett riktigt foto från platsen, som efter knappt tre sekunder tonar över i
-  spelets egen tecknade bild. Kameraknappen bredvid hållplatsnamnet visar att det
-  finns ett foto och tar tillbaka det hur många gånger som helst; den syns bara på
-  hållplatser som har ett, och ett tryck på själva bilden gör samma sak. Nästa hållplats foto hämtas redan medan man räknar, så
-  det står färdigt vid framkomsten. Foton och fotografer listas under *Bilderna och
+- **Riktiga foton på hållplatserna.** 105 av hållplatserna har ett eget foto,
+  och det är det man ser när vagnen rullat in. Kameraknappen bredvid
+  hållplatsnamnet – eller ett tryck på bilden – växlar till spelets egen tecknade
+  version och tillbaka igen. De 27 hållplatser som saknar eget foto visar en
+  spårvagn från Göteborg i stället; vilken av de sexton avgörs av hållplatsens
+  namn, så det blir samma vagn varje gång man kommer dit. Nästa hållplats bild
+  hämtas redan medan man räknar. Foton och fotografer listas under *Bilderna och
   fotograferna* i inställningarna.
 - **Varje hållplats syns.** Alla 132 hållplatser har en egen liten bild, ritad
   efter vad namnet betyder: rymdraket i Bergsjön (Komettorget, Rymdtorget,
@@ -163,7 +184,7 @@ tecknade scenerna i stället. Behövs en enda fil som bär med sig allt:
 python3 verktyg/bygg-fristaende.py
 ```
 
-Den skriver `fristaende.html` med alla 105 fotona inbakade i filen (drygt 3 MB).
+Den skriver `fristaende.html` med alla 121 fotona inbakade i filen (drygt 4 MB).
 Spelet i övrigt är identiskt.
 
 **Lägg till på iPhone eller iPad.** Öppna adressen i **Safari** (det måste vara
@@ -221,13 +242,13 @@ enligt sina licenser, till största delen CC BY-SA 3.0 och 4.0, några under CC 
 CC0 eller public domain. Fotograf och licens visas under varje bild i spelet och
 i listan under *Bilderna och fotograferna*. Bilderna är nedskalade till 640×300
 och beskurna i mitten. Av 132 hållplatser hittades en användbar bild för 105; de
-övriga visar bara den tecknade scenen. Går en enstaka bild inte att hämta hoppar
+övriga får en av sexton allmänna spårvagnsbilder. Går en enstaka bild inte att hämta hoppar
 spelet över just den; först efter tre bommar slutar det be om foton alls, så ett
 hack i nätet släcker inte resten av resan.
 
 ## Tester
 
-`node --test` kör femton tester som plockar ut spelets rena funktioner direkt
+`node --test` kör arton tester som plockar ut spelets rena funktioner direkt
 ur `index.html`, så att de aldrig testar en kopia som glidit isär från källan. De
 täcker att uppgifterna håller sig inom banans tal och aldrig blir negativa, att
 rätt svar alltid finns bland alternativen, att samma sorts tal aldrig kommer mer
