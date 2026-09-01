@@ -4,6 +4,7 @@ import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { REGIONS, LEVELS, SHOWN, buildRound, makeOptions, qNyckel, TRAM_LINES, STOP_PHOTOS,
+         THINGS, BAS_SAKER, BUTIK, sakerFor,
          justeraSkill, nivaForSkill, buildStigandeRound } from "./hamta.mjs";
 
 const rot = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -165,4 +166,40 @@ test("varje hållplatsfoto hör till en riktig hållplats och filen finns", () =
     filer.add(foto.f);
     assert.ok(foto.by && foto.lic, `${namn} saknar fotograf eller licens`);
   }
+});
+
+test("skattkistans saker går att rita, kostar olika och läggs till spelarens", () => {
+  for(const nyckel of BAS_SAKER) assert.ok(THINGS[nyckel], `räknesaken ${nyckel} saknar bild`);
+  const priser = [];
+  for(const v of BUTIK){
+    assert.ok(THINGS[v.id], `${v.id} går inte att rita`);
+    assert.ok(BAS_SAKER.indexOf(v.id) === -1, `${v.id} finns redan från start`);
+    assert.ok(v.pris > 0 && v.name && v.ord && v.flera, `${v.id} saknar pris eller namn`);
+    priser.push(v.pris);
+  }
+  assert.deepEqual(priser, [...priser].sort((a, b) => a - b), "priserna ska stiga");
+  assert.deepEqual(sakerFor(null), BAS_SAKER);
+  assert.deepEqual(sakerFor({ kopta: [] }), BAS_SAKER);
+  const med = sakerFor({ kopta: ["tram", "moon"] });
+  assert.equal(med.length, BAS_SAKER.length + 2);
+  assert.ok(med.includes("tram") && med.includes("moon"));
+});
+
+test("tiotalsuppgifter delar upp talet i tior och ental", () => {
+  const bana = LEVELS.find(l => l.id === 19);
+  assert.ok(bana.kinds.includes("tiotal"), "Räkna till 100 ska ha tiotalsuppgifter");
+  let sedda = 0;
+  for(let i = 0; i < 300; i++){
+    for(const q of buildRound(bana, 10)){
+      if(q.kind !== "tiotal") continue;
+      sedda++;
+      assert.equal(q.tior * 10 + q.ental, q.answer, `${q.tior} tior och ${q.ental} ental blir inte ${q.answer}`);
+      assert.ok(q.ental >= 0 && q.ental <= 9, `ental utanför 0–9: ${q.ental}`);
+      assert.ok(q.answer >= bana.min && q.answer <= bana.max, `${q.answer} utanför banans tal`);
+      const alt = makeOptions(q, 4);
+      assert.ok(alt.includes(q.answer), "rätt svar saknas bland alternativen");
+      assert.equal(new Set(alt).size, 4, "dubblett bland alternativen");
+    }
+  }
+  assert.ok(sedda > 100, `såg bara ${sedda} tiotalsuppgifter`);
 });

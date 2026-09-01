@@ -26,7 +26,7 @@ spårvagnsvärlden – och klarade banor går att spela om.
 | Grottan | 7–9 | Dubbelt, tiokompisar, vad fattas |
 | Berget | 10–12 | Plus till 20, minus till 20, plus och minus till 20 |
 | Molnen | 13–15 | Tre tal, blandat till 20, mästarprovet |
-| Stjärnhimlen | 16–19 | Räkna till 25, 50, 75 och 100 |
+| Stjärnhimlen | 16–19 | Räkna till 25, 50, 75 och 100 – i tioramar, tior och ental |
 
 Varje bana är tio uppgifter och kan spelas på två sätt: **välj svar** (tre eller
 fyra rutor att trycka på) eller **skriv svar** (stor knappsats; fysiskt
@@ -40,6 +40,15 @@ mer än två gånger i rad. Dubbeltal räknas som plustal i den fördelningen,
 eftersom de ser likadana ut på skärmen. Samma uppgift återkommer inte heller inom
 en omgång förrän alla möjliga varianter på banan är använda.
 
+### Tior och ental
+
+De stora räknebanorna ritar talen i tioramar: tio saker per ram, så att sju
+fulla ramar och sju lösa läses som 77 utan att räkna om från ett. Att räkna 87
+prickar en och en är ändå mest uthållighet, så halva uppgifterna på de banorna
+ställer frågan tvärtom: *7 tior + 7 ental = ?* Ramarna står kvar som stöd, och
+bland svarsalternativen ligger de vanligaste feltankarna – siffrorna omkastade
+(77 → 67) och siffrorna hopräknade (7 + 7 = 14).
+
 ### Poäng, stjärnor och märken
 
 Rätt på första försöket ger 10 guldmynt; tre rätt i rad dubblar och sex rätt i
@@ -47,6 +56,12 @@ rad tredubblar. Rätt efter ett feltryck ger 5 mynt – aldrig minuspoäng. Efte
 varje omgång delas upp till tre stjärnor ut (4 rätt direkt ger en, 7 ger två, 9
 ger tre), och minst en stjärna öppnar nästa bana. Totalt finns 57 stjärnor och 19
 märken att samla, från *Första stjärnan* och *Ändstation* till *Hela landet*.
+
+Mynten går att göra av med. Myntraden i topplisten öppnar **skattkistan**, där
+sex nya saker att räkna med står till salu: spårvagn (120 mynt), katt (250),
+glass (420), raket (650), hjärta (900) och måne (1200). Det som köps blandas in
+bland de sex som finns från start, så uppgifterna byter utseende allt eftersom
+skatten växer. Köpen hör till spelaren, precis som stjärnor och märken.
 
 ## Spårvagn — Göteborgs linjenät
 
@@ -212,7 +227,7 @@ hack i nätet släcker inte resten av resan.
 
 ## Tester
 
-`node --test` kör tretton tester som plockar ut spelets rena funktioner direkt
+`node --test` kör femton tester som plockar ut spelets rena funktioner direkt
 ur `index.html`, så att de aldrig testar en kopia som glidit isär från källan. De
 täcker att uppgifterna håller sig inom banans tal och aldrig blir negativa, att
 rätt svar alltid finns bland alternativen, att samma sorts tal aldrig kommer mer
