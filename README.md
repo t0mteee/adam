@@ -67,9 +67,14 @@ hållplats på linjekartan medan rösten ropar ut namnet.
   Vagnhallen Majorna. Övriga får sin bild av namnets ändelse.
 - **Kort summering.** När hållplatsen är avklarad visas bara mynten och en enda
   knapp: *Åk vidare!* Sedan rullar vagnen in på nästa hållplats.
-- **Talen väljs separat.** Knappen i toppen av resan byter vilka tal som gäller
-  under åkturen och om man vill välja eller skriva svaret. Det påverkar inte
-  Räknelandet.
+- **Svårighet väljs innan resan.** När man trycker på en linje kommer en ruta
+  där man väljer vilka tal som ska räknas och om svaret ska tryckas eller
+  skrivas. **Blandat** drar uppgifter ur allt barnet har låst upp och ger mest
+  omväxling på en lång linje. Valet går att ändra mitt i resan med *byt* i
+  toppen, och påverkar inte Räknelandet.
+- **Inga upprepningar mellan hållplatserna.** Eftersom en hållplats bara är fem
+  uppgifter minns spelet de senaste tjugofyra talen och undviker dem, så två
+  hållplatser i rad aldrig känns likadana.
 
 Linje 13 är utelämnad. Västtrafiks karta visar bara linjerna 1–12, och 13 är i
 praktiken indragen sedan 2023. Vill du lägga till eller rätta något ligger alla
@@ -77,8 +82,9 @@ linjer i listan `TRAM_LINES` högst upp i `index.html`, en rad per linje.
 
 Antalet hållplatser stämmer med Wikipedias uppgift för elva av tolv linjer.
 Undantaget är linje 1, där Wikipedias faktaruta säger 29 medan både
-OpenStreetMap och Wikipedias egen linjekarta säger 28; kartan visar ingen
-hållplats mellan Stenpiren och Järntorget, så 28 gäller här.
+OpenStreetMap och Wikipedias egen linjekarta säger 28. Linje 1 har bara en enda
+sträcka som ingen annan linje delar, Munkebäckstorget–Härlanda, och Västtrafiks
+karta visar ingen hållplats däremellan. 28 gäller.
 
 ## Tänkt för små barn
 
@@ -86,6 +92,8 @@ hållplats mellan Stenpiren och Järntorget, så 28 gäller här.
   hälsar med namn vid start. Hastigheten går att ställa i tre steg.
 - **Prickar att räkna.** Talen visas som saker, fem i rad som i en tiobasram, så
   att `6 + 4` går att räkna sig fram till. Kan stängas av när det sitter.
+  Storleken följer antalet: tre saker ritas stora och tydliga, tio krymper lagom
+  så att de får plats i två rader om fem.
 - **Fel svar gör inte ont.** Figuren blir lite ledsen, hjälpprickarna tänds
   automatiskt och barnet får försöka igen. Efter tre försök visas svaret vänligt
   och spelet går vidare. Banan markeras då som klarad med hjälp, inte som
@@ -119,6 +127,10 @@ spårvagnskarta som gäller från 2026-06-15, och Wikipedias artiklar om varje
 linje. Kontrollen gav fyra rättelser – Korsvägen saknades i OSM på linje 4, 6
 och 8, och fyra hållplatser stavades annorlunda än hos Västtrafik
 (Axel Dahlströms Torg, Dr. Fries Torg, Dr. Sydows Gata, Jaegerdorffsplatsen).
+
+Hela nätet är dessutom korsvaliderat internt: av 319 hållplatspar bekräftas 276
+av minst en annan linje som kör samma sträcka, och ingen linje motsäger en
+annan. Alla 132 hållplatsnamn återfinns ordagrant på Västtrafiks karta.
 
 Ingen kartbild eller bild på hållplatserna är hämtad någonstans ifrån – allt är
 ritat i SVG i den här filen.

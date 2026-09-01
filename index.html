@@ -444,6 +444,9 @@ h1, h2, h3{ font-family: "Baloo 2", "Baloo 2 Fallback", system-ui, sans-serif; f
 .q-visual.trio .plus{ font-size: 1.4rem; }
 .q-visual .plus{ font-family: "Lilita One", system-ui, sans-serif; font-size: 1.9rem; color: var(--grape); }
 .q-visual svg{ width: clamp(30px, 8.5vw, 46px); height: auto; }
+/* Få saker att räkna ⇒ rita dem stora. Många ⇒ krymp så de får plats. */
+.q-visual.jatte svg{ width: clamp(56px, 16vw, 92px); }
+.q-visual.stor svg{ width: clamp(40px, 10.5vw, 60px); }
 .q-visual.dense svg{ width: clamp(22px, 5.6vw, 32px); }
 .q-visual.packed svg{ width: clamp(18px, 4.4vw, 25px); }
 .q-visual .gone{ opacity: .28; }
@@ -684,6 +687,8 @@ body.on-tram .world{ display: none; }
   .q-label{ font-size: var(--t-sm); margin-bottom: 2px; }
   .q-visual{ margin: 2px 0 6px; gap: 5px; }
   .q-visual svg{ width: clamp(24px, 7vw, 34px); }
+  .q-visual.jatte svg{ width: clamp(44px, 13vw, 70px); }
+  .q-visual.stor svg{ width: clamp(34px, 9vw, 48px); }
   .q-visual.dense svg{ width: clamp(20px, 5vw, 27px); }
   .q-visual.packed svg{ width: clamp(16px, 4vw, 22px); }
   .speak-btn{ padding: 5px 13px; font-size: var(--t-xs); margin-top: 5px; }
@@ -1100,13 +1105,15 @@ function arrangeKinds(kinds){
 
 /* En omgång byggs i förväg: sorterna fördelas jämnt och sprids ut, och samma
    uppgift kommer inte två gånger förrän alla möjliga varianter är använda. */
-function buildRound(L, count){
+function buildRound(L, count, undvik){
   const kinds = [];
   for(let i = 0; i < count; i++) kinds.push(L.kinds[i % L.kinds.length]);
   const order = arrangeKinds(shuffle(kinds));
 
   const out = [];
-  let seen = new Set();
+  /* undvik innehåller uppgifter från de närmast föregående omgångarna, så att
+     två hållplatser i rad inte ger samma tal */
+  let seen = new Set(undvik || []);
   for(const kind of order){
     let q = MAKE[kind](L);
     for(let t = 0; t < 20; t++){
@@ -1120,6 +1127,8 @@ function buildRound(L, count){
   }
   return out;
 }
+
+const qNyckel = (q) => q.kind + ":" + [q.count, q.a, q.b, q.c, q.sum].join("_");
 
 /* ═══════════════════════════════════════════
    Delmål
@@ -1845,6 +1854,36 @@ function landskapHTML(r, top, hojd){
    Spårvagnsvärlden
    ═══════════════════════════════════════════ */
 const lineByRef = (ref) => TRAM_LINES.find(l => l.ref === ref);
+
+/* Spårvagnen kan köras på en vald bana, eller "Blandat" som drar uppgifter
+   ur allt barnet har låst upp – det ger mest omväxling på en lång resa. */
+function blandatLevel(p){
+  const oppna = LEVELS.filter(L => L.id <= p.unlocked && L.kinds[0] !== "count");
+  const kallor = oppna.length ? oppna : [LEVELS[2]];
+  return { id:0, name:"Blandat", desc:"Allt du kan",
+           kinds:[...new Set(kallor.flatMap(L => L.kinds))],
+           max: Math.max(...kallor.map(L => L.max)),
+           lo: 2, opts: 4 };
+}
+function tramLevelDef(p){
+  return p.tramLevel === 0 ? blandatLevel(p) : (levelById(p.tramLevel) || LEVELS[0]);
+}
+
+/* Val av tal och svarssätt – samma ruta används före resan och under den */
+function talvalHTML(p){
+  const oppna = LEVELS.filter(L => L.id <= p.unlocked);
+  return `
+    <p class="sheet-sub" style="margin:0 0 7px">Vilka tal vill du räkna?</p>
+    <div class="seg" style="flex-wrap:wrap;margin-bottom:14px">
+      <button type="button" data-tramlevel="0" aria-pressed="${p.tramLevel === 0}">Blandat</button>
+      ${oppna.map(L => `<button type="button" data-tramlevel="${L.id}" aria-pressed="${L.id === p.tramLevel}">${L.name}</button>`).join("")}
+    </div>
+    <p class="sheet-sub" style="margin:0 0 7px">Hur vill du svara?</p>
+    <div class="seg">
+      <button type="button" data-trammode="choice" aria-pressed="${p.tramMode === "choice"}">Välj svar</button>
+      <button type="button" data-trammode="type" aria-pressed="${p.tramMode === "type"}">Skriv svar</button>
+    </div>`;
+}
 const tramAt    = (p, ref) => (p.tram && p.tram[ref]) || 0;
 const lineDone  = (p, ref) => tramAt(p, ref) >= lineByRef(ref).stops.length - 1;
 
@@ -1875,8 +1914,30 @@ function renderLines(){
 el("lineList").addEventListener("click", (e) => {
   const b = e.target.closest("[data-line]"); if(!b) return;
   SFX.tap();
-  openTrip(b.dataset.line, false);
+  openLineSheet(lineByRef(b.dataset.line));
 });
+
+function openLineSheet(l){
+  const p = P();
+  if(p.tramLevel == null) p.tramLevel = 0;
+  const at = tramAt(p, l.ref), n = l.stops.length, klar = at >= n - 1;
+  openSheet(`
+    <div class="sheet-head">
+      <div>
+        <h2>Linje ${l.ref}</h2>
+        <p class="sheet-sub">${l.a} – ${l.b} · ${n} hållplatser</p>
+      </div>
+      ${CLOSE_BTN}
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+      ${roundel(l, "lg")}
+      <span class="sheet-sub" style="margin:0">${klar ? "Hela linjen är åkt! Du börjar om från " + l.stops[0] + "."
+        : at ? "Du står vid " + l.stops[at] + ", " + (n - 1 - at) + " hållplatser kvar."
+             : "Resan börjar vid " + l.stops[0] + "."}</span>
+    </div>
+    ${talvalHTML(p)}
+    <button class="btn btn-big" data-startline="${l.ref}" type="button" style="margin-top:16px">Åk!</button>`);
+}
 
 /* ── Resan längs linjen ─────────────────── */
 let tripRef = null, tripFrom = null;
@@ -1884,8 +1945,9 @@ let tripRef = null, tripFrom = null;
 function openTrip(ref, animera){
   const p = P();
   tripRef = ref; p.tramLine = ref;
-  if(p.tramLevel == null) p.tramLevel = nextLevelId(p);
+  if(p.tramLevel == null) p.tramLevel = 0;
   if(!p.tramMode) p.tramMode = "choice";
+  if(g.recentLine !== ref){ g.recent = []; g.recentLine = ref; }
   saveProfiles();
   renderTrip(animera);
   show("trip");
@@ -1894,7 +1956,7 @@ function openTrip(ref, animera){
 function renderTrip(animera, visaBilden){
   const p = P(), l = lineByRef(tripRef);
   const at = tramAt(p, tripRef), n = l.stops.length, klar = at >= n - 1;
-  const talnivå = levelById(p.tramLevel) || LEVELS[0];
+  const talnivå = tramLevelDef(p);
 
   el("tripHead").style.setProperty("--linecol", l.col);
   el("tripHead").innerHTML = `
@@ -1987,20 +2049,12 @@ el("tripHead").addEventListener("click", (e) => {
 /* Vilka tal ska man räkna under resan? */
 function openTramLevelSheet(){
   const p = P();
-  const öppna = LEVELS.filter(L => L.id <= p.unlocked);
   openSheet(`
     <div class="sheet-head">
       <div><h2>Vilka tal?</h2><p class="sheet-sub">Gäller när du åker spårvagn</p></div>
       ${CLOSE_BTN}
     </div>
-    <div class="seg" style="flex-wrap:wrap;margin-bottom:14px">
-      ${öppna.map(L => `<button type="button" data-tramlevel="${L.id}" aria-pressed="${L.id === p.tramLevel}">${L.name}</button>`).join("")}
-    </div>
-    <p class="sheet-sub" style="margin:0 0 8px">Hur vill du svara?</p>
-    <div class="seg">
-      <button type="button" data-trammode="choice" aria-pressed="${p.tramMode === "choice"}">Välj svar</button>
-      <button type="button" data-trammode="type" aria-pressed="${p.tramMode === "type"}">Skriv svar</button>
-    </div>`);
+    ${talvalHTML(p)}`);
 }
 el("stopCard").addEventListener("click", (e) => {
   if(!e.target.closest('[data-trip="say"]')) return;
@@ -2016,7 +2070,7 @@ el("goBtn").addEventListener("click", () => {
     renderTrip(false);
     return;
   }
-  startRound(p.tramLevel, p.tramMode, tripRef);
+  startRound(tramLevelDef(p), p.tramMode, tripRef);
 });
 
 /* ── Byt värld ──────────────────────────── */
@@ -2139,11 +2193,15 @@ sheet.addEventListener("click", (e) => {
     return;
   }
 
+  const startline = e.target.closest("[data-startline]");
+  if(startline){ SFX.ensure(); SFX.tap(); closeSheet(); openTrip(startline.dataset.startline, false); return; }
+
   const tl = e.target.closest("[data-tramlevel]");
   if(tl){
     p.tramLevel = Number(tl.dataset.tramlevel); saveProfiles(); SFX.tap();
+    g.recent = [];   /* ny svårighet – börja om med färska tal */
     sheet.querySelectorAll("[data-tramlevel]").forEach(b => b.setAttribute("aria-pressed", String(Number(b.dataset.tramlevel) === p.tramLevel)));
-    renderTrip(false);
+    if(el("screen-trip").classList.contains("is-active")) renderTrip(false);
     return;
   }
   const tm = e.target.closest("[data-trammode]");
@@ -2200,15 +2258,22 @@ const NUDGE  = ["Nästan!", "Prova igen!", "Nästan där!", "Titta en gång till
 
 const g = {
   level: null, mode: "choice", queue: [], q: null, tram: null, len: ROUND_LEN,
+  recent: [], recentLine: null,
   qIndex: 0, score: 0, streak: 0, bestStreak: 0, tries: 0, firstTry: 0,
   results: [], typed: "", locked: false, hint: false, thing: "apple", opts: []
 };
 
-function startRound(levelId, mode, tramRef){
-  const L = levelById(levelId);
+function startRound(niva, mode, tramRef){
+  const L = typeof niva === "object" ? niva : levelById(niva);
   g.level = L; g.mode = mode; g.tram = tramRef || null;
   g.len = g.tram ? TRAM_LEN : ROUND_LEN;
-  g.queue = buildRound(L, g.len);
+  /* På spårvagnen är varje omgång bara fem uppgifter, så vi minns de senaste
+     hållplatsernas tal och undviker dem – annars känns frågorna likadana. */
+  g.queue = buildRound(L, g.len, g.tram ? new Set(g.recent) : null);
+  if(g.tram){
+    g.queue.forEach(q => g.recent.push(qNyckel(q)));
+    g.recent = g.recent.slice(-24);
+  }
   g.qIndex = 0; g.score = 0; g.streak = 0; g.bestStreak = 0;
   g.firstTry = 0; g.results = []; g.locked = false;
   coinCount.textContent = "0";
@@ -2312,7 +2377,8 @@ function paintQuestion(){
   qLabel.textContent = labelFor(q);
   qVisual.innerHTML = visualHTML(q);
   const n = qVisual.querySelectorAll("svg").length;
-  qVisual.className = "q-visual" + (n > 10 ? " packed" : n > 6 ? " dense" : "") + (q.kind === "add3" ? " trio packed" : "");
+  const storlek = n === 0 ? "" : n <= 3 ? " jatte" : n <= 6 ? " stor" : n <= 10 ? "" : n <= 14 ? " dense" : " packed";
+  qVisual.className = "q-visual" + storlek + (q.kind === "add3" ? " trio packed" : "");
   qEquation.innerHTML = equationHTML(q);
   qEquation.style.display = q.kind === "count" ? "none" : "";
 }
@@ -2577,7 +2643,7 @@ function celebrateBadges(list){
   speak(`Nytt märke! ${b.name}!`);
 }
 
-el("againBtn").addEventListener("click", () => { SFX.tap(); startRound(g.level.id, g.mode); });
+el("againBtn").addEventListener("click", () => { SFX.tap(); startRound(g.level, g.mode); });
 el("backBtn").addEventListener("click", () => { SFX.tap(); enterWorld(false); });
 el("homeBtn").addEventListener("click", () => {
   SFX.tap();
