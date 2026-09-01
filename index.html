@@ -278,6 +278,23 @@ h1, h2, h3{ font-family: "Baloo 2", "Baloo 2 Fallback", system-ui, sans-serif; f
   border-radius: 34px; border: var(--stroke);
   box-shadow: 0 5px 0 rgba(46,26,102,.5);
 }
+.banval{ display: grid; gap: 6px; max-height: 38vh; overflow-y: auto; padding-right: 2px; }
+.banval details{ border: 2px solid var(--ink); border-radius: 14px; background: var(--paper-2); }
+.banval summary{
+  cursor: pointer; list-style: none; padding: 7px 12px; font-weight: 800; font-size: var(--t-sm);
+  display: flex; align-items: center; gap: 8px;
+}
+.banval summary::-webkit-details-marker{ display: none; }
+.banval summary::after{ content: "▸"; margin-left: auto; color: var(--ink-2); }
+.banval details[open] summary::after{ content: "▾"; }
+.banval summary .prick{ width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--ink); flex: none; }
+.banval details .seg{ padding: 0 8px 8px; }
+.region-band.sidospar{ border-style: dashed; }
+.sidospar-text{
+  position: absolute; right: 12px; white-space: nowrap;
+  font-size: .72rem; font-weight: 800; color: var(--paper);
+  background: rgba(46,26,102,.55); border-radius: 999px; padding: 3px 12px; z-index: 2;
+}
 .region-name{
   position: absolute; left: 50%; transform: translateX(-50%);
   font-family: "Baloo 2", system-ui, sans-serif; font-weight: 800; font-size: var(--t-sm);
@@ -1192,134 +1209,177 @@ const REGIONS = [
   { name:"Grottan", color:"#7B4BE0", tint:"#C4B0EC" },
   { name:"Berget",  color:"#D9691F", tint:"#F6D0A6" },
   { name:"Molnen",  color:"#2FA9D8", tint:"#DCEFFC" },
-  { name:"Stjärnhimlen", color:"#8E7BFF", tint:"#2F2A63" },
   { name:"Vagnhallen", color:"#C0392B", tint:"#F7DAD3" },
-  { name:"Ändstationen", color:"#1F7A6B", tint:"#CFE9E1" }
+  { name:"Ändstationen", color:"#1F7A6B", tint:"#CFE9E1" },
+  /* Sidospåret: räkna prickar. Öppnas när Berget är klart och spärrar inget. */
+  { name:"Stjärnhimlen", color:"#8E7BFF", tint:"#2F2A63", sidospar:true }
 ];
 
+/* Varje bana är en rad. Plus- och minustalen läser sina ramar härifrån:
+     max        största summa (plus) eller största första tal (minus)
+     lo         minsta summa / minsta första tal
+     minDel     minsta värde på det mindre talet – så inget 15 + 1
+     ensiffrigt båda talen högst 9 (minus: talet som dras och svaret)
+     litet      det mindre talet högst så här stort
+     tiotal     bara hela tiotal
+     over       "ja": måste växla eller låna över ett tiotal · "nej": får inte
+   Provbanor har pool i stället för kinds och drar uppgifter ur de banorna.
+   Från Berget och uppåt ritas inga saker att räkna på (utanHjalp). */
 const LEVELS = [
-  { id:1,  r:0, name:"Räkna till 5",           desc:"Hur många ser du?",       kinds:["count"], max:5,  opts:3 },
-  { id:2,  r:0, name:"Räkna till 10",          desc:"Hur många ser du?",       kinds:["count"], max:10, opts:3 },
-  { id:3,  r:0, name:"Plus till 5",            desc:"2 + 1 · 3 + 2",           kinds:["add"],   max:5,  opts:3 },
-  { id:4,  r:1, name:"Plus till 10",           desc:"6 + 3 · 4 + 5",           kinds:["add"],   max:10, lo:4, opts:4 },
-  { id:5,  r:1, name:"Minus till 5",           desc:"4 − 1 · 5 − 3",           kinds:["sub"],   max:5,  opts:3 },
-  { id:6,  r:1, name:"Plus och minus till 10", desc:"7 + 2 · 9 − 4",           kinds:["add","sub"], max:10, lo:4, opts:4 },
-  { id:7,  r:2, name:"Dubbelt",                desc:"3 + 3 · 6 + 6",           kinds:["double"], max:20, opts:4 },
-  { id:8,  r:2, name:"Tiokompisar",            desc:"7 + ? = 10",              kinds:["ten"],   max:10, opts:4 },
-  { id:9,  r:2, name:"Vad fattas?",            desc:"4 + ? = 9",               kinds:["missing"], max:10, opts:4 },
-  { id:10, r:3, name:"Plus till 20",           desc:"12 + 6 · 8 + 9",          kinds:["add"],   max:20, lo:11, opts:4, utanHjalp:true },
-  { id:11, r:3, name:"Minus till 20",          desc:"17 − 8 · 15 − 6",         kinds:["sub"],   max:20, lo:11, opts:4, utanHjalp:true },
-  { id:12, r:3, name:"Plus och minus till 20", desc:"13 + 5 · 18 − 7",         kinds:["add","sub"], max:20, lo:11, opts:4, utanHjalp:true },
-  { id:13, r:4, name:"Tre tal",                desc:"2 + 3 + 4",               kinds:["add3"],  max:15, opts:4, utanHjalp:true },
-  { id:14, r:4, name:"Blandat till 20",        desc:"Allt om vartannat",       kinds:["add","sub","missing","double"], max:20, lo:8, opts:4, utanHjalp:true },
-  { id:15, r:4, name:"Mästarprovet",           desc:"Hela Räknelandet",        kinds:["add","sub","missing","add3","double"], max:20, lo:10, opts:4, utanHjalp:true },
-  { id:16, r:5, name:"Räkna till 25",          desc:"Tioramar, tior och ental", kinds:["count","tiotal"], max:25,  min:11, opts:4 },
-  { id:17, r:5, name:"Räkna till 50",          desc:"Tioramar, tior och ental", kinds:["count","tiotal"], max:50,  min:26, opts:4 },
-  { id:18, r:5, name:"Räkna till 75",          desc:"Tioramar, tior och ental", kinds:["count","tiotal"], max:75,  min:51, opts:4 },
-  { id:19, r:5, name:"Räkna till 100",         desc:"Tioramar, tior och ental", kinds:["count","tiotal"], max:100, min:76, opts:4 },
-  /* Vagnhallen – här slutar bilderna hjälpa till och talen gör jobbet */
-  { id:20, r:6, name:"Plus över tian",         desc:"7 + 8 · 9 + 6",           kinds:["bridge"],    max:18,  opts:4, utanHjalp:true },
-  { id:21, r:6, name:"Minus över tian",        desc:"15 − 7 · 12 − 8",         kinds:["bridgeSub"], max:18,  opts:4, utanHjalp:true },
-  { id:22, r:6, name:"Hela tiotal",            desc:"20 + 30 · 70 − 40",       kinds:["tioAdd","tioSub"], max:100, opts:4, utanHjalp:true },
-  { id:23, r:6, name:"Tiotal och ental",       desc:"34 + 5 · 46 − 3",         kinds:["tvaAdd","tvaSub"], max:99,  opts:4, utanHjalp:true },
-  { id:24, r:6, name:"Plus till 100",          desc:"25 + 25 · 38 + 27",       kinds:["storAdd"],   max:100, opts:4, utanHjalp:true },
-  { id:25, r:6, name:"Talföljder",             desc:"2 · 4 · 6 · ?",           kinds:["serie"],     max:100, opts:4, utanHjalp:true },
-  { id:26, r:6, name:"Gånger och hälften",     desc:"5 × 4 · hälften av 18",   kinds:["mul","half"], max:100, opts:4, utanHjalp:true },
-  { id:27, r:6, name:"Vagnhallens prov",       desc:"Allt som finns",          kinds:["bridge","bridgeSub","tioAdd","tvaAdd","tvaSub","storAdd","serie","mul","half"], max:100, opts:4, utanHjalp:true },
-  /* Ändstationen – fria tal, inga snälla ental att lägga till */
-  { id:28, r:7, name:"Allt till 100",          desc:"25 + 37 · 82 − 46",       kinds:["fritAdd","fritSub"], max:100, minDel:12, opts:4, utanHjalp:true },
-  { id:29, r:7, name:"Allt till 200",          desc:"137 + 48 · 172 − 85",     kinds:["fritAdd","fritSub"], max:200, minDel:15, opts:4, utanHjalp:true },
-  { id:30, r:7, name:"Tre tal i rad",          desc:"12 + 5 + 29",             kinds:["flera"], termer:3, max:100, opts:4, utanHjalp:true },
-  { id:31, r:7, name:"Fyra tal i rad",         desc:"12 + 5 + 29 + 10",        kinds:["flera"], termer:4, max:200, opts:4, utanHjalp:true }
+  /* Ängen */
+  { id:1,  r:0, name:"Räkna till 5",   desc:"Hur många ser du?",  kinds:["count"], max:5,  opts:3 },
+  { id:2,  r:0, name:"Räkna till 10",  desc:"Hur många ser du?",  kinds:["count"], max:10, opts:3 },
+  { id:3,  r:0, name:"Plus till 5",    desc:"2 + 1 · 3 + 2",      kinds:["add"],   max:5,  opts:3 },
+  /* Skogen */
+  { id:4,  r:1, name:"Plus till 10",   desc:"6 + 3 · 4 + 5",      kinds:["add"],   max:10, lo:4, opts:4 },
+  { id:5,  r:1, name:"Minus till 5",   desc:"4 − 1 · 5 − 3",      kinds:["sub"],   max:5,  opts:3 },
+  { id:6,  r:1, name:"Plus och minus till 10", desc:"7 + 2 · 9 − 4", kinds:["add","sub"], max:10, lo:4, opts:4 },
+  /* Grottan */
+  { id:7,  r:2, name:"Dubbelt",        desc:"3 + 3 · 6 + 6",      kinds:["double"],  max:20, opts:4 },
+  { id:8,  r:2, name:"Tiokompisar",    desc:"7 + ? = 10",         kinds:["ten"],     max:10, opts:4 },
+  { id:9,  r:2, name:"Vad fattas?",    desc:"4 + ? = 9",          kinds:["missing"], max:10, opts:4 },
+  /* Berget – härifrån inga hjälpbilder och inga snälla ental */
+  { id:10, r:3, name:"Plus till 20",   desc:"12 + 6 · 8 + 9",     kinds:["add"], max:20, lo:11, minDel:3, opts:4, utanHjalp:true },
+  { id:11, r:3, name:"Minus till 20",  desc:"17 − 8 · 15 − 6",    kinds:["sub"], max:20, lo:11, minDel:3, opts:4, utanHjalp:true },
+  { id:12, r:3, name:"Plus och minus till 20", desc:"13 + 5 · 18 − 7", kinds:["add","sub"], max:20, lo:11, minDel:3, opts:4, utanHjalp:true },
+  /* Molnen */
+  { id:13, r:4, name:"Tre små tal",    desc:"2 + 3 + 4",          kinds:["add3"], max:15, opts:4, utanHjalp:true },
+  { id:14, r:4, name:"Blandat till 20", desc:"Allt om vartannat", kinds:["add","sub","missing","double"], max:20, lo:8, minDel:4, opts:4, utanHjalp:true },
+  { id:15, r:4, name:"Mästarprovet",   desc:"Allt från Berget och Molnen", pool:[10,11,12,13,14], opts:4, utanHjalp:true },
+  /* Vagnhallen */
+  { id:16, r:5, name:"Plus över tian",  desc:"7 + 8 · 9 + 6",     kinds:["add"], max:18, lo:11, minDel:2, ensiffrigt:true, opts:4, utanHjalp:true },
+  { id:17, r:5, name:"Minus över tian", desc:"15 − 7 · 12 − 8",   kinds:["sub"], max:18, lo:11, minDel:2, ensiffrigt:true, over:"ja", opts:4, utanHjalp:true },
+  { id:18, r:5, name:"Hela tiotal",     desc:"20 + 30 · 70 − 40", kinds:["add","sub"], max:100, lo:30, tiotal:true, opts:4, utanHjalp:true },
+  { id:19, r:5, name:"Tiotal och ental", desc:"34 + 5 · 46 − 3",  kinds:["add","sub"], max:99, lo:20, minDel:2, litet:9, over:"nej", opts:4, utanHjalp:true },
+  { id:20, r:5, name:"Växla och låna",  desc:"38 + 27 · 63 − 28", kinds:["add","sub"], max:100, lo:30, minDel:11, over:"ja", opts:4, utanHjalp:true },
+  { id:21, r:5, name:"Talföljder",      desc:"2 · 4 · 6 · ?",     kinds:["serie"], max:100, opts:4, utanHjalp:true },
+  { id:22, r:5, name:"Gånger och hälften", desc:"5 × 4 · hälften av 18", kinds:["mul","half"], max:100, opts:4, utanHjalp:true },
+  { id:23, r:5, name:"Vagnhallens prov", desc:"Allt i Vagnhallen", pool:[16,17,18,19,20,21,22], opts:4, utanHjalp:true },
+  /* Ändstationen – fria tal */
+  { id:24, r:6, name:"Allt till 100",   desc:"25 + 37 · 82 − 46",   kinds:["add","sub"], max:100, lo:30, minDel:12, opts:4, utanHjalp:true },
+  { id:25, r:6, name:"Allt till 200",   desc:"137 + 48 · 172 − 85", kinds:["add","sub"], max:200, lo:40, minDel:15, opts:4, utanHjalp:true },
+  { id:26, r:6, name:"Tre tal i rad",   desc:"12 + 5 + 29",         kinds:["flera"], termer:3, max:100, opts:4, utanHjalp:true },
+  { id:27, r:6, name:"Fyra tal i rad",  desc:"12 + 5 + 29 + 10",    kinds:["flera"], termer:4, max:200, opts:4, utanHjalp:true },
+  /* Stjärnhimlen – sidospåret. Här är sakerna själva uppgiften. */
+  { id:28, r:7, name:"Räkna till 25",  desc:"Tioramar, tior och ental", kinds:["count","tiotal"], max:25,  min:11, opts:4 },
+  { id:29, r:7, name:"Räkna till 50",  desc:"Tioramar, tior och ental", kinds:["count","tiotal"], max:50,  min:26, opts:4 },
+  { id:30, r:7, name:"Räkna till 75",  desc:"Tioramar, tior och ental", kinds:["count","tiotal"], max:75,  min:51, opts:4 },
+  { id:31, r:7, name:"Räkna till 100", desc:"Tioramar, tior och ental", kinds:["count","tiotal"], max:100, min:76, opts:4 }
 ];
+/* Huvudspåret är 1–27, sidospåret 28–31 */
+const HUVUD_MAX = 27, SIDO_START = 28, SIDO_MAX = 31;
+const huvudspar = (L) => L.id < SIDO_START;
+/* Provbanorna ärver sorter och tak från banorna de drar ur, så att allt som
+   tittar på en bana kan behandla dem som vilka banor som helst. */
+LEVELS.filter(L => L.pool).forEach(L => {
+  const delar = L.pool.map(id => LEVELS.find(x => x.id === id));
+  L.kinds = [...new Set(delar.flatMap(x => x.kinds))];
+  L.max = Math.max(...delar.map(x => x.max));
+});
 const MAX_STARS = LEVELS.length * 3;
 const levelById = (id) => LEVELS.find(l => l.id === id);
 
+/* Två tal att lägga ihop eller dra ifrån, inom banans ramar (se LEVELS).
+   Ramarna prövas mot slumpade tal tills ett par passar. */
+function plusTal(L){
+  const minst = L.minDel || 1;
+  for(let f = 0; f < 80; f++){
+    const sum = L.tiotal
+      ? ri(Math.max(2, Math.ceil((L.lo || 20) / 10)), Math.floor(L.max / 10)) * 10
+      : ri(Math.max(2, L.lo || 2), L.max);
+    if(sum - minst < minst) continue;
+    const a = L.tiotal ? ri(1, sum / 10 - 1) * 10 : ri(minst, sum - minst);
+    const b = sum - a;
+    const lit = Math.min(a, b), st = Math.max(a, b);
+    if(L.ensiffrigt && st > 9) continue;
+    if(L.litet && lit > L.litet) continue;
+    const vaxling = a % 10 + b % 10 >= 10;
+    if(L.over === "ja" && !vaxling) continue;
+    if(L.over === "nej" && vaxling) continue;
+    return { kind:"add", a, b, answer:sum };
+  }
+  return { kind:"add", a:1, b:1, answer:2 };
+}
+function minusTal(L){
+  const minst = L.minDel || 1;
+  for(let f = 0; f < 80; f++){
+    const a = L.tiotal
+      ? ri(Math.max(2, Math.ceil((L.lo || 20) / 10)), Math.floor(L.max / 10)) * 10
+      : ri(Math.max(2, L.lo || 2), L.max);
+    if(a - minst < minst) continue;
+    const b = L.tiotal ? ri(1, a / 10 - 1) * 10 : ri(minst, a - minst);
+    const svar = a - b;
+    if(L.ensiffrigt && (b > 9 || svar > 9)) continue;
+    if(L.litet && b > L.litet) continue;
+    const lan = a % 10 < b % 10;
+    if(L.over === "ja" && !lan) continue;
+    if(L.over === "nej" && lan) continue;
+    return { kind:"sub", a, b, answer:svar };
+  }
+  return { kind:"sub", a:2, b:1, answer:1 };
+}
+
 /* Uppgiftsmakare – en per sort */
 const MAKE = {
-  count:   L => { const n = ri(L.min || 1, L.räknaMax || L.max); return { kind:"count", answer:n, count:n }; },
-  add:     L => { const sum = ri(Math.max(2, L.lo || 2), L.max); const a = ri(1, sum - 1); return { kind:"add", a, b:sum - a, answer:sum }; },
-  sub:     L => { const a = ri(Math.max(2, L.lo || 2), L.max); const b = ri(1, a - 1); return { kind:"sub", a, b, answer:a - b }; },
-  missing: L => { const sum = ri(Math.max(3, L.lo || 3), L.max); const a = ri(1, sum - 1); return { kind:"missing", a, sum, answer:sum - a }; },
-  double:  L => { const a = ri(1, Math.floor(L.max / 2)); return { kind:"add", a, b:a, answer:a + a }; },
-  ten:     L => { const a = ri(1, 9); return { kind:"missing", a, sum:10, answer:10 - a }; },
+  count:   L => { const n = ri(L.min || 1, L.max); return { kind:"count", answer:n, count:n }; },
   /* Tioramarna gör talet läsbart: åtta fulla ramar och sju lösa är 87. Här
      får barnet strukturen given och slipper räkna om från ett varje gång. */
   tiotal:  L => { const n = ri(Math.max(10, L.min || 10), L.max);
                   return { kind:"tiotal", answer:n, count:n,
                            tior:Math.floor(n / 10), ental:n % 10 }; },
+  add:     plusTal,
+  sub:     minusTal,
+  /* Även fattas-tal och dubbelt följer banans minDel, så 1 + ? = 9 och 1 + 1
+     inte dyker upp på banor där de andra talen har slutat vara små. */
+  missing: L => { const minst = L.minDel || 1;
+                  const sum = ri(Math.max(minst * 2, L.lo || 3), L.max);
+                  const a = ri(minst, sum - minst);
+                  return { kind:"missing", a, sum, answer:sum - a }; },
+  double:  L => { const a = ri(L.minDel || 1, Math.max(L.minDel || 1, Math.floor(L.max / 2)));
+                  return { kind:"add", a, b:a, answer:a + a }; },
+  ten:     L => { const a = ri(1, 9); return { kind:"missing", a, sum:10, answer:10 - a }; },
   add3:    L => { const m = Math.min(6, Math.max(2, Math.floor(L.max / 3)));
                   const a = ri(1, m), b = ri(1, m), c = ri(1, m);
                   return { kind:"add3", a, b, c, answer:a + b + c }; },
-
-  /* ── Vagnhallens sorter ──────────────────────────────────────────────
-     Att gå över tiotalet, räkna med hela tiotal och se mönster i en talföljd
-     är egna steg – de går inte att räkna sig till på fingrarna lika lätt. */
-  bridge:    L => { const a = ri(4, 9), b = ri(11 - a, 9);
-                    return { kind:"add", a, b, answer:a + b }; },
-  bridgeSub: L => { const a = ri(11, 18), b = ri(a - 9, 9);
-                    return { kind:"sub", a, b, answer:a - b }; },
-  tioAdd:    L => { const tior = Math.floor((L.max || 100) / 10);
-                    const sum = ri(3, tior) * 10, a = ri(1, sum / 10 - 1) * 10;
-                    return { kind:"add", a, b:sum - a, answer:sum }; },
-  tioSub:    L => { const tior = Math.floor((L.max || 100) / 10);
-                    const a = ri(3, tior) * 10, b = ri(1, a / 10 - 1) * 10;
-                    return { kind:"sub", a, b, answer:a - b }; },
-  tvaAdd:    L => { const t = ri(1, 8) * 10, e = ri(1, 5), b = ri(1, 9 - e);
-                    return { kind:"add", a:t + e, b, answer:t + e + b }; },
-  tvaSub:    L => { const t = ri(2, 9) * 10, e = ri(3, 9), b = ri(1, e);
-                    return { kind:"sub", a:t + e, b, answer:t + e - b }; },
-  storAdd:   L => { const a = ri(11, 60), b = ri(11, Math.min(60, (L.max || 100) - a));
-                    return { kind:"add", a, b, answer:a + b }; },
   /* Talföljd: tre tal syns, det fjärde ska fram. Steget kan gå åt båda håll. */
-  serie:     L => { const steg = pick([2, 5, 10]), upp = rnd(2) === 0, max = L.max || 100;
-                    const start = upp
-                      ? ri(1, Math.max(1, Math.floor((max - steg * 3) / steg))) * steg
-                      : ri(3, Math.floor(max / steg)) * steg;
-                    const tal = [0, 1, 2].map(i => start + (upp ? 1 : -1) * steg * i);
-                    return { kind:"serie", tal, steg, upp, a:start, b:steg, c:upp ? 1 : 0,
-                             answer:start + (upp ? 1 : -1) * steg * 3 }; },
-  mul:       L => { const a = pick([2, 5, 10]), b = ri(2, 10);
-                    return { kind:"mul", a, b, answer:a * b }; },
+  serie:   L => { const steg = pick([2, 5, 10]), upp = rnd(2) === 0, max = L.max || 100;
+                  const start = upp
+                    ? ri(1, Math.max(1, Math.floor((max - steg * 3) / steg))) * steg
+                    : ri(3, Math.floor(max / steg)) * steg;
+                  const tal = [0, 1, 2].map(i => start + (upp ? 1 : -1) * steg * i);
+                  return { kind:"serie", tal, steg, upp, a:start, b:steg, c:upp ? 1 : 0,
+                           answer:start + (upp ? 1 : -1) * steg * 3 }; },
+  mul:     L => { const a = pick([2, 5, 10]), b = ri(2, 10);
+                  return { kind:"mul", a, b, answer:a * b }; },
   /* Hälften av 94 är inget femåringen räknar i huvudet. Håll talen runda:
      antingen under tjugo, eller ett jämnt femtal. */
-  half:      L => { const max = L.max || 100;
-                    const svar = rnd(2) === 0 ? ri(2, 20) : ri(1, Math.floor(max / 10)) * 5;
-                    return { kind:"half", a:svar * 2, answer:svar }; },
-
-  /* ── Ändstationen ────────────────────────────────────────────────────
-     Fria tal: båda leden ska vara värda att räkna, så inget 38 + 1. */
-  fritAdd:   L => { const max = L.max || 100, minst = L.minDel || 12;
-                    const a = ri(minst, max - minst), b = ri(minst, max - a);
-                    return { kind:"add", a, b, answer:a + b }; },
-  fritSub:   L => { const max = L.max || 100, minst = L.minDel || 12;
-                    const a = ri(minst * 2, max), b = ri(minst, a - minst);
-                    return { kind:"sub", a, b, answer:a - b }; },
+  half:    L => { const max = L.max || 100;
+                  const svar = rnd(2) === 0 ? ri(2, 20) : ri(1, Math.floor(max / 10)) * 5;
+                  return { kind:"half", a:svar * 2, answer:svar }; },
   /* Tre eller fyra tal på rad med blandade storlekar: 12 + 5 + 29 + 10 */
-  flera:     L => { const antal = L.termer || 3, max = L.max || 100;
-                    /* Taket per tal följer hur många de är, annars fylls
-                       summan upp av de första och sista talet blir en tvåa. */
-                    const stor = Math.max(12, Math.floor(max / antal));
-                    const tal = []; let sum = 0;
-                    for(let i = 0; i < antal; i++){
-                      const kvar = antal - i - 1;
-                      const tak = Math.max(2, Math.min(stor, max - sum - 2 * kvar));
-                      /* Minst ett stort tal, resten blandas mellan smått och stort */
-                      const litet = i > 0 && rnd(2) === 0;
-                      const t = litet ? ri(2, Math.min(9, tak)) : ri(Math.min(10, tak), tak);
-                      tal.push(t); sum += t;
-                    }
-                    shuffle(tal);
-                    return { kind:"flera", tal, a:tal[0], b:tal[1], c:tal[2],
-                             sum:tal[3], answer:sum }; }
+  flera:   L => { const antal = L.termer || 3, max = L.max || 100;
+                  /* Taket per tal följer hur många de är, annars fylls
+                     summan upp av de första och sista talet blir en tvåa. */
+                  const stor = Math.max(12, Math.floor(max / antal));
+                  const tal = []; let sum = 0;
+                  for(let i = 0; i < antal; i++){
+                    const kvar = antal - i - 1;
+                    const tak = Math.max(2, Math.min(stor, max - sum - 2 * kvar));
+                    /* Minst ett stort tal, resten blandas mellan smått och stort */
+                    const litet = i > 0 && rnd(2) === 0;
+                    const t = litet ? ri(2, Math.min(9, tak)) : ri(Math.min(10, tak), tak);
+                    tal.push(t); sum += t;
+                  }
+                  shuffle(tal);
+                  return { kind:"flera", tal, a:tal[0], b:tal[1], c:tal[2],
+                           sum:tal[3], answer:sum }; }
 };
 
 /* Hur uppgiften ser ut på skärmen. "Dubbelt" ritas som ett plustal och
    "tiokompisar" som ett fattas-tal, så de räknas som samma sort här. */
-const SHOWN = { count:"count", add:"add", sub:"sub", missing:"missing", double:"add", ten:"missing",
-                add3:"add3", tiotal:"tiotal", bridge:"add", bridgeSub:"sub", tioAdd:"add", tioSub:"sub",
-                tvaAdd:"add", tvaSub:"sub", storAdd:"add", serie:"serie", mul:"mul", half:"half",
-                fritAdd:"add", fritSub:"sub", flera:"flera" };
+const SHOWN = { count:"count", tiotal:"tiotal", add:"add", sub:"sub", missing:"missing",
+                double:"add", ten:"missing", add3:"add3", serie:"serie", mul:"mul",
+                half:"half", flera:"flera" };
 
 /* Lägg sorterna i en ordning där samma sort aldrig kommer tre gånger i rad:
    ta alltid den sort det finns flest kvar av, men aldrig en som just
@@ -1351,6 +1411,10 @@ function arrangeKinds(kinds){
 /* En omgång byggs i förväg: sorterna fördelas jämnt och sprids ut, och samma
    uppgift kommer inte två gånger förrän alla möjliga varianter är använda. */
 function buildRound(L, count, undvik){
+  if(L.pool){
+    const delar = L.pool.map(levelById);
+    return buildFranNivaer(() => pick(delar), delar, count, undvik);
+  }
   const kinds = [];
   for(let i = 0; i < count; i++) kinds.push(L.kinds[i % L.kinds.length]);
   const order = arrangeKinds(shuffle(kinds));
@@ -1391,15 +1455,15 @@ const BADGES = [
   { id:"reg2",    name:"Grottan klar",    desc:"Alla banor i Grottan",   art:"gem",   test:p => regionDone(p, 2) },
   { id:"reg3",    name:"Berget klart",    desc:"Alla banor på Berget",   art:"mount", test:p => regionDone(p, 3) },
   { id:"reg4",    name:"Molnen klara",    desc:"Alla banor i Molnen",    art:"cloud", test:p => regionDone(p, 4) },
-  { id:"reg5",    name:"Stjärnhimlen klar", desc:"Alla räknebanor",       art:"star",  test:p => regionDone(p, 5) },
-  { id:"reg6",    name:"Vagnhallen klar",  desc:"Alla banor i Vagnhallen", art:"tram", test:p => regionDone(p, 6) },
-  { id:"reg7",    name:"Ändstationen",     desc:"Alla banor vid Ändstationen", art:"spar", test:p => regionDone(p, 7) },
+  { id:"regV",    name:"Vagnhallen klar",  desc:"Alla banor i Vagnhallen", art:"tram", test:p => regionDone(p, 5) },
+  { id:"regA",    name:"Ändstationen",     desc:"Alla banor vid Ändstationen", art:"spar", test:p => regionDone(p, 6) },
+  { id:"regS",    name:"Stjärnhimlen klar", desc:"Alla räknebanor på sidospåret", art:"star", test:p => regionDone(p, 7) },
   { id:"perfect", name:"Felfritt",        desc:"En bana helt utan fel",  art:"medal", test:p => (p.perfect || 0) >= 1 },
   { id:"streak10",name:"Tio i rad",       desc:"Tio rätt i rad",         art:"bolt",  test:p => (p.bestStreak || 0) >= 10 },
   { id:"coin300", name:"300 mynt",        desc:"Samla 300 guldmynt",     art:"coin",  test:p => p.coins >= 300 },
   { id:"coin1000",name:"1000 mynt",       desc:"Samla 1000 guldmynt",    art:"chest", test:p => p.coins >= 1000 },
   { id:"star45",  name:"Hela landet",     desc:`Alla ${MAX_STARS} stjärnor`, art:"crown", test:p => totalStars(p) >= MAX_STARS },
-  { id:"hundra",  name:"Räkna till 100",  desc:"Klara sista räknebanan", art:"star", test:p => ((p.stars || {})[19] || 0) > 0 },
+  { id:"hundra",  name:"Räkna till 100",  desc:"Klara sista räknebanan", art:"star", test:p => ((p.stars || {})[31] || 0) > 0 },
   { id:"tram1",   name:"Första resan",    desc:"Åk en hållplats",        art:"tram",  test:p => (p.stopsRidden || 0) >= 1 },
   { id:"tram25",  name:"25 hållplatser",  desc:"Åk 25 hållplatser",      art:"tram",  test:p => (p.stopsRidden || 0) >= 25 },
   { id:"tramline",name:"Ändstation",      desc:"Åk en hel linje",        art:"spar",  test:p => (p.linesDone || []).length >= 1 },
@@ -2011,9 +2075,31 @@ function newProfile(name, char){
   return p;
 }
 
+/* Två spår. Huvudspåret (1–27) öppnas bana för bana i p.unlocked. Sidospåret
+   Stjärnhimlen (28–31) öppnas när Berget är klart och räknas i p.sidoUpp. */
+function sidoOppen(p){
+  if(!p.sidoUpp && ((p.stars || {})[12] || 0) > 0) p.sidoUpp = SIDO_START;
+  return p.sidoUpp || 0;
+}
+const arLast = (p, L) => huvudspar(L) ? L.id > p.unlocked : L.id > sidoOppen(p);
+/* Nästa bana i samma spår, eller null när spåret är slut */
+function nastaBana(L){
+  return huvudspar(L) ? (L.id < HUVUD_MAX ? levelById(L.id + 1) : null)
+                      : (L.id < SIDO_MAX  ? levelById(L.id + 1) : null);
+}
+/* Öppnar nästa bana om L var den senast öppnade i sitt spår. Ger banan som
+   öppnades, annars null. */
+function oppnaEfter(p, L){
+  if(huvudspar(L)){
+    if(L.id === p.unlocked && L.id < HUVUD_MAX){ p.unlocked = L.id + 1; return levelById(p.unlocked); }
+  }else{
+    if(L.id === sidoOppen(p) && L.id < SIDO_MAX){ p.sidoUpp = L.id + 1; return levelById(p.sidoUpp); }
+  }
+  return null;
+}
 function nextLevelId(p){
-  for(const L of LEVELS) if(!(p.stars || {})[L.id]) return Math.min(L.id, p.unlocked);
-  return LEVELS[LEVELS.length - 1].id;
+  for(const L of LEVELS) if(huvudspar(L) && !(p.stars || {})[L.id]) return Math.min(L.id, p.unlocked);
+  return HUVUD_MAX;
 }
 
 /* ═══════════════════════════════════════════
@@ -2157,16 +2243,24 @@ function renderMap(){
     const idx = LEVELS.map((L, i) => L.r === r ? i : -1).filter(i => i >= 0);
     if(!idx.length) return;
     const top = nodeY(idx[0]) - 66, h = nodeY(idx[idx.length - 1]) - nodeY(idx[0]) + 138;
-    html += `<div class="region-band" style="top:${top}px;height:${h}px;background:${reg.tint}"></div>`;
+    html += `<div class="region-band ${reg.sidospar ? "sidospar" : ""}" style="top:${top}px;height:${h}px;background:${reg.tint}"></div>`;
     html += landskapHTML(r, top, h);
     html += `<div class="region-name" style="top:${top - 15}px">${reg.name}</div>`;
+    if(reg.sidospar){
+      const oppet = sidoOppen(p) > 0;
+      html += `<div class="sidospar-text" style="top:${top + 34}px">${oppet
+        ? "Sidospår · räkna när du vill"
+        : "Sidospår · öppnas efter Berget"}</div>`;
+    }
   });
 
   /* Stigen mellan banorna */
   LEVELS.forEach((L, i) => {
     if(i === LEVELS.length - 1) return;
+    /* Ingen stig mellan huvudspårets slut och sidospårets början */
+    if(huvudspar(L) !== huvudspar(LEVELS[i + 1])) return;
     const x1 = nodeX(i), y1 = nodeY(i), x2 = nodeX(i + 1), y2 = nodeY(i + 1);
-    const last = LEVELS[i + 1].id > p.unlocked;
+    const last = arLast(p, LEVELS[i + 1]);
     for(const t of [0.24, 0.42, 0.6, 0.78]){
       const fyll = last ? "" : `background:${REGIONS[LEVELS[i + 1].r].color};`;
       html += `<div class="trail-dot ${last ? "locked" : ""}" style="${fyll}left:${x1 + (x2 - x1) * t}%;top:${y1 + (y2 - y1) * t}px"></div>`;
@@ -2177,7 +2271,7 @@ function renderMap(){
   const current = nextLevelId(p);
   LEVELS.forEach((L, i) => {
     const stars = (p.stars || {})[L.id] || 0;
-    const locked = L.id > p.unlocked;
+    const locked = arLast(p, L);
     const reg = REGIONS[L.r];
     html += `
       <button class="node ${locked ? "locked" : ""} ${L.id === current && !locked ? "current" : ""}"
@@ -2203,9 +2297,10 @@ el("map").addEventListener("click", (e) => {
   const b = e.target.closest("[data-level]"); if(!b) return;
   const L = levelById(Number(b.dataset.level));
   const p = P();
-  if(L.id > p.unlocked){
+  if(arLast(p, L)){
     SFX.wrong();
-    speak("Den här banan är låst. Klara banan innan så öppnas den!");
+    speak(huvudspar(L) || sidoOppen(p) ? "Den här banan är låst. Klara banan innan så öppnas den!"
+                                        : "Sidospåret öppnas när Berget är klart!");
     return;
   }
   SFX.tap();
@@ -2289,12 +2384,12 @@ const LANDSKAP = [
     {a: D.topp, w:70}, {a: D.sten, w:52} ],
   [ {a: D.moln, w:66}, {a: D.fagel, w:44}, {a: D.moln, w:52}, {a: D.stjarna, w:28},
     {a: D.moln, w:74}, {a: D.fagel, w:36}, {a: D.stjarna, w:24} ],
-  [ {a: D.mane, w:52}, {a: D.stjarna, w:26}, {a: D.planet, w:56}, {a: D.stjarna, w:34},
-    {a: D.stjarna, w:22}, {a: D.planet, w:44}, {a: D.stjarna, w:30} ],
   [ {a: D.vagn, w:78}, {a: D.stolpe, w:30}, {a: D.rals, w:56}, {a: D.vagn, w:64},
     {a: D.stolpe, w:26}, {a: D.rals, w:48}, {a: D.vagn, w:70} ],
   [ {a: D.stopbock, w:52}, {a: D.klocka, w:34}, {a: D.vagn, w:74}, {a: D.rals, w:52},
-    {a: D.klocka, w:30}, {a: D.stopbock, w:44}, {a: D.vagn, w:66} ]
+    {a: D.klocka, w:30}, {a: D.stopbock, w:44}, {a: D.vagn, w:66} ],
+  [ {a: D.mane, w:52}, {a: D.stjarna, w:26}, {a: D.planet, w:56}, {a: D.stjarna, w:34},
+    {a: D.stjarna, w:22}, {a: D.planet, w:44}, {a: D.stjarna, w:30} ]
 ];
 
 function slumpFast(n){ const x = Math.sin(n * 127.1 + 11.7) * 43758.5453; return x - Math.floor(x); }
@@ -2325,25 +2420,16 @@ const lineByRef = (ref) => TRAM_LINES.find(l => l.ref === ref);
 /* Spårvagnen kan köras på en vald bana, eller "Blandat" som drar uppgifter
    ur allt barnet har låst upp – det ger mest omväxling på en lång resa. */
 function blandatLevel(p){
-  const alla = LEVELS.filter(L => L.id <= p.unlocked);
-  const tal = alla.filter(L => L.kinds[0] !== "count");
-  const rakning = alla.filter(L => L.kinds[0] === "count");
-  /* Blandat ska betyda allt barnet kan. Räkning följer med som ett inslag –
-     bara den svåraste räknebanan, så det inte blir "räkna till 5" om och om. */
-  const kallor = tal.length ? tal : (alla.length ? alla : [LEVELS[0]]);
-  const kinds = [...new Set(kallor.flatMap(L => L.kinds))];
-  const bastaRakning = rakning[rakning.length - 1];
-  if(tal.length && bastaRakning) kinds.push("count");
-  const max = Math.max(...kallor.map(L => L.max));
-  return { id:0, name:"Blandat", desc:"Allt du kan",
-           kinds, max,
-           min: bastaRakning ? (bastaRakning.min || 1) : 1,
-           räknaMax: bastaRakning ? bastaRakning.max : 10,
-           /* Golvet följer med uppåt, så en van spelare slipper 1 + 1, men
-              rena plustal ska inte bli slumpmässiga hundrasplittringar. */
-           lo: Math.max(2, Math.min(20, Math.floor(max * 0.45))),
-           /* Har barnet nått banorna utan hjälpbilder gäller det här också */
-           utanHjalp: kallor.some(L => L.utanHjalp), opts: 4 };
+  /* Allt barnet kan – men inte 1 + 1 för den som räknar till 200. Uppgifterna
+     dras ur de två senaste områdena barnet öppnat på huvudspåret. */
+  const oppna = LEVELS.filter(L => huvudspar(L) && L.id <= p.unlocked && !L.pool);
+  const omraden = [...new Set(oppna.map(L => L.r))].slice(-2);
+  const pool = oppna.filter(L => omraden.includes(L.r)).map(L => L.id);
+  const delar = pool.map(levelById);
+  return { id:0, name:"Blandat", desc:"Allt du kan", pool,
+           kinds:[...new Set(delar.flatMap(L => L.kinds))],
+           max:Math.max(...delar.map(L => L.max)),
+           utanHjalp: delar.some(L => L.utanHjalp), opts:4 };
 }
 /* Stigande: spelet håller reda på var barnet ligger med ett flyttal, höjer det
    vid rätt svar och sänker det vid fel. Uppgifterna dras från nivån runt det
@@ -2352,16 +2438,16 @@ function blandatLevel(p){
 const SKILL_UPP = 0.2, SKILL_HJALP = -0.15, SKILL_NED = -0.5;
 
 function skillNu(p){
-  const topp = Math.min(p.unlocked || 1, LEVELS.length);
+  const topp = Math.min(p.unlocked || 1, HUVUD_MAX);
   return Math.max(1, Math.min(topp, p.skill == null ? topp : p.skill));
 }
 function justeraSkill(p, utfall){
-  const topp = Math.min(p.unlocked || 1, LEVELS.length);
+  const topp = Math.min(p.unlocked || 1, HUVUD_MAX);
   const steg = utfall === "ratt" ? SKILL_UPP : utfall === "hjalp" ? SKILL_HJALP : SKILL_NED;
   p.skill = Math.max(1, Math.min(topp, skillNu(p) + steg));
 }
 function nivaForSkill(p){
-  const topp = Math.min(p.unlocked || 1, LEVELS.length);
+  const topp = Math.min(p.unlocked || 1, HUVUD_MAX);
   const s = skillNu(p);
   const r = Math.random();
   /* Mestadels den nivå barnet är på, ibland en lättare och ibland en svårare */
@@ -2382,23 +2468,30 @@ function stigandeLevel(p){
    hållplatsers tal är önskvärt men får ge vika när nivåns förråd är litet –
    annars skulle till exempel Dubbelt, som bara har tio varianter, ta slut. */
 function buildStigandeRound(p, count, undvik){
+  const reserv = LEVELS.filter(L => huvudspar(L) && L.id <= Math.min(p.unlocked || 1, HUVUD_MAX) && !L.pool);
+  return buildFranNivaer(() => nivaForSkill(p), reserv, count, undvik);
+}
+/* valjNiva lottar fram en bana per uppgift; reserv är banorna att leta i när
+   inget färskt hittas – så att en omgång aldrig innehåller samma tal två
+   gånger. Att undvika föregående hållplatsers tal är önskvärt men får ge vika
+   när förrådet är litet, annars tar till exempel Dubbelt slut. */
+function buildFranNivaer(valjNiva, reserv, count, undvik){
   const out = [];
   const iRundan = new Set();
   const tidigare = new Set(undvik || []);
+  const gor = (L) => {
+    const q = MAKE[pick(L.kinds)](L);
+    q.opts = L.opts; q.utanHjalp = !!L.utanHjalp;
+    return q;
+  };
   for(let i = 0; i < count; i++){
-    let vald = null, reserv = null;
+    let vald = null, reserven = null;
     for(let t = 0; t < 40; t++){
-      /* Nivån lottas om vid varje försök. Tar en lätt banas förråd slut –
-         "Räkna till 5" har bara fem uppgifter – hittas en färsk på grannivån
-         i stället för att samma tal kommer två gånger. */
-      const L = nivaForSkill(p);
-      const kandidat = MAKE[pick(L.kinds)](L);
-      kandidat.opts = L.opts;
-      kandidat.utanHjalp = !!L.utanHjalp;
-      const treIRad = out.length >= 2 && out[out.length - 1].kind === kandidat.kind
-                                      && out[out.length - 2].kind === kandidat.kind;
+      const kandidat = gor(valjNiva());
+      const treIRad = out.length >= 2 && SHOWN[out[out.length - 1].kind] === SHOWN[kandidat.kind]
+                                      && SHOWN[out[out.length - 2].kind] === SHOWN[kandidat.kind];
       if(treIRad) continue;
-      if(!reserv) reserv = kandidat;
+      if(!reserven) reserven = kandidat;
       const nyckel = qNyckel(kandidat);
       if(iRundan.has(nyckel)) continue;
       if(t < 22 && tidigare.has(nyckel)) continue;
@@ -2407,14 +2500,9 @@ function buildStigandeRound(p, count, undvik){
       break;
     }
     if(!vald){
-      /* Sista utvägen: sök igenom alla öppnade banor efter något oanvänt,
-         så att en omgång aldrig innehåller samma uppgift två gånger. */
-      const topp = Math.min(p.unlocked || 1, LEVELS.length);
-      for(const L2 of LEVELS.filter(x => x.id <= topp)){
+      for(const L2 of shuffle(reserv.slice())){
         for(let t = 0; t < 12 && !vald; t++){
-          const kandidat = MAKE[pick(L2.kinds)](L2);
-          kandidat.utanHjalp = !!L2.utanHjalp;
-          kandidat.opts = L2.opts;
+          const kandidat = gor(L2);
           if(iRundan.has(qNyckel(kandidat))) continue;
           iRundan.add(qNyckel(kandidat));
           vald = kandidat;
@@ -2422,11 +2510,7 @@ function buildStigandeRound(p, count, undvik){
         if(vald) break;
       }
     }
-    if(!vald){
-      const L = nivaForSkill(p);
-      vald = reserv || MAKE[pick(L.kinds)](L);
-      if(!vald.opts) vald.opts = L.opts;
-    }
+    if(!vald) vald = reserven || gor(valjNiva());
     out.push(vald);
   }
   return out;
@@ -2439,22 +2523,38 @@ function tramLevelDef(p){
 
 /* Val av tal och svarssätt – samma ruta används före resan och under den */
 function talvalHTML(p){
-  const oppna = LEVELS.filter(L => L.id <= p.unlocked);
+  const vald = p.tramLevel;
+  const grupper = REGIONS.map((reg, r) => ({
+    reg, banor: LEVELS.filter(L => L.r === r && !arLast(p, L))
+  })).filter(g => g.banor.length);
+  /* Det senaste området står öppet, de andra hopfällda */
+  const senast = grupper.filter(g => !g.reg.sidospar).slice(-1)[0];
+  const valdGrupp = grupper.find(g => g.banor.some(L => L.id === vald));
+  const spelad = vald > 0 ? levelById(vald) : levelById(p.unlocked);
+  const nasta = spelad ? nastaBana(spelad) : null;
   return `
-    <p class="sheet-sub" style="margin:0 0 7px">Vilka tal vill du räkna?
-      <b>Stigande</b> börjar där du är och blir svårare när det går bra.</p>
-    <div class="seg" style="flex-wrap:wrap;margin-bottom:14px;max-height:34vh;overflow-y:auto">
-      <button type="button" data-tramlevel="-1" aria-pressed="${p.tramLevel === -1}">Stigande</button>
-      <button type="button" data-tramlevel="0" aria-pressed="${p.tramLevel === 0}">Blandat</button>
-      ${oppna.map(L => `<button type="button" data-tramlevel="${L.id}" aria-pressed="${L.id === p.tramLevel}">${L.name}</button>`).join("")}
+    <p class="sheet-sub" style="margin:0 0 7px"><b>Stigande</b> börjar där du är och blir svårare när det går bra.
+      <b>Blandat</b> tar allt från de två senaste områdena.</p>
+    <div class="seg" style="margin-bottom:10px">
+      <button type="button" data-tramlevel="-1" aria-pressed="${vald === -1}">Stigande</button>
+      <button type="button" data-tramlevel="0" aria-pressed="${vald === 0}">Blandat</button>
     </div>
-    <p class="sheet-sub" style="margin:0 0 7px">Hur vill du svara?</p>
+    <div class="banval">
+      ${grupper.map(g => `
+        <details ${g === senast || g === valdGrupp ? "open" : ""}>
+          <summary><span class="prick" style="background:${g.reg.color}"></span>${g.reg.name}${g.reg.sidospar ? " · sidospår" : ""}</summary>
+          <div class="seg" style="flex-wrap:wrap">
+            ${g.banor.map(L => `<button type="button" data-tramlevel="${L.id}" aria-pressed="${L.id === vald}">${L.name}</button>`).join("")}
+          </div>
+        </details>`).join("")}
+    </div>
+    <p class="sheet-sub" style="margin:12px 0 7px">Hur vill du svara?</p>
     <div class="seg">
       <button type="button" data-trammode="choice" aria-pressed="${p.tramMode === "choice"}">Välj svar</button>
       <button type="button" data-trammode="type" aria-pressed="${p.tramMode === "type"}">Skriv svar</button>
     </div>
-    ${p.unlocked < LEVELS.length ? `<p class="sheet-sub" style="margin:12px 0 0;text-align:center">
-      Klara fyra av fem på ${p.tramLevel <= 0 ? (p.tramLevel === -1 ? "Stigande" : "Blandat") : "svåraste banan"} så öppnas <b>${levelById(p.unlocked + 1).name}</b>.</p>` : ""}`;
+    ${nasta ? `<p class="sheet-sub" style="margin:12px 0 0;text-align:center">
+      Klara fyra av fem på ${vald === -1 ? "Stigande" : vald === 0 ? "Blandat" : spelad.name} så öppnas <b>${nasta.name}</b>.</p>` : ""}`;
 }
 const tramAt    = (p, ref) => (p.tram && p.tram[ref]) || 0;
 const lineDone  = (p, ref) => tramAt(p, ref) >= lineByRef(ref).stops.length - 1;
@@ -2786,7 +2886,7 @@ function openSettings(){
       </div>
     </div>
     <div class="set-row">
-      <span><span class="set-label">Visa prickar</span><br><span class="set-hint">Talen som saker att räkna</span></span>
+      <span><span class="set-label">Räknehjälp på de lätta banorna</span><br><span class="set-hint">Talen som saker att räkna, till och med Grottan</span></span>
       <button class="toggle" data-toggle="dots" aria-pressed="${s.dots}" type="button"><span class="dot"></span></button>
     </div>
     <div class="set-row" style="flex-wrap:wrap;gap:8px">
@@ -3325,11 +3425,9 @@ function finishRound(){
   if(perfect === ROUND_LEN) p.perfect = (p.perfect || 0) + 1;
 
   /* Nästa bana öppnas när den här är klarad med minst en stjärna */
-  let unlocked = null;
-  if(stars > 0 && L.id === p.unlocked && L.id < LEVELS.length){
-    p.unlocked = L.id + 1;
-    unlocked = levelById(p.unlocked);
-  }
+  let unlocked = stars > 0 ? oppnaEfter(p, L) : null;
+  /* Berget klart öppnar sidospåret – det är också en ny bana */
+  if(!unlocked && stars > 0 && L.id === 12 && !p.sidoUpp) unlocked = levelById(sidoOppen(p));
   saveProfiles();
   const nya = newBadges(p);
 
@@ -3377,12 +3475,13 @@ function finishTramStop(p, perfect){
      den svåraste banan man har öppen (eller på Blandat) öppnar nästa bana.
      Annars vore man tvungen att spela Räknelandet för att få svårare tal. */
   let nyBana = null;
-  const påTopp = p.tramLevel <= 0 || p.tramLevel === p.unlocked;
   if(perfect === g.len) p.tramPerfect = (p.tramPerfect || 0) + 1;
-  /* Fyra av fem räcker. Ett enda feltryck ska inte stoppa en fyraåring. */
-  if(perfect >= g.len - 1 && påTopp && p.unlocked < LEVELS.length){
-    p.unlocked += 1;
-    nyBana = levelById(p.unlocked);
+  /* Fyra av fem räcker. Ett enda feltryck ska inte stoppa en fyraåring.
+     Stigande och Blandat för huvudspåret framåt; en vald bana för sitt spår. */
+  if(perfect >= g.len - 1){
+    const spelad = p.tramLevel > 0 ? levelById(p.tramLevel) : levelById(p.unlocked);
+    if(spelad) nyBana = oppnaEfter(p, spelad);
+    if(!nyBana && spelad && spelad.id === 12 && !p.sidoUpp) nyBana = levelById(sidoOppen(p));
   }
   const nästa = Math.min(at + 1, l.stops.length - 1);
   p.tram = p.tram || {};
@@ -3472,6 +3571,32 @@ if("serviceWorker" in navigator && location.protocol.startsWith("http")
   addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
 }
 
+/* Räknebanorna 16–19 låg mitt i kedjan och spärrade Vagnhallen. Nu är de
+   sidospåret 28–31 och Vagnhallen börjar på 16. Sparfiler från den gamla
+   ordningen flyttas en gång: stjärnor, rekord, öppnade banor, valt tal. */
+function flyttaTillTvaSpar(p){
+  if(p.tvaSpar) return;
+  const ny = (id) => id <= 15 ? id : id <= 19 ? id + 12 : id - 4;
+  const stars = {}, best = {};
+  for(const k of Object.keys(p.stars || {})) stars[ny(Number(k))] = p.stars[k];
+  for(const k of Object.keys(p.best || {})){
+    const [id, lage] = k.split(":");
+    best[ny(Number(id)) + ":" + lage] = p.best[k];
+  }
+  p.stars = stars; p.best = best;
+  const u = p.unlocked || 1;
+  if(u <= 15){ p.unlocked = u; }
+  else if(u <= 19){ p.unlocked = 16; p.sidoUpp = 28 + (u - 16); }
+  else { p.unlocked = u - 4; p.sidoUpp = 31; }
+  if(p.tramLevel > 0) p.tramLevel = ny(p.tramLevel);
+  if(p.skill != null){
+    p.skill = p.skill < 16 ? p.skill : p.skill < 20 ? 15 + (p.skill - 16) / 4 : p.skill - 4;
+  }
+  const marke = { reg5:"regS", reg6:"regV", reg7:"regA" };
+  p.badges = (p.badges || []).map(b => marke[b] || b);
+  p.tvaSpar = true; p.nyssFlyttad = true;
+}
+
 (function init(){
   /* Äldre sparfiler kan sakna fält som tillkommit senare */
   profiles.forEach(p => {
@@ -3484,7 +3609,10 @@ if("serviceWorker" in navigator && location.protocol.startsWith("http")
     if(!p.stigandeFlytt){ if(p.tramLevel == null || p.tramLevel === 0) p.tramLevel = -1; p.stigandeFlytt = true; }
     p.linesDone = p.linesDone || [];
     p.settings = Object.assign({ sound:true, voice:true, dots:true, rate:1 }, p.settings || {});
+    flyttaTillTvaSpar(p);
   });
+  /* Flyttade sparfiler ska sparas direkt, inte först vid nästa omgång */
+  if(profiles.some(p => p.nyssFlyttad)){ profiles.forEach(p => delete p.nyssFlyttad); saveProfiles(); }
   if(activeId && P()) enterWorld(true);
   else { renderProfiles(); show("profiles"); }
 })();

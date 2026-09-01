@@ -5,7 +5,8 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { REGIONS, LEVELS, SHOWN, buildRound, makeOptions, qNyckel, TRAM_LINES, STOP_PHOTOS, TRAM_PHOTOS, vagnFoto,
          THINGS, BAS_SAKER, BUTIK, sakerFor,
-         justeraSkill, nivaForSkill, buildStigandeRound } from "./hamta.mjs";
+         justeraSkill, nivaForSkill, buildStigandeRound,
+         HUVUD_MAX, SIDO_START, SIDO_MAX, huvudspar, arLast, oppnaEfter, sidoOppen, nastaBana, blandatLevel, levelById } from "./hamta.mjs";
 
 const rot = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -186,7 +187,7 @@ test("skattkistans saker går att rita, kostar olika och läggs till spelarens",
 });
 
 test("tiotalsuppgifter delar upp talet i tior och ental", () => {
-  const bana = LEVELS.find(l => l.id === 19);
+  const bana = LEVELS.find(l => l.name === "Räkna till 100");
   assert.ok(bana.kinds.includes("tiotal"), "Räkna till 100 ska ha tiotalsuppgifter");
   let sedda = 0;
   for(let i = 0; i < 300; i++){
@@ -205,7 +206,7 @@ test("tiotalsuppgifter delar upp talet i tior och ental", () => {
 });
 
 test("Vagnhallens sorter räknar rätt och håller sig inom banans tal", () => {
-  const banor = LEVELS.filter(L => L.r === 6);
+  const banor = LEVELS.filter(L => REGIONS[L.r].name === "Vagnhallen");
   assert.equal(banor.length, 8, "Vagnhallen ska ha åtta banor");
   let serier = 0, ganger = 0, halvor = 0;
   for(const L of banor){
@@ -241,7 +242,7 @@ test("Vagnhallens sorter räknar rätt och håller sig inom banans tal", () => {
 test("banorna med hjälpbilder behåller dem, räknebanorna sina figurer", () => {
   for(const L of LEVELS){
     const q = buildRound(L, 10)[0];
-    if(L.id <= 9 || L.r === 5) assert.ok(!q.utanHjalp, `${L.name} ska ha hjälpbilder`);
+    if(L.id <= 9 || REGIONS[L.r].sidospar) assert.ok(!q.utanHjalp, `${L.name} ska ha hjälpbilder`);
     else assert.ok(q.utanHjalp, `${L.name} ska sakna hjälpbilder`);
   }
 });
@@ -265,7 +266,7 @@ test("hållplatser utan eget foto får samma spårvagn varje gång", () => {
 });
 
 test("Ändstationens tal är stora nog och summerar rätt", () => {
-  const banor = LEVELS.filter(L => L.r === 7);
+  const banor = LEVELS.filter(L => REGIONS[L.r].name === "Ändstationen");
   assert.equal(banor.length, 4, "Ändstationen ska ha fyra banor");
   for(const L of banor){
     assert.ok(L.utanHjalp, `${L.name} ska sakna hjälpbilder`);

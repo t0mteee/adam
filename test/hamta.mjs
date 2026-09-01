@@ -18,7 +18,10 @@ const kalla = [
   block(/const rnd  = [\s\S]*?\nfunction shuffle[\s\S]*?\n/, "slumpfunktioner"),
   block(/const REGIONS = \[[\s\S]*?\n\];/, "REGIONS"),
   block(/const LEVELS = \[[\s\S]*?\n\];/, "LEVELS"),
+  block(/const HUVUD_MAX = [^\n]*\nconst huvudspar = [^\n]*/, "spåren"),
   block(/const MAX_STARS = [^\n]*\nconst levelById = [^\n]*/, "levelById"),
+  block(/LEVELS\.filter\(L => L\.pool\)\.forEach[\s\S]*?\n\}\);/, "provbanornas sorter"),
+  block(/function plusTal\(L\)\{[\s\S]*?\n\}\nfunction minusTal\(L\)\{[\s\S]*?\n\}/, "plus och minus"),
   block(/const MAKE = \{[\s\S]*?\n\};/, "MAKE"),
   block(/const SHOWN = \{[\s\S]*?\};/, "SHOWN"),
   block(/function arrangeKinds\(kinds\)\{[\s\S]*?\n\}/, "arrangeKinds"),
@@ -29,7 +32,9 @@ const kalla = [
   block(/function skillNu\(p\)\{[\s\S]*?\n\}/, "skillNu"),
   block(/function justeraSkill\(p, utfall\)\{[\s\S]*?\n\}/, "justeraSkill"),
   block(/function nivaForSkill\(p\)\{[\s\S]*?\n\}/, "nivaForSkill"),
-  block(/function buildStigandeRound\(p, count, undvik\)\{[\s\S]*?\n  return out;\n\}/, "buildStigandeRound"),
+  block(/function buildStigandeRound\(p, count, undvik\)\{[\s\S]*?\n  return out;\n\}/, "buildStigandeRound och buildFranNivaer"),
+  block(/function sidoOppen\(p\)\{[\s\S]*?\nfunction nextLevelId\(p\)\{[\s\S]*?\n\}/, "upplåsningen"),
+  block(/function blandatLevel\(p\)\{[\s\S]*?\n\}/, "blandatLevel"),
   block(/const TRAM_LINES = \[[\s\S]*?\n\];/, "TRAM_LINES"),
   block(/const STOP_PHOTOS = \{[\s\S]*?\n\};/, "STOP_PHOTOS"),
   block(/const TRAM_PHOTOS = \[[\s\S]*?\n\];[\s\S]*?\nconst vagnFoto = [^\n]*/, "TRAM_PHOTOS"),
@@ -39,8 +44,9 @@ const kalla = [
 
 const modul = await import(
   "data:text/javascript;base64," +
-  Buffer.from(kalla + "\nexport { REGIONS, LEVELS, MAKE, SHOWN, buildRound, makeOptions, qNyckel, TRAM_LINES, STOP_PHOTOS, TRAM_PHOTOS, vagnFoto, THINGS, BAS_SAKER, BUTIK, sakerFor, skillNu, justeraSkill, nivaForSkill, buildStigandeRound };").toString("base64")
+  Buffer.from(kalla + "\nexport { REGIONS, LEVELS, MAKE, SHOWN, buildRound, makeOptions, qNyckel, TRAM_LINES, STOP_PHOTOS, TRAM_PHOTOS, vagnFoto, THINGS, BAS_SAKER, BUTIK, sakerFor, skillNu, justeraSkill, nivaForSkill, buildStigandeRound, HUVUD_MAX, SIDO_START, SIDO_MAX, huvudspar, arLast, oppnaEfter, sidoOppen, nastaBana, blandatLevel, levelById };").toString("base64")
 );
 export const { REGIONS, LEVELS, MAKE, SHOWN, buildRound, makeOptions, qNyckel, TRAM_LINES, STOP_PHOTOS, TRAM_PHOTOS, vagnFoto,
   THINGS, BAS_SAKER, BUTIK, sakerFor,
-  skillNu, justeraSkill, nivaForSkill, buildStigandeRound } = modul;
+  skillNu, justeraSkill, nivaForSkill, buildStigandeRound,
+  HUVUD_MAX, SIDO_START, SIDO_MAX, huvudspar, arLast, oppnaEfter, sidoOppen, nastaBana, blandatLevel, levelById } = modul;

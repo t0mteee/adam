@@ -13,13 +13,20 @@ två världar högst upp på skärmen: **Räknelandet** eller **Spårvagn**. Bå
 
 ### Räknelandet
 
-Trettioen banor på en slingrande stig genom åtta områden, som var och ett ser ut
-som sitt namn – blommor på Ängen, granar i Skogen, kristaller och droppstenar i
-Grottan, snöklädda toppar på Berget, moln högre upp, stjärnor i Stjärnhimlen,
-spårvagnar och kontaktledningsstolpar i Vagnhallen och stoppbockar och
-stationsklockor vid Ändstationen. En bana i taget låses
-upp genom att klaras med minst en stjärna – eller genom en felfri hållplats i
-spårvagnsvärlden – och klarade banor går att spela om.
+Trettioen banor genom åtta områden, som var och ett ser ut som sitt namn –
+blommor på Ängen, granar i Skogen, kristaller och droppstenar i Grottan,
+snöklädda toppar på Berget, moln högre upp, spårvagnar och
+kontaktledningsstolpar i Vagnhallen, stoppbockar och stationsklockor vid
+Ändstationen. En bana i taget låses upp genom att klaras med minst en stjärna –
+eller genom fyra rätt av fem på en hållplats i spårvagnsvärlden – och klarade
+banor går att spela om.
+
+Stigen har två spår. **Huvudspåret** går från Ängen till Ändstationen, 27 banor,
+och det är där svårigheten stiger. **Sidospåret** Stjärnhimlen – räkna till 25,
+50, 75 och 100 i tioramar – öppnas när Berget är klart och spärrar ingenting.
+Så slipper den som kan räkna till hundra i huvudet räkna hundra prickar innan
+Vagnhallen öppnas, och den som älskar att räkna prickar kan göra det när som
+helst.
 
 | Område | Banor | Innehåll |
 | --- | --- | --- |
@@ -27,10 +34,16 @@ spårvagnsvärlden – och klarade banor går att spela om.
 | Skogen | 4–6 | Plus till 10, minus till 5, plus och minus till 10 |
 | Grottan | 7–9 | Dubbelt, tiokompisar, vad fattas |
 | Berget | 10–12 | Plus till 20, minus till 20, plus och minus till 20 |
-| Molnen | 13–15 | Tre tal, blandat till 20, mästarprovet |
-| Stjärnhimlen | 16–19 | Räkna till 25, 50, 75 och 100 – i tioramar, tior och ental |
-| Vagnhallen | 20–27 | Över tian, hela tiotal, tiotal och ental, plus till 100, talföljder, gånger och hälften, Vagnhallens prov |
-| Ändstationen | 28–31 | Allt till 100, allt till 200, tre tal i rad, fyra tal i rad |
+| Molnen | 13–15 | Tre små tal, blandat till 20, mästarprovet |
+| Vagnhallen | 16–23 | Plus och minus över tian, hela tiotal, tiotal och ental, växla och låna, talföljder, gånger och hälften, Vagnhallens prov |
+| Ändstationen | 24–27 | Allt till 100, allt till 200, tre tal i rad, fyra tal i rad |
+| Stjärnhimlen (sidospår) | 28–31 | Räkna till 25, 50, 75 och 100 – i tioramar, tior och ental |
+
+Från Berget och uppåt har varje bana ett minsta värde på det mindre talet, så
+att 15 + 1 och 16 − 15 inte dyker upp där talen annars slutat vara små: 3 på
+Berget, 4 och 5 på Molnen, 11 på *Växla och låna*, 12 och 15 vid Ändstationen.
+*Mästarprovet* och *Vagnhallens prov* har inga egna tal utan drar sina uppgifter
+ur områdets övriga banor.
 
 Varje bana är tio uppgifter och kan spelas på två sätt: **välj svar** (tre eller
 fyra rutor att trycka på) eller **skriv svar** (stor knappsats; fysiskt
@@ -132,15 +145,16 @@ låter som ett utrop och inte som en lekkamrat.
   läget, så det blir svårare när det går bra och backar tillfälligt när det
   kärvar – tills nivån sitter igen. Rubriken visar var man är just nu, till
   exempel *Stigande · Plus till 10*.
-- **Andra lägen finns kvar.** **Blandat** drar ur allt barnet låst upp, med ett
-  golv som följer med uppåt så en van spelare slipper 1 + 1. Man kan också låsa
-  en enskild bana. Valet görs innan resan och går att ändra med *byt* i toppen.
+- **Andra lägen finns kvar.** **Blandat** drar ur de två senaste områdena barnet
+  öppnat på huvudspåret, så en van spelare slipper 1 + 1. Man kan också välja en
+  enskild bana: listan är grupperad per område, med det senaste uppfällt och
+  sidospåret sist. Valet görs innan resan och går att ändra med *byt* i toppen.
 - **Hur långt man kommit syns.** Varje linje i listan har en mätare i linjens
   egen färg som fylls hållplats för hållplats, och blir grön när hela linjen är
   åkt.
-- **Spårvagnen för spelaren framåt.** Fyra rätt av fem på en hållplats, på
-  Blandat eller på den svåraste öppna banan, öppnar nästa bana – samma banor som
-  i Räknelandet. Man kan alltså börja med spårvagnen och aldrig röra kartan; ett
+- **Spårvagnen för spelaren framåt.** Fyra rätt av fem på en hållplats öppnar
+  nästa bana i det spår man spelade: Stigande och Blandat för huvudspåret framåt,
+  en vald räknebana för sidospåret. Samma banor som i Räknelandet. Man kan alltså börja med spårvagnen och aldrig röra kartan; ett
   barn som bara åker linje 10 går från *Räkna till 5* till *Plus och minus till
   10* på fem hållplatser.
 - **Inga upprepningar mellan hållplatserna.** Eftersom en hållplats bara är fem
