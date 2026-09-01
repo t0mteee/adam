@@ -7,9 +7,11 @@ att sidan laddats en gång.
 
 ## Så funkar det
 
-Barnet skapar en egen spelare med namn och kompisfigur, och väljer sedan mellan
-två världar högst upp på skärmen: **Räknelandet** eller **Spårvagn**. Båda
-öppnar nya banor, så man kan börja i vilken som helst.
+Barnet skapar en egen spelare med namn och kompisfigur. Spelet har två
+världar, **Räknelandet** och **Spårvagn**; vilken som spelas väljs överst i
+inställningarna (kugghjulet), så huvudskärmen slipper en växlare. Båda öppnar
+nya banor, så man kan börja i vilken som helst. Pillen i topplisten visar
+stjärnor i Räknelandet och åkta linjer i spårvagnen.
 
 ### Räknelandet
 
@@ -251,9 +253,11 @@ Tre saker värda att veta:
 
 ## För vuxna
 
-Kugghjulet uppe till höger: ljud, uppläsning, rösthastighet, prickar, byt
-kompisfigur, byt spelare och ta bort spelare. Inställningarna hör till spelaren,
-så syskon kan ha olika.
+Kugghjulet uppe till höger: värld, ljud, uppläsning, rösthastighet, räknehjälp,
+byt kompisfigur, byt spelare och ta bort spelare. Inställningarna hör till
+spelaren, så syskon kan ha olika. Kompisfiguren står längst ner på spelskärmen
+och hejar, så frågan och svaren får hela bredden; i skrivläget hamnar den under
+knappsatsen och är aldrig i vägen.
 
 Flera spelare får plats. Allt sparas lokalt i webbläsaren (`localStorage`) –
 ingenting skickas någonstans. Rensas webbläsardata försvinner även framstegen.
