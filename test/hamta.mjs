@@ -39,14 +39,15 @@ const kalla = [
   block(/const STOP_PHOTOS = \{[\s\S]*?\n\};/, "STOP_PHOTOS"),
   block(/const TRAM_PHOTOS = \[[\s\S]*?\n\];[\s\S]*?\nconst vagnFoto = [^\n]*/, "TRAM_PHOTOS"),
   block(/const THINGS = \{[\s\S]*?\n\};/, "THINGS"),
-  block(/const BAS_SAKER = [^\n]*\nconst BUTIK = \[[\s\S]*?\n\];[\s\S]*?\nconst sakerFor = [^\n]*/, "butiken"),
+  block(/const BAS_SAKER = [^\n]*\n[\s\S]*?const BUTIK = \[[\s\S]*?\n\];[\s\S]*?\nconst sakerFor = [^\n]*/, "butiken"),
+  block(/const HJASSA = [^\n]*\nconst TILLBEHOR = \[[\s\S]*?\n\];\nconst tillbehorAv = [^\n]*/, "hattarna"),
 ].join("\n");
 
 const modul = await import(
   "data:text/javascript;base64," +
-  Buffer.from(kalla + "\nexport { REGIONS, LEVELS, MAKE, SHOWN, buildRound, makeOptions, qNyckel, TRAM_LINES, STOP_PHOTOS, TRAM_PHOTOS, vagnFoto, THINGS, BAS_SAKER, BUTIK, sakerFor, skillNu, justeraSkill, nivaForSkill, buildStigandeRound, HUVUD_MAX, SIDO_START, SIDO_MAX, huvudspar, arLast, oppnaEfter, sidoOppen, nastaBana, blandatLevel, levelById };").toString("base64")
+  Buffer.from(kalla + "\nexport { REGIONS, LEVELS, MAKE, SHOWN, buildRound, makeOptions, qNyckel, TRAM_LINES, STOP_PHOTOS, TRAM_PHOTOS, vagnFoto, THINGS, BAS_SAKER, BUTIK, TILLBEHOR, sakerFor, skillNu, justeraSkill, nivaForSkill, buildStigandeRound, HUVUD_MAX, SIDO_START, SIDO_MAX, huvudspar, arLast, oppnaEfter, sidoOppen, nastaBana, blandatLevel, levelById };").toString("base64")
 );
 export const { REGIONS, LEVELS, MAKE, SHOWN, buildRound, makeOptions, qNyckel, TRAM_LINES, STOP_PHOTOS, TRAM_PHOTOS, vagnFoto,
-  THINGS, BAS_SAKER, BUTIK, sakerFor,
+  THINGS, BAS_SAKER, BUTIK, TILLBEHOR, sakerFor,
   skillNu, justeraSkill, nivaForSkill, buildStigandeRound,
   HUVUD_MAX, SIDO_START, SIDO_MAX, huvudspar, arLast, oppnaEfter, sidoOppen, nastaBana, blandatLevel, levelById } = modul;

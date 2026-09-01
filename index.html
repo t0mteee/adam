@@ -263,6 +263,8 @@ h1, h2, h3{ font-family: "Baloo 2", "Baloo 2 Fallback", system-ui, sans-serif; f
   color: var(--ink); cursor: pointer; box-shadow: 0 3px 0 var(--ink);
 }
 .butik-rad .kop[disabled]{ background: var(--locked); box-shadow: none; cursor: default; opacity: .75; }
+.butik-rad .kop.pa{ background: var(--grass); color: #fff; }
+.butik-rad .sak svg{ overflow: visible; }
 .butik-rad .agd{ flex: none; font-size: var(--t-xs); color: var(--grass-deep); font-weight: 800; }
 .star-track{
   display: flex; align-items: center; gap: 5px;
@@ -1122,7 +1124,7 @@ const pick = (arr) => arr[rnd(arr.length)];
 const INK = "#2E1A66";
 /* Syns under Inställningar, så man kan se vilken version telefonen kör.
    Höjs tillsammans med VERSION i sw.js. */
-const SPELVERSION = "12";
+const SPELVERSION = "13";
 function shuffle(a){ for(let i = a.length - 1; i > 0; i--){ const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
 function store(key, val){
@@ -1244,10 +1246,32 @@ const CHARACTERS = [
       ${eyes(m, 100, 88, 12, 22)}
       ${mouth(m, 100, 128, 0.62)}`; } }
 ];
-function charSVG(id, mood){
+/* Var hjässan sitter på varje figur (x, y i figurens ruta), så en hatt
+   hamnar rätt oavsett vem som bär den */
+const HJASSA = { bloppy:[100, 32], zippy:[100, 50], toffe:[100, 40], stella:[106, 60], bip:[100, 44], mans:[100, 42] };
+const TILLBEHOR = [
+  { id:"keps",   name:"Keps",            pris:60,  ord:"en keps",
+    rita:`<path d="M-46 4 q46 -52 92 0 z" fill="#FF6B6B" stroke="${INK}" stroke-width="5"/><path d="M-50 2 h104 l24 14 q-14 8 -40 4 h-88 z" fill="#DD4747" stroke="${INK}" stroke-width="5"/><circle cx="0" cy="-42" r="6" fill="#FFC42E" stroke="${INK}" stroke-width="4"/>` },
+  { id:"forare", name:"Förarmössa",      pris:150, ord:"en förarmössa",
+    rita:`<path d="M-48 6 q48 -44 96 0 z" fill="#2E4A9E" stroke="${INK}" stroke-width="5"/><path d="M-54 4 h108 q4 8 -6 12 h-96 q-10 -4 -6 -12z" fill="#1F3579" stroke="${INK}" stroke-width="5"/><path d="M-30 16 h60 l8 10 h-76 z" fill="#2E1A66" stroke="${INK}" stroke-width="4"/><circle cx="0" cy="-8" r="11" fill="#FFC42E" stroke="${INK}" stroke-width="4"/><rect x="-6" y="-14" width="12" height="12" rx="3" fill="#62CDF2" stroke="${INK}" stroke-width="3"/>` },
+  { id:"krona",  name:"Krona",           pris:300, ord:"en krona",
+    rita:`<path d="M-40 8 l-6 -46 22 22 24 -34 24 34 22 -22 -6 46 z" fill="#FFC42E" stroke="${INK}" stroke-width="5"/><circle cx="-46" cy="-38" r="6" fill="#FF6B6B" stroke="${INK}" stroke-width="3.5"/><circle cx="0" cy="-50" r="6" fill="#62CDF2" stroke="${INK}" stroke-width="3.5"/><circle cx="46" cy="-38" r="6" fill="#57C96B" stroke="${INK}" stroke-width="3.5"/>` },
+  { id:"party",  name:"Partyhatt",       pris:200, ord:"en partyhatt",
+    rita:`<path d="M-30 8 l30 -74 30 74 z" fill="#9061F9" stroke="${INK}" stroke-width="5"/><circle cx="-8" cy="-14" r="5" fill="#FFC42E"/><circle cx="10" cy="-34" r="5" fill="#FF8AD0"/><circle cx="4" cy="-4" r="5" fill="#57C96B"/><circle cx="0" cy="-70" r="9" fill="#FF6B6B" stroke="${INK}" stroke-width="4"/>` },
+  { id:"rosett", name:"Rosett",          pris:100, ord:"en rosett",
+    rita:`<g transform="translate(34 -6)"><path d="M0 0 l-32 -22 v44 z M0 0 l32 -22 v44 z" fill="#FF8AD0" stroke="${INK}" stroke-width="5"/><circle r="9" fill="#FF6B6B" stroke="${INK}" stroke-width="4"/></g>` },
+  { id:"stjarna", name:"Stjärnpannband", pris:450, ord:"ett stjärnpannband",
+    rita:`<path d="M-56 10 q56 -24 112 0" fill="none" stroke="#9061F9" stroke-width="10" stroke-linecap="round"/><path d="M-56 10 q56 -24 112 0" fill="none" stroke="${INK}" stroke-width="3"/><g transform="translate(0 -22) scale(1.25)"><path d="M0-14l4.1 8.6 9.5 1.3-6.9 6.5 1.8 9.4L0 7.4l-8.5 4.4 1.8-9.4-6.9-6.5 9.5-1.3z" fill="#FFC42E" stroke="${INK}" stroke-width="3.5" stroke-linejoin="round"/></g>` }
+];
+const tillbehorAv = (id) => TILLBEHOR.find(t => t.id === id);
+
+function charSVG(id, mood, hatt){
   const c = CHARACTERS.find(x => x.id === id) || CHARACTERS[0];
-  return `<svg viewBox="0 0 200 208" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round">${c.draw(mood || "idle")}</svg>`;
+  const t = hatt && tillbehorAv(hatt), h = HJASSA[c.id] || [100, 40];
+  return `<svg viewBox="0 0 200 208" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round">${c.draw(mood || "idle")}${t ? `<g transform="translate(${h[0]} ${h[1]})">${t.rita}</g>` : ""}</svg>`;
 }
+/* Spelarens egen kompis, med det den har på sig */
+const kompisSVG = (p, mood) => charSVG(p.char, mood, p.tillbehor);
 
 /* ═══════════════════════════════════════════
    Saker att räkna, stjärnor, märken
@@ -1271,16 +1295,19 @@ const THINGS = {
 
 /* De sex första finns från start, resten köps i skattkistan */
 const BAS_SAKER = ["apple", "ball", "star", "fish", "flower", "frog"];
+/* Räknesakerna syns där saker räknas: räknebanorna, hjälpbilderna till
+   och med Grottan, och när svaret visas efter tre fel. De är billiga, så
+   de hinner köpas medan de gör nytta. */
 const BUTIK = [
-  { id:"tram",   name:"Spårvagn", pris:120,  ord:"en spårvagn", flera:"spårvagnar" },
-  { id:"cat",    name:"Katt",     pris:250,  ord:"en katt",     flera:"katter" },
-  { id:"glass",  name:"Glass",    pris:420,  ord:"en glass",    flera:"glassar" },
-  { id:"rocket", name:"Raket",    pris:650,  ord:"en raket",    flera:"raketer" },
-  { id:"heart",  name:"Hjärta",   pris:900,  ord:"ett hjärta",  flera:"hjärtan" },
-  { id:"moon",   name:"Måne",     pris:1200, ord:"en måne",     flera:"månar" }
+  { id:"tram",   name:"Spårvagn", pris:50,  ord:"en spårvagn", flera:"spårvagnar" },
+  { id:"cat",    name:"Katt",     pris:80,  ord:"en katt",     flera:"katter" },
+  { id:"glass",  name:"Glass",    pris:120, ord:"en glass",    flera:"glassar" },
+  { id:"rocket", name:"Raket",    pris:170, ord:"en raket",    flera:"raketer" },
+  { id:"heart",  name:"Hjärta",   pris:230, ord:"ett hjärta",  flera:"hjärtan" },
+  { id:"moon",   name:"Måne",     pris:300, ord:"en måne",     flera:"månar" }
 ];
 /* Vad den här spelaren har att räkna med */
-const sakerFor = (p) => BAS_SAKER.concat((p && p.kopta) || []);
+const sakerFor = (p) => BAS_SAKER.concat(((p && p.kopta) || []).filter(id => THINGS[id]));
 
 const starPath = "M20 3l5.2 11 12.1 1.6-8.9 8.3 2.3 12-10.7-6-10.7 6 2.3-12-8.9-8.3L14.8 14z";
 const STAR_ON  = `<svg class="st" viewBox="0 0 40 40"><path d="${starPath}" fill="#FFC42E" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/></svg>`;
@@ -2278,7 +2305,7 @@ function renderProfiles(){
   }else{
     list.innerHTML = profiles.map(p => `
       <button class="profile-card" data-profile="${p.id}" type="button">
-        ${charSVG(p.char, "happy")}
+        ${kompisSVG(p, "happy")}
         <span style="min-width:0">
           <span class="p-name">${escapeHtml(p.name)}</span><br>
           <span class="p-meta">${totalStars(p)} av ${MAX_STARS} stjärnor · ${p.coins} mynt</span>
@@ -2334,7 +2361,7 @@ const nodeY = (i) => TOP + i * GAP;
 /* Topplisten är gemensam för båda världarna */
 function renderHeader(){
   const p = P(); if(!p) return;
-  el("whoArt").innerHTML = charSVG(p.char, "happy");
+  el("whoArt").innerHTML = kompisSVG(p, "happy");
   el("whoName").textContent = p.name;
   el("whoCoins").innerHTML = COIN_SVG + " " + p.coins + " mynt";
   /* Stjärnor hör till Räknelandets banor; i spårvagnen räknas linjerna */
@@ -2404,7 +2431,7 @@ function renderMap(){
   const ci = LEVELS.findIndex(L => L.id === current);
   if(ci >= 0){
     const wx = nodeX(ci) > 50 ? nodeX(ci) - 17 : nodeX(ci) + 17;
-    html += `<div class="walker" style="left:${wx}%;top:${nodeY(ci)}px">${charSVG(p.char, "idle")}</div>`;
+    html += `<div class="walker" style="left:${wx}%;top:${nodeY(ci)}px">${kompisSVG(p, "idle")}</div>`;
   }
   map.innerHTML = html;
 }
@@ -3508,19 +3535,27 @@ sheet.addEventListener("click", (e) => {
     speak(p.world === "tram" ? "Spårvagn" : "Räknelandet");
     return;
   }
+  const tapa = e.target.closest("[data-tapa]");
+  if(tapa){
+    p.tillbehor = p.tillbehor === tapa.dataset.tapa ? null : tapa.dataset.tapa;
+    saveProfiles(); SFX.tap(); renderHeader(); visaHatten(); openShop();
+    return;
+  }
   const kop = e.target.closest("[data-kop]");
   if(kop){
-    const v = BUTIK.find(x => x.id === kop.dataset.kop);
+    const v = BUTIK.find(x => x.id === kop.dataset.kop) || tillbehorAv(kop.dataset.kop);
     if(!v || p.coins < v.pris || (p.kopta || []).indexOf(v.id) !== -1) return;
     p.coins -= v.pris;
     p.kopta = (p.kopta || []).concat(v.id);
+    /* En hatt tas på direkt – det är hela poängen med att köpa den */
+    if(v.rita) p.tillbehor = v.id;
     saveProfiles();
     SFX.coin();
-    renderHeader();
+    renderHeader(); visaHatten();
     openShop();
     const r = sheet.getBoundingClientRect();
     confetti(r.left + r.width / 2, r.top + 90, 26);
-    speak(`Du köpte ${v.ord}! Nu får du räkna ${v.flera} också.`);
+    speak(v.rita ? `Du köpte ${v.ord}! Snyggt!` : `Du köpte ${v.ord}! Nu får du räkna ${v.flera} också.`);
     return;
   }
   if(e.target.closest('[data-action="switch"]')){
@@ -3555,30 +3590,45 @@ el("shopBtn").addEventListener("click", () => { SFX.ensure(); SFX.tap(); openSho
    ═══════════════════════════════════════════ */
 function butikRadHTML(v, p){
   const agd = (p.kopta || []).indexOf(v.id) !== -1;
+  const hatt = !!v.rita;
   const rad = agd ? "butik-rad min" : "butik-rad";
-  const knapp = agd
-    ? `<span class="agd">din!</span>`
-    : `<button class="kop" data-kop="${v.id}" type="button" ${p.coins < v.pris ? "disabled" : ""}>Köp</button>`;
+  const bild = hatt
+    ? `<svg viewBox="-64 -80 128 110">${v.rita}</svg>`
+    : THINGS[v.id];
+  const knapp = !agd
+    ? `<button class="kop" data-kop="${v.id}" type="button" ${p.coins < v.pris ? "disabled" : ""}>Köp</button>`
+    : hatt
+      ? `<button class="kop ${p.tillbehor === v.id ? "pa" : ""}" data-tapa="${v.id}" type="button">${p.tillbehor === v.id ? "Ta av" : "Ta på"}</button>`
+      : `<span class="agd">din!</span>`;
   return `<div class="${rad}">
-    <span class="sak">${THINGS[v.id]}</span>
+    <span class="sak">${bild}</span>
     <span class="txt"><b>${v.name}</b><span>${COIN_SVG} ${v.pris} mynt</span></span>
     ${knapp}</div>`;
 }
+/* Figuren på kartan ritas när kartan ritas – efter ett köp ska hatten synas
+   där också, utan att man behöver lämna skärmen */
+function visaHatten(){
+  if(el("screen-map").classList.contains("is-active")) renderMap();
+}
 function openShop(){
   const p = P();
-  const kvar = BUTIK.filter(v => (p.kopta || []).indexOf(v.id) === -1);
+  const kvar = BUTIK.concat(TILLBEHOR).filter(v => (p.kopta || []).indexOf(v.id) === -1).sort((a, b) => a.pris - b.pris);
   const rad = kvar.length === 0
     ? "Du har allt i kistan! Snyggt jobbat."
     : p.coins < kvar[0].pris
       ? `Spara ${kvar[0].pris - p.coins} mynt till så räcker det till ${kvar[0].ord}.`
-      : "Välj något att räkna med!";
+      : "Välj något!";
   openSheet(`
     <div class="sheet-head">
       <div><h2>Skattkistan</h2><p class="sheet-sub"><span style="display:inline-block;width:14px;vertical-align:-2px">${COIN_SVG}</span> ${p.coins} mynt · ${rad}</p></div>
       ${CLOSE_BTN}
     </div>
-    <p class="sheet-sub" style="margin:0 0 10px">Det du köper dyker upp i uppgifterna, så det blir nya saker att räkna.</p>
-    <div class="butik" id="butikLista">${BUTIK.map(v => butikRadHTML(v, p)).join("")}</div>`);
+    <div class="butik" id="butikLista">
+      <p class="sheet-sub" style="margin:0 0 4px"><b>Till kompisen</b> – syns på varje skärm, i båda världarna.</p>
+      ${TILLBEHOR.map(v => butikRadHTML(v, p)).join("")}
+      <p class="sheet-sub" style="margin:10px 0 4px"><b>Saker att räkna</b> – syns på räknebanorna, som räknehjälp till och med Grottan, och när svaret visas efter tre fel.</p>
+      ${BUTIK.map(v => butikRadHTML(v, p)).join("")}
+    </div>`);
 }
 
 /* ═══════════════════════════════════════════
@@ -3636,10 +3686,10 @@ function nextQuestion(){
 
 function setBuddy(mood, anim){
   const p = P();
-  buddy.innerHTML = charSVG(p.char, mood);
+  buddy.innerHTML = kompisSVG(p, mood);
   buddy.className = "buddy " + (anim || "bob");
   if(anim && anim !== "bob"){
-    later(() => { buddy.className = "buddy bob"; buddy.innerHTML = charSVG(p.char, "idle"); }, 1300);
+    later(() => { buddy.className = "buddy bob"; buddy.innerHTML = kompisSVG(p, "idle"); }, 1300);
   }
 }
 
@@ -3893,6 +3943,15 @@ function answer(value, sourceEl){
       const ratt = [...answerArea.querySelectorAll(".opt")].find(x => Number(x.dataset.val) === q.answer);
       if(ratt){ ratt.disabled = false; ratt.classList.remove("wrong"); ratt.classList.add("right"); }
     }
+    /* Utan hjälpbilder visas ändå svaret som saker när det är över – det är
+       ingen räknehjälp längre, bara en bild av hur det hänger ihop. */
+    if(q.utanHjalp && q.answer <= 30 && ["add", "sub", "missing"].includes(q.kind)){
+      const kopia = Object.assign({}, q, { utanHjalp:false });
+      const t = g.thing;
+      qVisual.innerHTML = q.kind === "add" ? `<span class="grp">${thingsRow(q.a, 0, t)}</span><span class="plus">+</span><span class="grp">${thingsRow(q.b, 0, t)}</span>`
+                        : q.kind === "sub" ? hogHTML(q.a, q.b, t) : hogHTML(q.sum, q.sum - q.a, t);
+      qVisual.className = "q-visual" + (q.answer > 12 ? " packed" : q.answer > 6 ? "" : " stor");
+    }
     qEquation.style.display = "";
     qEquation.innerHTML = q.kind === "count"
       ? `<span class="facit">${q.answer}</span>`
@@ -3963,7 +4022,7 @@ function finishRound(){
   saveProfiles();
   const nya = newBadges(p);
 
-  el("resultBuddy").innerHTML = charSVG(p.char, stars ? "happy" : "idle");
+  el("resultBuddy").innerHTML = kompisSVG(p, stars ? "happy" : "idle");
   el("resultStars").innerHTML = [0,1,2].map(i => i < stars ? STAR_ON : STAR_OFF).join("");
   const titles = ["Bra kämpat!", "Fint jobbat!", "Superbra!", "Helt fantastiskt!"];
   el("resultTitle").textContent = titles[stars];

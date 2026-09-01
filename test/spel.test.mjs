@@ -4,7 +4,7 @@ import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { REGIONS, LEVELS, SHOWN, buildRound, makeOptions, qNyckel, TRAM_LINES, STOP_PHOTOS, TRAM_PHOTOS, vagnFoto,
-         THINGS, BAS_SAKER, BUTIK, sakerFor,
+         THINGS, BAS_SAKER, BUTIK, TILLBEHOR, sakerFor,
          justeraSkill, nivaForSkill, buildStigandeRound,
          HUVUD_MAX, SIDO_START, SIDO_MAX, huvudspar, arLast, oppnaEfter, sidoOppen, nastaBana, blandatLevel, levelById } from "./hamta.mjs";
 
@@ -181,9 +181,15 @@ test("skattkistans saker går att rita, kostar olika och läggs till spelarens",
   assert.deepEqual(priser, [...priser].sort((a, b) => a - b), "priserna ska stiga");
   assert.deepEqual(sakerFor(null), BAS_SAKER);
   assert.deepEqual(sakerFor({ kopta: [] }), BAS_SAKER);
-  const med = sakerFor({ kopta: ["tram", "moon"] });
-  assert.equal(med.length, BAS_SAKER.length + 2);
-  assert.ok(med.includes("tram") && med.includes("moon"));
+  const med = sakerFor({ kopta: ["tram", "moon", "keps"] });
+  assert.equal(med.length, BAS_SAKER.length + 2, "en hatt är ingen räknesak");
+  assert.ok(med.includes("tram") && med.includes("moon") && !med.includes("keps"));
+  const hattpriser = TILLBEHOR.map(t => t.pris);
+  for(const t of TILLBEHOR){
+    assert.ok(t.rita && t.name && t.ord && t.pris > 0, `${t.id} saknar bild, namn eller pris`);
+    assert.ok(!THINGS[t.id] && BAS_SAKER.indexOf(t.id) === -1, `${t.id} krockar med en räknesak`);
+  }
+  assert.equal(new Set(hattpriser).size, hattpriser.length, "två hattar kostar lika mycket");
 });
 
 test("tiotalsuppgifter delar upp talet i tior och ental", () => {

@@ -65,8 +65,10 @@ Fram till Grottan ritas talen ut som saker man kan räkna: sex äpplen plus tre
 äpplen. Från Berget och uppåt försvinner de. Ett barn som kan räkna prickarna
 snabbt behöver aldrig lära sig talen, och då blir 8 + 9 en fråga om uthållighet
 i stället för huvudräkning. Räknebanorna i Stjärnhimlen är undantaget – där *är*
-sakerna uppgiften. Efter tre fel visas svaret ändå, och nivåbladet skriver ut
-*utan hjälpbilder* så man vet vad man valt.
+sakerna uppgiften. Efter tre fel visas svaret ändå, ritat som saker när det är
+30 eller mindre – det är ingen räknehjälp längre, bara en bild av hur det
+hänger ihop – och nivåbladet skriver ut *utan hjälpbilder* så man vet vad man
+valt.
 
 ### Vagnhallen
 
@@ -103,11 +105,17 @@ varje omgång delas upp till tre stjärnor ut (4 rätt direkt ger en, 7 ger två
 ger tre), och minst en stjärna öppnar nästa bana. Totalt finns 93 stjärnor och 22
 märken att samla, från *Första stjärnan* och *Ändstation* till *Hela landet*.
 
-Mynten går att göra av med. Myntraden i topplisten öppnar **skattkistan**, där
-sex nya saker att räkna med står till salu: spårvagn (120 mynt), katt (250),
-glass (420), raket (650), hjärta (900) och måne (1200). Det som köps blandas in
-bland de sex som finns från start, så uppgifterna byter utseende allt eftersom
-skatten växer. Köpen hör till spelaren, precis som stjärnor och märken.
+Mynten går att göra av med. Myntraden i topplisten öppnar **skattkistan** med
+två hyllor. *Till kompisen*: keps (60 mynt), rosett (100), förarmössa (150),
+partyhatt (200), krona (300) och stjärnpannband (450). Den man köper tas på
+direkt och syns på kompisen överallt – i topplisten, på kartan, på spelskärmen
+och på resultatskärmen, i båda världarna – och går att ta av och på i kistan.
+*Saker att räkna*: spårvagn (50), katt (80), glass (120), raket (170), hjärta
+(230) och måne (300). De blandas in bland de sex som finns från start och syns
+där saker räknas: på räknebanorna, som räknehjälp till och med Grottan, och när
+svaret visas efter tre fel på vilken bana som helst. De är billiga med flit, så
+de hinner köpas medan de gör nytta. Köpen hör till spelaren, precis som stjärnor
+och märken.
 
 ## Spårvagn — Göteborgs linjenät
 
