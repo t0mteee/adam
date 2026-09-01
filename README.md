@@ -8,14 +8,16 @@ att sidan laddats en gång.
 ## Så funkar det
 
 Barnet skapar en egen spelare med namn och kompisfigur, och väljer sedan mellan
-två världar högst upp på skärmen: **Räknelandet** eller **Spårvagn**.
+två världar högst upp på skärmen: **Räknelandet** eller **Spårvagn**. Båda
+öppnar nya banor, så man kan börja i vilken som helst.
 
 ### Räknelandet
 
 Femton banor på en slingrande stig genom fem områden, som var och ett ser ut som
 sitt namn – blommor på Ängen, granar i Skogen, kristaller och droppstenar i
 Grottan, snöklädda toppar på Berget och moln högst upp. En bana i taget låses
-upp genom att klaras med minst en stjärna, och klarade banor går att spela om.
+upp genom att klaras med minst en stjärna – eller genom en felfri hållplats i
+spårvagnsvärlden – och klarade banor går att spela om.
 
 | Område | Banor | Innehåll |
 | --- | --- | --- |
@@ -71,7 +73,12 @@ hållplats på linjekartan medan rösten ropar ut namnet.
   där man väljer vilka tal som ska räknas och om svaret ska tryckas eller
   skrivas. **Blandat** drar uppgifter ur allt barnet har låst upp och ger mest
   omväxling på en lång linje. Valet går att ändra mitt i resan med *byt* i
-  toppen, och påverkar inte Räknelandet.
+  toppen.
+- **Spårvagnen för spelaren framåt.** En hållplats klarad helt utan fel, på
+  Blandat eller på den svåraste öppna banan, öppnar nästa bana – samma banor som
+  i Räknelandet. Man kan alltså börja med spårvagnen och aldrig röra kartan; ett
+  barn som bara åker linje 10 går från *Räkna till 5* till *Plus och minus till
+  10* på fem felfria hållplatser.
 - **Inga upprepningar mellan hållplatserna.** Eftersom en hållplats bara är fem
   uppgifter minns spelet de senaste tjugofyra talen och undviker dem, så två
   hållplatser i rad aldrig känns likadana.

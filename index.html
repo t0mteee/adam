@@ -1858,8 +1858,10 @@ const lineByRef = (ref) => TRAM_LINES.find(l => l.ref === ref);
 /* Spårvagnen kan köras på en vald bana, eller "Blandat" som drar uppgifter
    ur allt barnet har låst upp – det ger mest omväxling på en lång resa. */
 function blandatLevel(p){
-  const oppna = LEVELS.filter(L => L.id <= p.unlocked && L.kinds[0] !== "count");
-  const kallor = oppna.length ? oppna : [LEVELS[2]];
+  const alla = LEVELS.filter(L => L.id <= p.unlocked);
+  const utanRakning = alla.filter(L => L.kinds[0] !== "count");
+  /* Har barnet bara räknebanor öppna blir Blandat räkning – annars tal */
+  const kallor = utanRakning.length ? utanRakning : (alla.length ? alla : [LEVELS[0]]);
   return { id:0, name:"Blandat", desc:"Allt du kan",
            kinds:[...new Set(kallor.flatMap(L => L.kinds))],
            max: Math.max(...kallor.map(L => L.max)),
@@ -1882,7 +1884,9 @@ function talvalHTML(p){
     <div class="seg">
       <button type="button" data-trammode="choice" aria-pressed="${p.tramMode === "choice"}">Välj svar</button>
       <button type="button" data-trammode="type" aria-pressed="${p.tramMode === "type"}">Skriv svar</button>
-    </div>`;
+    </div>
+    ${p.unlocked < LEVELS.length ? `<p class="sheet-sub" style="margin:12px 0 0;text-align:center">
+      Klara en hållplats helt utan fel på ${p.tramLevel === 0 ? "Blandat" : "svåraste banan"} så öppnas <b>${levelById(p.unlocked + 1).name}</b>.</p>` : ""}`;
 }
 const tramAt    = (p, ref) => (p.tram && p.tram[ref]) || 0;
 const lineDone  = (p, ref) => tramAt(p, ref) >= lineByRef(ref).stops.length - 1;
@@ -2579,6 +2583,16 @@ function finishRound(){
 function finishTramStop(p, perfect){
   const l = lineByRef(g.tram);
   const at = tramAt(p, g.tram);
+
+  /* Att åka spårvagn ska också föra spelaren framåt: en felfri hållplats på
+     den svåraste banan man har öppen (eller på Blandat) öppnar nästa bana.
+     Annars vore man tvungen att spela Räknelandet för att få svårare tal. */
+  let nyBana = null;
+  const påTopp = p.tramLevel === 0 || p.tramLevel === p.unlocked;
+  if(perfect === g.len && påTopp && p.unlocked < LEVELS.length){
+    p.unlocked += 1;
+    nyBana = levelById(p.unlocked);
+  }
   const nästa = Math.min(at + 1, l.stops.length - 1);
   p.tram = p.tram || {};
   p.tram[g.tram] = nästa;
@@ -2601,6 +2615,7 @@ function finishTramStop(p, perfect){
       <span class="score-chip">Mynt <b>+${g.score}</b></span>
       <span class="score-chip">Skattkista <b>${p.coins}</b></span>
     </div>
+    ${nyBana ? `<span class="unlock-note">Ny bana öppen: ${nyBana.name}!</span>` : ""}
     <button class="btn btn-big" id="rideOnBtn" type="button">Åk vidare!</button>`;
   el("rideOnBtn").addEventListener("click", () => {
     SFX.tap();
@@ -2610,7 +2625,7 @@ function finishTramStop(p, perfect){
   show("result");
   SFX.win();
   confetti(innerWidth / 2, innerHeight * 0.42, 34);
-  speak(`Bra åkt! ${g.score} mynt.`);
+  speak(nyBana ? `Bra åkt! Ny bana öppen: ${nyBana.name}!` : `Bra åkt! ${g.score} mynt.`);
   /* Fira märket här, inte när vagnen rullar in – annars skyms hållplatsen */
   if(nya.length) setTimeout(() => celebrateBadges(nya), 900);
 }
