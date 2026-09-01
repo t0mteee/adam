@@ -18,17 +18,24 @@ const kalla = [
   block(/const rnd  = [\s\S]*?\nfunction shuffle[\s\S]*?\n/, "slumpfunktioner"),
   block(/const REGIONS = \[[\s\S]*?\n\];/, "REGIONS"),
   block(/const LEVELS = \[[\s\S]*?\n\];/, "LEVELS"),
+  block(/const MAX_STARS = [^\n]*\nconst levelById = [^\n]*/, "levelById"),
   block(/const MAKE = \{[\s\S]*?\n\};/, "MAKE"),
   block(/const SHOWN = \{[\s\S]*?\};/, "SHOWN"),
   block(/function arrangeKinds\(kinds\)\{[\s\S]*?\n\}/, "arrangeKinds"),
   block(/function buildRound\(L, count, undvik\)\{[\s\S]*?\n  return out;\n\}/, "buildRound"),
   block(/function makeOptions\(q, n\)\{[\s\S]*?\n\}/, "makeOptions"),
   block(/const qNyckel = [^\n]*/, "qNyckel"),
+  block(/const SKILL_UPP = [^\n]*/, "skill-konstanter"),
+  block(/function skillNu\(p\)\{[\s\S]*?\n\}/, "skillNu"),
+  block(/function justeraSkill\(p, utfall\)\{[\s\S]*?\n\}/, "justeraSkill"),
+  block(/function nivaForSkill\(p\)\{[\s\S]*?\n\}/, "nivaForSkill"),
+  block(/function buildStigandeRound\(p, count, undvik\)\{[\s\S]*?\n  return out;\n\}/, "buildStigandeRound"),
   block(/const TRAM_LINES = \[[\s\S]*?\n\];/, "TRAM_LINES"),
 ].join("\n");
 
 const modul = await import(
   "data:text/javascript;base64," +
-  Buffer.from(kalla + "\nexport { REGIONS, LEVELS, MAKE, SHOWN, buildRound, makeOptions, qNyckel, TRAM_LINES };").toString("base64")
+  Buffer.from(kalla + "\nexport { REGIONS, LEVELS, MAKE, SHOWN, buildRound, makeOptions, qNyckel, TRAM_LINES, skillNu, justeraSkill, nivaForSkill, buildStigandeRound };").toString("base64")
 );
-export const { REGIONS, LEVELS, MAKE, SHOWN, buildRound, makeOptions, qNyckel, TRAM_LINES } = modul;
+export const { REGIONS, LEVELS, MAKE, SHOWN, buildRound, makeOptions, qNyckel, TRAM_LINES,
+  skillNu, justeraSkill, nivaForSkill, buildStigandeRound } = modul;

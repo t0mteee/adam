@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { REGIONS, LEVELS, SHOWN, buildRound, makeOptions, qNyckel, TRAM_LINES } from "./hamta.mjs";
+import { REGIONS, LEVELS, SHOWN, buildRound, makeOptions, qNyckel, TRAM_LINES,
+         justeraSkill, nivaForSkill, buildStigandeRound } from "./hamta.mjs";
 
 const OMGANGAR = 400;
 const talen = (q) => [q.a, q.b, q.c, q.sum, q.count, q.answer].filter(v => v != null);
@@ -104,4 +105,45 @@ test("ingen linje motsäger en annan om hållplatsernas ordning", () => {
     }
   }
   assert.deepEqual(fel, [], fel.join("\n"));
+});
+
+test("stigande svårighet höjs vid rätt och sänks vid fel, inom det upplåsta", () => {
+  const p = { unlocked: 10, skill: 5 };
+  for(let i = 0; i < 5; i++) justeraSkill(p, "ratt");
+  assert.ok(p.skill > 5, "skickligheten steg inte vid rätt svar");
+  const topp = p.skill;
+  for(let i = 0; i < 5; i++) justeraSkill(p, "ned");
+  assert.ok(p.skill < topp, "skickligheten sjönk inte vid fel svar");
+  assert.ok(p.skill >= 1, "skickligheten föll under lägsta banan");
+
+  for(let i = 0; i < 200; i++) justeraSkill(p, "ratt");
+  assert.equal(p.skill, 10, "skickligheten stannade inte vid den svåraste upplåsta banan");
+  for(let i = 0; i < 200; i++) justeraSkill(p, "ned");
+  assert.equal(p.skill, 1, "skickligheten gick under bana ett");
+});
+
+test("stigande drar bara uppgifter från upplåsta banor", () => {
+  for(const unlocked of [1, 3, 7, 12, 19]){
+    const p = { unlocked, skill: unlocked };
+    for(let r = 0; r < 300; r++){
+      const L = nivaForSkill(p);
+      assert.ok(L.id >= 1 && L.id <= unlocked, `nivå ${L.id} utanför 1–${unlocked}`);
+    }
+  }
+});
+
+test("ingen uppgift upprepas inom samma stigande omgång", () => {
+  for(const skill of [2, 5, 7, 9, 14]){
+    const p = { unlocked: 15, skill };
+    for(let r = 0; r < 300; r++){
+      const tidigare = new Set(buildStigandeRound(p, 5).map(qNyckel));
+      const omgang = buildStigandeRound(p, 5, tidigare);
+      const nycklar = omgang.map(qNyckel);
+      assert.equal(new Set(nycklar).size, nycklar.length,
+        `skicklighet ${skill}: dubblett i omgången ${nycklar.join(" | ")}`);
+      for(const q of omgang){
+        assert.ok(q.answer >= 0 && q.opts >= 3, `ogiltig uppgift ${JSON.stringify(q)}`);
+      }
+    }
+  }
 });

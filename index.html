@@ -623,6 +623,19 @@ body.on-tram .world{ display: none; }
   font-size: var(--t-xs); background: var(--paper-2); border: 2px solid var(--ink);
   border-radius: 999px; padding: 3px 9px; white-space: nowrap; font-variant-numeric: tabular-nums;
 }
+/* Hur långt man kommit på linjen, i linjens egen färg */
+.line-bar{
+  display: block; width: 100%; height: 10px; margin-top: 6px;
+  background: #DCD2F2; border: 2.5px solid var(--ink);
+  border-radius: 999px; overflow: hidden;
+}
+.line-bar span{
+  display: block; height: 100%; background: var(--linecol);
+  border-radius: 999px; transition: width .7s cubic-bezier(.3,1.1,.5,1);
+}
+/* Ettan är vit. Utan en kant i bläck syns dess fyllnad inte alls. */
+.line-bar span.pabörjad{ border-right: 3px solid var(--ink); box-sizing: border-box; }
+.line-bar.klar span{ background: var(--grass); }
 .line-prog.klar{ background: var(--grass); color: #fff; }
 
 /* Resans vy */
@@ -1532,7 +1545,14 @@ const SFX = {
   unlock(){ [392, 523.25, 659.25, 880].forEach((f, i) => this.tone(f, i * 0.11, 0.32, "triangle", 0.18)); },
   badge(){ [659.25, 880, 1046.5, 1318.5, 1760].forEach((f, i) => this.tone(f, i * 0.1, 0.34, "triangle", 0.18)); },
   tram(){ this.tone(392, 0, 0.5, "sawtooth", 0.07); this.tone(587.33, 0.06, 0.2, "square", 0.07); this.tone(493.88, 0.26, 0.3, "square", 0.06); },
-  pling(){ this.tone(1174.7, 0, 0.1, "square", 0.11); this.tone(880, 0.1, 0.26, "square", 0.1); }
+  pling(){ this.tone(1174.7, 0, 0.1, "square", 0.11); this.tone(880, 0.1, 0.26, "square", 0.1); },
+  /* Två mjuka toner före hållplatsutropet, som signalen i en spårvagn */
+  utrop(){
+    [[987.77, 0], [739.99, 0.26]].forEach(([f, t]) => {
+      this.tone(f, t, 0.85, "sine", 0.16);
+      this.tone(f * 2, t, 0.5, "sine", 0.05);
+    });
+  }
 };
 
 let svVoice = null;
@@ -1546,6 +1566,22 @@ if(window.speechSynthesis){
   findVoice();
   if(speechSynthesis.addEventListener) speechSynthesis.addEventListener("voiceschanged", findVoice);
 }
+/* Hållplatsutrop läses lugnare och med lägre tonläge än matteuppgifterna,
+   så att det låter mer som ett utrop och mindre som en lekkamrat. */
+function speakUtrop(text){
+  const p = P();
+  if(!window.speechSynthesis || !text || !p || !p.settings.voice) return;
+  try{
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "sv-SE";
+    if(svVoice) u.voice = svVoice;
+    u.rate = Math.max(0.55, RATES[p.settings.rate != null ? p.settings.rate : 1].v - 0.12);
+    u.pitch = 0.95;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+
 function speak(text, force){
   const p = P();
   if(!window.speechSynthesis || !text) return;
@@ -1615,7 +1651,7 @@ function newProfile(name, char){
     name: name, char: char,
     coins: 0, stars: {}, best: {},
     unlocked: 1, badges: [], bestStreak: 0, perfect: 0, rounds: 0,
-    world: "land", tram: {}, tramLine: null, tramLevel: null, tramMode: "choice",
+    world: "land", tram: {}, tramLine: null, tramLevel: -1, tramMode: "choice", skill: null,
     stopsRidden: 0, linesDone: [],
     settings: { sound:true, voice:true, dots:true, rate:1 }
   };
@@ -1939,13 +1975,86 @@ function blandatLevel(p){
   const kinds = [...new Set(kallor.flatMap(L => L.kinds))];
   const bastaRakning = rakning[rakning.length - 1];
   if(tal.length && bastaRakning) kinds.push("count");
+  const max = Math.max(...kallor.map(L => L.max));
   return { id:0, name:"Blandat", desc:"Allt du kan",
-           kinds, max: Math.max(...kallor.map(L => L.max)),
+           kinds, max,
            min: bastaRakning ? (bastaRakning.min || 1) : 1,
            räknaMax: bastaRakning ? bastaRakning.max : 10,
-           lo: 2, opts: 4 };
+           /* Golvet följer med uppåt, så en van spelare slipper 1 + 1 */
+           lo: Math.max(2, Math.floor(max * 0.45)), opts: 4 };
 }
+/* Stigande: spelet håller reda på var barnet ligger med ett flyttal, höjer det
+   vid rätt svar och sänker det vid fel. Uppgifterna dras från nivån runt det
+   talet, så svårigheten stiger av sig själv och backar tillfälligt när det
+   kärvar – tills nivån sitter igen. */
+const SKILL_UPP = 0.2, SKILL_HJALP = -0.15, SKILL_NED = -0.5;
+
+function skillNu(p){
+  const topp = Math.min(p.unlocked || 1, LEVELS.length);
+  return Math.max(1, Math.min(topp, p.skill == null ? topp : p.skill));
+}
+function justeraSkill(p, utfall){
+  const topp = Math.min(p.unlocked || 1, LEVELS.length);
+  const steg = utfall === "ratt" ? SKILL_UPP : utfall === "hjalp" ? SKILL_HJALP : SKILL_NED;
+  p.skill = Math.max(1, Math.min(topp, skillNu(p) + steg));
+}
+function nivaForSkill(p){
+  const topp = Math.min(p.unlocked || 1, LEVELS.length);
+  const s = skillNu(p);
+  const r = Math.random();
+  /* Mestadels den nivå barnet är på, ibland en lättare och ibland en svårare */
+  let id = Math.round(s);
+  if(r < 0.22) id -= 1;
+  else if(r < 0.37) id += 1;
+  return levelById(Math.max(1, Math.min(topp, id))) || LEVELS[0];
+}
+
+function stigandeLevel(p){
+  const nu = levelById(Math.round(skillNu(p))) || LEVELS[0];
+  return { id:-1, name:"Stigande", desc:"Svårare efter hand", nuvarande: nu.name,
+           kinds: nu.kinds, max: nu.max, opts: 4 };
+}
+
+/* En omgång där varje uppgift kan komma från olika nivå.
+   Två uppgifter i samma omgång får aldrig vara lika. Att undvika föregående
+   hållplatsers tal är önskvärt men får ge vika när nivåns förråd är litet –
+   annars skulle till exempel Dubbelt, som bara har tio varianter, ta slut. */
+function buildStigandeRound(p, count, undvik){
+  const out = [];
+  const iRundan = new Set();
+  const tidigare = new Set(undvik || []);
+  for(let i = 0; i < count; i++){
+    let vald = null, reserv = null;
+    for(let t = 0; t < 40; t++){
+      /* Nivån lottas om vid varje försök. Tar en lätt banas förråd slut –
+         "Räkna till 5" har bara fem uppgifter – hittas en färsk på grannivån
+         i stället för att samma tal kommer två gånger. */
+      const L = nivaForSkill(p);
+      const kandidat = MAKE[pick(L.kinds)](L);
+      kandidat.opts = L.opts;
+      const treIRad = out.length >= 2 && out[out.length - 1].kind === kandidat.kind
+                                      && out[out.length - 2].kind === kandidat.kind;
+      if(treIRad) continue;
+      if(!reserv) reserv = kandidat;
+      const nyckel = qNyckel(kandidat);
+      if(iRundan.has(nyckel)) continue;
+      if(t < 22 && tidigare.has(nyckel)) continue;
+      iRundan.add(nyckel);
+      vald = kandidat;
+      break;
+    }
+    if(!vald){
+      const L = nivaForSkill(p);
+      vald = reserv || MAKE[pick(L.kinds)](L);
+      if(!vald.opts) vald.opts = L.opts;
+    }
+    out.push(vald);
+  }
+  return out;
+}
+
 function tramLevelDef(p){
+  if(p.tramLevel === -1) return stigandeLevel(p);
   return p.tramLevel === 0 ? blandatLevel(p) : (levelById(p.tramLevel) || LEVELS[0]);
 }
 
@@ -1953,8 +2062,10 @@ function tramLevelDef(p){
 function talvalHTML(p){
   const oppna = LEVELS.filter(L => L.id <= p.unlocked);
   return `
-    <p class="sheet-sub" style="margin:0 0 7px">Vilka tal vill du räkna?</p>
+    <p class="sheet-sub" style="margin:0 0 7px">Vilka tal vill du räkna?
+      <b>Stigande</b> börjar där du är och blir svårare när det går bra.</p>
     <div class="seg" style="flex-wrap:wrap;margin-bottom:14px">
+      <button type="button" data-tramlevel="-1" aria-pressed="${p.tramLevel === -1}">Stigande</button>
       <button type="button" data-tramlevel="0" aria-pressed="${p.tramLevel === 0}">Blandat</button>
       ${oppna.map(L => `<button type="button" data-tramlevel="${L.id}" aria-pressed="${L.id === p.tramLevel}">${L.name}</button>`).join("")}
     </div>
@@ -1964,7 +2075,7 @@ function talvalHTML(p){
       <button type="button" data-trammode="type" aria-pressed="${p.tramMode === "type"}">Skriv svar</button>
     </div>
     ${p.unlocked < LEVELS.length ? `<p class="sheet-sub" style="margin:12px 0 0;text-align:center">
-      Klara fyra av fem på ${p.tramLevel === 0 ? "Blandat" : "svåraste banan"} så öppnas <b>${levelById(p.unlocked + 1).name}</b>.</p>` : ""}`;
+      Klara fyra av fem på ${p.tramLevel <= 0 ? (p.tramLevel === -1 ? "Stigande" : "Blandat") : "svåraste banan"} så öppnas <b>${levelById(p.unlocked + 1).name}</b>.</p>` : ""}`;
 }
 const tramAt    = (p, ref) => (p.tram && p.tram[ref]) || 0;
 const lineDone  = (p, ref) => tramAt(p, ref) >= lineByRef(ref).stops.length - 1;
@@ -1984,8 +2095,9 @@ function renderLines(){
       <button class="line-row" data-line="${l.ref}" type="button" style="--linecol:${l.col}">
         ${roundel(l)}
         <span style="min-width:0">
-          <span class="line-ends">${l.a} – ${l.b}</span><br>
-          <span class="line-meta">${n} hållplatser${at ? " · du är vid " + l.stops[at] : ""}</span>
+          <span class="line-ends">${l.a} – ${l.b}</span>
+          <span class="line-meta" style="display:block">${n} hållplatser${at ? " · du är vid " + l.stops[at] : ""}</span>
+          <span class="line-bar ${klar ? "klar" : ""}"><span class="${at ? "pabörjad" : ""}" style="width:${Math.round(at / (n - 1) * 100)}%"></span></span>
         </span>
         <span class="line-prog ${klar ? "klar" : ""}">${klar ? "Hela linjen!" : at + "/" + (n - 1)}</span>
       </button>`;
@@ -2028,7 +2140,7 @@ let tripRef = null, tripFrom = null;
 function openTrip(ref, animera){
   const p = P();
   tripRef = ref; p.tramLine = ref;
-  if(p.tramLevel == null) p.tramLevel = 0;
+  if(p.tramLevel == null) p.tramLevel = -1;
   if(!p.tramMode) p.tramMode = "choice";
   if(g.recentLine !== ref){ g.recent = []; g.recentLine = ref; }
   saveProfiles();
@@ -2049,7 +2161,7 @@ function renderTrip(animera, visaBilden){
     <span class="trip-mid">
       <span class="line-ends">mot ${l.b}</span>
       <button class="line-meta" data-trip="level" type="button" style="background:var(--paper-2);border:2px solid var(--ink);border-radius:999px;padding:2px 11px;cursor:pointer;font-family:inherit;color:inherit;white-space:nowrap">
-        ${at + 1}/${n} · ${talnivå.name} · byt
+        ${at + 1}/${n} · ${talnivå.name}${talnivå.nuvarande ? " · " + talnivå.nuvarande : ""} · byt
       </button>
       <span class="trip-bar"><span style="width:${Math.round(at / (n - 1) * 100)}%"></span></span>
     </span>
@@ -2104,7 +2216,8 @@ function rullaFram(till){
   const del = el("route").querySelector(".done-part");
   if(!vagn) return;
   SFX.tram();
-  speak("Nästa hållplats: " + namn);
+  SFX.utrop();
+  later(() => speakUtrop("Nästa hållplats: " + namn), 620);
   vagn.style.top = (till * 52 + 26) + "px";
   if(del) del.style.height = (till * 52) + "px";
   rader.forEach((r, i) => {
@@ -2118,7 +2231,7 @@ function rullaFram(till){
     tripFrom = null;
     SFX.pling();
     confetti(innerWidth / 2, innerHeight * 0.4, till >= l.stops.length - 1 ? 70 : 22);
-    speak(till >= l.stops.length - 1 ? "Ändstation " + namn + "! Hela linjen klar!" : namn);
+    speakUtrop(till >= l.stops.length - 1 ? "Ändstation, " + namn + ". Hela linjen klar!" : namn);
     renderTrip(false, true);
   }, reduceMotion ? 60 : 950);
 }
@@ -2142,7 +2255,8 @@ function openTramLevelSheet(){
 el("stopCard").addEventListener("click", (e) => {
   if(!e.target.closest('[data-trip="say"]')) return;
   const l = lineByRef(tripRef), p = P();
-  speak("Hållplats " + l.stops[tramAt(p, tripRef)], true);
+  SFX.utrop();
+  later(() => speakUtrop("Hållplats " + l.stops[tramAt(p, tripRef)]), 620);
 });
 
 el("goBtn").addEventListener("click", () => {
@@ -2283,7 +2397,7 @@ sheet.addEventListener("click", (e) => {
   const tl = e.target.closest("[data-tramlevel]");
   if(tl){
     p.tramLevel = Number(tl.dataset.tramlevel); saveProfiles(); SFX.tap();
-    speak(p.tramLevel === 0 ? "Blandat" : levelById(p.tramLevel).name);
+    speak(p.tramLevel === -1 ? "Stigande" : p.tramLevel === 0 ? "Blandat" : levelById(p.tramLevel).name);
     g.recent = [];   /* ny svårighet – börja om med färska tal */
     sheet.querySelectorAll("[data-tramlevel]").forEach(b => b.setAttribute("aria-pressed", String(Number(b.dataset.tramlevel) === p.tramLevel)));
     if(el("screen-trip").classList.contains("is-active")) renderTrip(false);
@@ -2354,7 +2468,9 @@ function startRound(niva, mode, tramRef){
   g.len = g.tram ? TRAM_LEN : ROUND_LEN;
   /* På spårvagnen är varje omgång bara fem uppgifter, så vi minns de senaste
      hållplatsernas tal och undviker dem – annars känns frågorna likadana. */
-  g.queue = buildRound(L, g.len, g.tram ? new Set(g.recent) : null);
+  g.queue = (L.id === -1 && g.tram)
+    ? buildStigandeRound(P(), g.len, new Set(g.recent))
+    : buildRound(L, g.len, g.tram ? new Set(g.recent) : null);
   if(g.tram){
     g.queue.forEach(q => g.recent.push(qNyckel(q)));
     g.recent = g.recent.slice(-24);
@@ -2509,7 +2625,7 @@ function makeOptions(q, n){
 
 function renderAnswerArea(){
   if(g.mode === "choice"){
-    const n = g.level.opts;
+    const n = g.q.opts || g.level.opts;
     g.opts = makeOptions(g.q, n);
     answerArea.innerHTML = `<div class="options ${n === 3 ? "three" : ""}">` +
       g.opts.map((v, i) => `<button type="button" class="btn opt c${i}" data-val="${v}">${v}</button>`).join("") + `</div>`;
@@ -2549,6 +2665,7 @@ function answer(value, sourceEl){
     if(firstTry){ g.streak++; g.firstTry++; g.bestStreak = Math.max(g.bestStreak, g.streak); }
     else g.streak = 0;
 
+    if(g.tram && g.level.id === -1) justeraSkill(P(), firstTry ? "ratt" : "hjalp");
     const mult = g.streak >= 6 ? 3 : g.streak >= 3 ? 2 : 1;
     const gain = firstTry ? 10 * mult : 5;
     g.score += gain;
@@ -2585,6 +2702,7 @@ function answer(value, sourceEl){
   if(g.tries >= 3){
     g.locked = true;
     g.results[g.qIndex] = "help";
+    if(g.tram && g.level.id === -1) justeraSkill(P(), "ned");
     /* Skriv in facit där barnet letade efter det – i svarsrutan, på rätt ruta
        och i själva talet – i stället för att bara säga siffran i en bubbla. */
     if(g.mode === "type"){
@@ -2708,7 +2826,7 @@ function finishTramStop(p, perfect){
      den svåraste banan man har öppen (eller på Blandat) öppnar nästa bana.
      Annars vore man tvungen att spela Räknelandet för att få svårare tal. */
   let nyBana = null;
-  const påTopp = p.tramLevel === 0 || p.tramLevel === p.unlocked;
+  const påTopp = p.tramLevel <= 0 || p.tramLevel === p.unlocked;
   if(perfect === g.len) p.tramPerfect = (p.tramPerfect || 0) + 1;
   /* Fyra av fem räcker. Ett enda feltryck ska inte stoppa en fyraåring. */
   if(perfect >= g.len - 1 && påTopp && p.unlocked < LEVELS.length){
@@ -2810,6 +2928,9 @@ if("serviceWorker" in navigator && location.protocol.startsWith("http")
     p.coins = p.coins || 0; p.unlocked = p.unlocked || 1;
     p.tram = p.tram || {}; p.world = p.world || "land";
     p.tramMode = p.tramMode || "choice"; p.stopsRidden = p.stopsRidden || 0;
+    /* Stigande är nytt standardläge. Flytta över den som aldrig valt själv,
+       en enda gång, så ett medvetet val av Blandat får stå kvar sedan. */
+    if(!p.stigandeFlytt){ if(p.tramLevel == null || p.tramLevel === 0) p.tramLevel = -1; p.stigandeFlytt = true; }
     p.linesDone = p.linesDone || [];
     p.settings = Object.assign({ sound:true, voice:true, dots:true, rate:1 }, p.settings || {});
   });
