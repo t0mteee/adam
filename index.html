@@ -680,7 +680,71 @@ body.on-tram .world{ display: none; }
 .world-switch button:focus-visible{ outline: 3px dashed var(--grape); outline-offset: 2px; }
 
 /* Linjeväljaren – uppställd som en linjekarta */
+/* Startskärmen i spårvagnsvärlden */
+.start-rubrik{ font-family: "Baloo 2", system-ui, sans-serif; font-size: var(--t-lg); margin: 18px 0 8px; }
+.fortsatt{
+  display: grid; grid-template-columns: 96px 1fr auto; align-items: center; gap: 12px;
+  width: 100%; padding: 10px; background: var(--paper); border: var(--stroke); border-radius: 22px;
+  box-shadow: var(--lift); cursor: pointer; font-family: inherit; color: inherit; text-align: left;
+}
+.fortsatt img, .fortsatt .scen-mini{ width: 96px; height: 64px; object-fit: cover; border-radius: 14px; border: 2.5px solid var(--ink); display: block; }
+.fortsatt .scen-mini svg{ width: 100%; height: 100%; display: block; }
+.fortsatt b{ font-family: "Baloo 2", system-ui, sans-serif; font-size: var(--t-md); display: block; line-height: 1.1; }
+.fortsatt small{ font-size: var(--t-xs); color: var(--ink-2); display: block; margin-top: 2px; }
+.linjechips{ display: flex; gap: 7px; overflow-x: auto; padding: 4px 2px 10px; scrollbar-width: none; }
+.linjechips::-webkit-scrollbar{ display: none; }
+.linjechips button{
+  flex: none; border: 2.5px solid var(--ink); border-radius: 999px; padding: 5px 13px;
+  background: var(--paper); font-family: inherit; font-weight: 800; font-size: var(--t-sm);
+  color: var(--ink); cursor: pointer;
+}
+.linjechips button[aria-pressed="true"]{ background: var(--sun); box-shadow: 0 3px 0 var(--ink); }
+.linjechips .roundel.sm{ width: 36px; height: 36px; padding: 0; }
+.linjechips .roundel.sm[aria-pressed="true"]{ box-shadow: 0 0 0 3px var(--sun); }
+.stoppgrid{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+@media (min-width: 520px){ .stoppgrid{ grid-template-columns: repeat(3, 1fr); } }
+.stopp-tile{
+  padding: 0; background: var(--paper); border: var(--stroke); border-radius: 18px; overflow: hidden;
+  box-shadow: var(--lift-sm); cursor: pointer; font-family: inherit; color: inherit; text-align: left;
+  transition: transform .09s ease, box-shadow .09s ease;
+}
+.stopp-tile:active{ transform: translateY(4px); box-shadow: 0 0 0 var(--ink); }
+.stopp-tile img, .stopp-tile .scen-mini{ display: block; width: 100%; aspect-ratio: 32 / 15; object-fit: cover; border-bottom: 2.5px solid var(--ink); background: #CDEBFB; }
+.stopp-tile .scen-mini svg{ width: 100%; height: 100%; display: block; }
+.stopp-tile span{ display: block; padding: 7px 10px 9px; font-weight: 800; font-size: var(--t-sm); line-height: 1.15; }
+.stopp-tile .linjer{ display: flex; gap: 3px; padding: 0 10px 9px; }
+.stopp-tile .linjer i{
+  font-style: normal; font-size: 10px; font-weight: 800; width: 20px; height: 20px; border-radius: 50%;
+  display: grid; place-items: center; border: 2px solid var(--ink);
+}
+.mina-linjer{ display: grid; gap: 7px; }
+.mina-linjer .line-row{ cursor: default; }
 .line-list{ display: grid; gap: 9px; }
+/* Perrongen: vagnarna man kan stiga på */
+.perrong{ display: grid; gap: 10px; max-height: 52vh; overflow-y: auto; padding: 4px 2px; }
+.avgang{
+  display: grid; grid-template-columns: 64px 1fr auto; align-items: center; gap: 12px;
+  padding: 8px 12px 8px 8px; background: var(--paper-2); border: var(--stroke); border-radius: 20px;
+  box-shadow: var(--lift-sm); cursor: pointer; font-family: inherit; color: inherit; text-align: left;
+}
+.avgang:active{ transform: translateY(3px); box-shadow: 0 0 0 var(--ink); }
+.avgang .vagn{ width: 64px; }
+.avgang .vagn svg{ width: 100%; height: auto; display: block; }
+.avgang .skylt{
+  display: inline-block; font-family: "Baloo 2", system-ui, sans-serif; font-weight: 800; font-size: var(--t-md);
+  line-height: 1.1;
+}
+.avgang small{ display: block; font-size: var(--t-xs); color: var(--ink-2); margin-top: 2px; }
+.avgang .pil{ font-size: 1.6rem; line-height: 1; }
+.trip-knappar{ display: flex; gap: 8px; margin-bottom: 14px; }
+.trip-knappar .btn{ flex: 1; padding: 11px 8px; font-size: var(--t-sm); background: var(--paper-2); }
+/* Kartans zoomknapp */
+.nat-zoom{
+  position: absolute; right: 10px; top: 10px; z-index: 3;
+  border: 2.5px solid var(--ink); border-radius: 999px; padding: 6px 12px;
+  background: var(--paper); font-family: inherit; font-weight: 800; font-size: var(--t-xs);
+  color: var(--ink); cursor: pointer; box-shadow: 0 3px 0 var(--ink);
+}
 .line-row{
   display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px;
   background: var(--paper); border: var(--stroke); border-radius: 20px;
@@ -980,7 +1044,7 @@ body.on-tram .world{ display: none; }
 
   <!-- ── SPÅRVAGN: VÄLJ LINJE ───────────── -->
   <section id="screen-lines" class="screen">
-    <div class="line-list" id="lineList"></div>
+    <div id="startTram"></div>
     <p class="footnote" id="tramCredit"></p>
   </section>
 
@@ -989,6 +1053,10 @@ body.on-tram .world{ display: none; }
     <div class="trip-head" id="tripHead"></div>
     <div id="stopCard"></div>
     <div class="natkarta" id="natkarta" aria-label="Spårvagnskarta"></div>
+    <div class="trip-knappar">
+      <button class="btn" data-trip="byt" type="button">Byt vagn eller riktning</button>
+      <button class="btn" data-trip="av" type="button">Hoppa av</button>
+    </div>
     <details class="alla-stopp" id="allaStopp">
       <summary>Alla hållplatser på linjen</summary>
       <div class="route" id="route"></div>
@@ -1064,7 +1132,7 @@ const pick = (arr) => arr[rnd(arr.length)];
 const INK = "#2E1A66";
 /* Syns under Inställningar, så man kan se vilken version telefonen kör.
    Höjs tillsammans med VERSION i sw.js. */
-const SPELVERSION = "10";
+const SPELVERSION = "11";
 function shuffle(a){ for(let i = a.length - 1; i > 0; i--){ const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
 function store(key, val){
@@ -2608,61 +2676,129 @@ function talvalHTML(p){
     ${nasta ? `<p class="sheet-sub" style="margin:12px 0 0;text-align:center">
       Klara fyra av fem på ${vald === -1 ? "Stigande" : vald === 0 ? "Blandat" : spelad.name} så öppnas <b>${nasta.name}</b>.</p>` : ""}`;
 }
-const tramAt    = (p, ref) => (p.tram && p.tram[ref]) || 0;
-const lineDone  = (p, ref) => tramAt(p, ref) >= lineByRef(ref).stops.length - 1;
-
+/* ── Spårvagnen: ett eget äventyr ────────────────────────────────────────
+   Spelaren står på en hållplats, väljer vagn och riktning, åker en hållplats
+   i taget och kan byta vagn, vända eller hoppa av var som helst. Resan sparas
+   som p.resa = { pos, ref, rikt } och åkta hållplatser per linje i p.besokta. */
 function roundel(l, cls){
   const text = ljusFarg(l.col) ? INK : "#FFFDF7";
   return `<span class="roundel ${cls || ""}" style="background:${l.col};color:${text}">${l.ref}</span>`;
 }
+const linjerVid = (namn) => TRAM_LINES.filter(l => l.stops.includes(namn));
+const besoktaPa = (p, ref) => (p.besokta && p.besokta[ref]) || [];
+function linjeKlar(p, ref){
+  const l = lineByRef(ref), b = new Set(besoktaPa(p, ref));
+  return !!l && l.stops.every(x => b.has(x));
+}
+const riktOrdning = (l, rikt) => rikt === 1 ? l.stops : l.stops.slice().reverse();
+/* Avgångar från en hållplats: varje linje åt de håll som inte tagit slut */
+function avgangar(namn){
+  const ut = [];
+  for(const l of linjerVid(namn)){
+    const i = l.stops.indexOf(namn);
+    if(i < l.stops.length - 1) ut.push({ ref:l.ref, rikt:1,  mot:l.b, nasta:l.stops[i + 1], kvar:l.stops.length - 1 - i });
+    if(i > 0)                  ut.push({ ref:l.ref, rikt:-1, mot:l.a, nasta:l.stops[i - 1], kvar:i });
+  }
+  return ut;
+}
+/* De hållplatser som är ändstation för någon linje – bra ställen att börja */
+const ANDSTATIONER = [...new Set(TRAM_LINES.flatMap(l => [l.stops[0], l.stops[l.stops.length - 1]]))];
 
-/* ── Välj linje ─────────────────────────── */
-function renderLines(){
-  const p = P();
-  renderHeader();
-  el("lineList").innerHTML = TRAM_LINES.map(l => {
-    const at = tramAt(p, l.ref), n = l.stops.length, klar = at >= n - 1;
-    return `
-      <button class="line-row" data-line="${l.ref}" type="button" style="--linecol:${l.col}">
-        ${roundel(l)}
-        <span style="min-width:0">
-          <span class="line-ends">${l.a} – ${l.b}</span>
-          <span class="line-meta" style="display:block">${n} hållplatser${at ? " · du är vid " + l.stops[at] : ""}</span>
-          <span class="line-bar ${klar ? "klar" : ""}"><span class="${at ? "pabörjad" : ""}" style="width:${Math.round(at / (n - 1) * 100)}%"></span></span>
-        </span>
-        <span class="line-prog ${klar ? "klar" : ""}">${klar ? "Hela linjen!" : at + "/" + (n - 1)}</span>
-      </button>`;
-  }).join("");
-  el("tramCredit").innerHTML = "Hållplatser och linjefärger från OpenStreetMap (© OpenStreetMap-bidragsgivare)";
+function stoppBildHTML(namn, cls){
+  const eget = fotonAv ? null : STOP_PHOTOS[namn];
+  const foto = eget || (fotonAv ? null : vagnFoto(namn));
+  return foto ? `<img class="${cls || ""}" loading="lazy" src="${fotoSrc(foto)}" alt="">`
+              : `<span class="scen-mini">${sceneSVG(namn)}</span>`;
 }
 
-el("lineList").addEventListener("click", (e) => {
-  const b = e.target.closest("[data-line]"); if(!b) return;
-  SFX.tap();
-  openLineSheet(lineByRef(b.dataset.line));
+let startFilter = "and";   /* "and" = ändstationer, "alla", eller ett linjenummer */
+
+function renderStart(){
+  const p = P();
+  renderHeader();
+  const r = p.resa && lineByRef(p.resa.ref) ? p.resa : null;
+  const rl = r ? lineByRef(r.ref) : null;
+  const urval = startFilter === "alla" ? Object.keys(STOP_XY).sort((a, b) => a.localeCompare(b, "sv"))
+              : startFilter === "and" ? ANDSTATIONER.slice().sort((a, b) => a.localeCompare(b, "sv"))
+              : (lineByRef(startFilter) || TRAM_LINES[0]).stops;
+  el("startTram").innerHTML = `
+    ${r ? `<button class="fortsatt" data-fortsatt type="button">
+        ${stoppBildHTML(r.pos)}
+        <span style="min-width:0"><b>Fortsätt från ${r.pos}</b><small>Linje ${r.ref} mot ${r.rikt === 1 ? rl.b : rl.a}</small></span>
+        ${roundel(rl)}
+      </button>` : ""}
+    <h2 class="start-rubrik">${r ? "Eller börja någon annanstans" : "Var vill du börja?"}</h2>
+    <div class="linjechips">
+      <button type="button" data-filter="and" aria-pressed="${startFilter === "and"}">Ändstationer</button>
+      <button type="button" data-filter="alla" aria-pressed="${startFilter === "alla"}">Alla</button>
+      ${TRAM_LINES.map(l => `<button type="button" class="roundel sm" data-filter="${l.ref}" aria-pressed="${startFilter === l.ref}"
+        style="background:${l.col};color:${ljusFarg(l.col) ? INK : "#FFFDF7"}">${l.ref}</button>`).join("")}
+    </div>
+    <div class="stoppgrid">
+      ${urval.map(namn => `<button class="stopp-tile" data-stopp="${namn}" type="button">
+          ${stoppBildHTML(namn)}
+          <span>${namn}</span>
+          <span class="linjer" style="padding-top:0">${linjerVid(namn).map(l => `<i style="background:${l.col};color:${ljusFarg(l.col) ? INK : "#FFFDF7"}">${l.ref}</i>`).join("")}</span>
+        </button>`).join("")}
+    </div>
+    <h2 class="start-rubrik">Mina linjer</h2>
+    <div class="mina-linjer">
+      ${TRAM_LINES.map(l => {
+        const n = l.stops.length, b = besoktaPa(p, l.ref).length, klar = linjeKlar(p, l.ref);
+        return `<div class="line-row" style="--linecol:${l.col}">
+          ${roundel(l)}
+          <span style="min-width:0">
+            <span class="line-ends">${l.a} – ${l.b}</span>
+            <span class="line-meta" style="display:block">${n} hållplatser</span>
+            <span class="line-bar ${klar ? "klar" : ""}"><span class="${b ? "pabörjad" : ""}" style="width:${Math.round(b / n * 100)}%"></span></span>
+          </span>
+          <span class="line-prog ${klar ? "klar" : ""}">${klar ? "Hela linjen!" : b + "/" + n}</span>
+        </div>`; }).join("")}
+    </div>`;
+  el("tramCredit").innerHTML = "Hållplatser, linjefärger och lägen från OpenStreetMap (© OpenStreetMap-bidragsgivare)";
+}
+
+el("startTram").addEventListener("click", (e) => {
+  const f = e.target.closest("[data-filter]");
+  if(f){ SFX.tap(); startFilter = f.dataset.filter; renderStart(); return; }
+  const fort = e.target.closest("[data-fortsatt]");
+  if(fort){ SFX.ensure(); SFX.tap(); openTrip(false); return; }
+  const t = e.target.closest("[data-stopp]");
+  if(t){ SFX.ensure(); SFX.tap(); openPerrong(t.dataset.stopp); }
 });
 
-function openLineSheet(l){
+/* Perrongen: vagnarna som går från hållplatsen, en per linje och håll */
+function openPerrong(namn, andstation){
   const p = P();
-  if(p.tramLevel == null) p.tramLevel = 0;
-  const at = tramAt(p, l.ref), n = l.stops.length, klar = at >= n - 1;
+  const val = avgangar(namn);
   openSheet(`
     <div class="sheet-head">
-      <div>
-        <h2>Linje ${l.ref}</h2>
-        <p class="sheet-sub">${l.a} – ${l.b} · ${n} hållplatser</p>
-      </div>
+      <div><h2>${namn}</h2><p class="sheet-sub">${andstation ? "Ändstation! Vilken vagn tar du nu?" : "Vilken vagn vill du åka med?"}</p></div>
       ${CLOSE_BTN}
     </div>
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
-      ${roundel(l, "lg")}
-      <span class="sheet-sub" style="margin:0">${klar ? "Hela linjen är åkt! Du börjar om från " + l.stops[0] + "."
-        : at ? "Du står vid " + l.stops[at] + ", " + (n - 1 - at) + " hållplatser kvar."
-             : "Resan börjar vid " + l.stops[0] + "."}</span>
+    <div class="perrong">
+      ${val.map(a => { const l = lineByRef(a.ref); return `
+        <button class="avgang" data-stig="${a.ref}|${a.rikt}|${namn}" type="button" style="--linecol:${l.col}">
+          <span class="vagn">${tramSVG(l.col, l.ref)}</span>
+          <span style="min-width:0"><span class="skylt">mot ${a.mot}</span><small>Nästa: ${a.nasta} · ${a.kvar} hållplats${a.kvar === 1 ? "" : "er"} kvar</small></span>
+          <span class="pil">${a.rikt === 1 ? "→" : "←"}</span>
+        </button>`; }).join("")}
     </div>
-    ${talvalHTML(p)}
-    <button class="btn btn-big" data-startline="${l.ref}" type="button" style="margin-top:16px">Åk!</button>`);
-  speak(`Linje ${l.ref}, mot ${l.b}`);
+    <p class="sheet-sub" style="margin:12px 0 0">Vilka tal du räknar väljer du med <b>byt</b> uppe i resan.</p>`);
+  speakUtrop(namn + (andstation ? ". Ändstation." : ""));
+}
+
+function stigPa(ref, rikt, pos){
+  const p = P();
+  p.resa = { pos, ref, rikt };
+  p.besokta = p.besokta || {};
+  if(!besoktaPa(p, ref).includes(pos)) p.besokta[ref] = besoktaPa(p, ref).concat(pos);
+  if(g.recentLine !== ref){ g.recent = []; g.recentLine = ref; }
+  saveProfiles();
+  const l = lineByRef(ref);
+  SFX.tram();
+  later(() => speakUtrop(`Linje ${ref}, mot ${rikt === 1 ? l.b : l.a}`), 300);
+  openTrip(false);
 }
 
 /* ── Nätkartan ──────────────────────────────────────────────────────────
@@ -2851,9 +2987,12 @@ function natFonster(l, i){
 }
 const viewBoxStr = (f) => `${f.x.toFixed(1)} ${f.y.toFixed(1)} ${f.w.toFixed(1)} ${f.h.toFixed(1)}`;
 
-function natkartaSVG(l, at){
-  const f = natFonster(l, at);
+const HELA_NATET = { x: 20, y: 15, w: 1030, h: 1030 };
+function natkartaSVG(l, at, o){
+  o = o || {};
+  const f = o.utzoomad ? HELA_NATET : natFonster(l, at);
   const skala = f.w / 260;                     /* 1 vid normalt fönster */
+  const besokta = o.besokta || new Set();
   const stopp = new Set(l.stops);
   const andra = TRAM_LINES.filter(x => x.ref !== l.ref);
   let html = "";
@@ -2871,8 +3010,8 @@ function natkartaSVG(l, at){
   l.stops.forEach((namn, i) => {
     const P = STOP_XY[namn]; if(!P) return;
     if(i === at) return;
-    const akt = i < at;
-    html += `<circle class="nat-stopp" data-stopp="${i}" cx="${P[0]}" cy="${P[1]}" r="${(6 * skala).toFixed(1)}"
+    const akt = besokta.has(namn);
+    html += `<circle class="nat-stopp" data-stopp="${i}" cx="${P[0]}" cy="${P[1]}" r="${((o.utzoomad ? 4 : 6) * skala).toFixed(1)}"
       fill="${akt ? INK : "#FFFDF7"}" stroke="${INK}" stroke-width="${(2.6 * skala).toFixed(1)}"/>`;
   });
   /* Namn på hållplatsen, grannarna och ändstationerna. Varje namn prövar
@@ -2880,9 +3019,11 @@ function natkartaSVG(l, at){
      krockar med ett annat namn eller en hållplatsring; hittas inget hoppas
      namnet över. Den egna hållplatsen läggs alltid först, ovanför ringen. */
   const upptaget = [];
-  const krockar = (b) => upptaget.some(u => b.x < u.x + u.w && b.x + b.w > u.x && b.y < u.y + u.h && b.y + b.h > u.y);
+  /* Ett namn får varken krocka med ett annat eller sticka utanför fönstret */
+  const krockar = (b) => b.x < f.x || b.x + b.w > f.x + f.w || b.y < f.y || b.y + b.h > f.y + f.h
+    || upptaget.some(u => b.x < u.x + u.w && b.x + b.w > u.x && b.y < u.y + u.h && b.y + b.h > u.y);
   l.stops.forEach((namn, i) => { const P = STOP_XY[namn]; if(P) upptaget.push({ x:P[0] - 7 * skala, y:P[1] - 7 * skala, w:14 * skala, h:14 * skala }); });
-  const ordning = [at, at - 1, at + 1, 0, l.stops.length - 1, at - 2, at + 2]
+  const ordning = (o.utzoomad ? [at, 0, l.stops.length - 1] : [at, at - 1, at + 1, 0, l.stops.length - 1, at - 2, at + 2])
     .filter((i, k, arr) => i >= 0 && i < l.stops.length && arr.indexOf(i) === k);
   ordning.forEach(i => {
     const P = STOP_XY[l.stops[i]]; if(!P) return;
@@ -2910,7 +3051,8 @@ function natkartaSVG(l, at){
     <text font-size="${(11 * skala).toFixed(1)}" fill="${text}">${l.ref}</text></g>
   </g>`;
   return `<svg viewBox="${viewBoxStr(f)}" xmlns="http://www.w3.org/2000/svg" id="natSvg" role="img" aria-label="Linje ${l.ref} vid ${l.stops[at]}">${html}</svg>
-    <span class="nat-hint">Tryck på en hållplats så säger jag namnet</span>`;
+    <button class="nat-zoom" type="button">${o.utzoomad ? "Zooma in" : "Hela nätet"}</button>
+    <span class="nat-hint">${o.utzoomad ? "Tryck på kartan för att zooma in" : "Tryck på kartan för hela nätet"}</span>`;
 }
 
 /* Vagnen rullar från en hållplats till nästa och kartan följer med */
@@ -2934,24 +3076,25 @@ function animeraNatkarta(l, fran, till, ms){
 }
 
 /* ── Resan längs linjen ─────────────────── */
-let tripRef = null, tripFrom = null;
+let tripRef = null, tripFrom = null;   /* tripFrom: index i linjen man just lämnade */
+let natUtzoomad = false;
 /* Kan bilderna inte hämtas alls – i en visare där bildmappen saknas – slutar vi
    be om dem. Ett enstaka misslyckande räcker inte som bevis: då kan det lika
    gärna vara en lucka i nätet, och resten av resan ska inte bli utan foton. */
 let fotoMissar = 0, fotonAv = false;
-
 /* Bilderna ligger som filer bredvid spelet. Bakas de in i stället (se
    verktyg/bygg-fristaende.py) ligger de redan i FOTO_DATA. */
 function fotoSrc(foto){
   return FOTO_DATA[foto.f] || "./bilder/" + foto.f + ".jpg";
 }
 
-function openTrip(ref, animera){
+function openTrip(animera){
   const p = P();
-  tripRef = ref; p.tramLine = ref;
+  if(!p.resa || !lineByRef(p.resa.ref)){ renderStart(); show("lines"); return; }
+  tripRef = p.resa.ref;
   if(p.tramLevel == null) p.tramLevel = -1;
   if(!p.tramMode) p.tramMode = "choice";
-  if(g.recentLine !== ref){ g.recent = []; g.recentLine = ref; }
+  if(g.recentLine !== tripRef){ g.recent = []; g.recentLine = tripRef; }
   saveProfiles();
   /* Skärmen först: show() rensar fördröjda händelser, och renderTrip lägger
      upp både fotots övergång och autoscrollen som sådana. */
@@ -2975,39 +3118,51 @@ function visaFoto(på){
   }
 }
 
+/* Var i linjen resan står: index i linjen, index i färdriktningen, om det är slut */
+function resLage(p){
+  const l = lineByRef(p.resa.ref), rikt = p.resa.rikt;
+  const at = Math.max(0, l.stops.indexOf(p.resa.pos));
+  const ordn = riktOrdning(l, rikt), k = ordn.indexOf(l.stops[at]);
+  const slut = k >= ordn.length - 1;
+  return { l, rikt, at, ordn, k, slut, mot: rikt === 1 ? l.b : l.a, nasta: slut ? null : ordn[k + 1] };
+}
+
 function renderTrip(animera, visaBilden){
-  const p = P(), l = lineByRef(tripRef);
-  const at = tramAt(p, tripRef), n = l.stops.length, klar = at >= n - 1;
+  const p = P();
+  const { l, rikt, at, ordn, k, slut, mot, nasta } = resLage(p);
+  const n = ordn.length;
   const talnivå = tramLevelDef(p);
+  const besokta = new Set(besoktaPa(p, l.ref));
 
   el("tripHead").style.setProperty("--linecol", l.col);
   el("tripHead").innerHTML = `
-    <button class="icon-btn" data-trip="back" type="button" aria-label="Tillbaka till linjerna">
+    <button class="icon-btn" data-trip="back" type="button" aria-label="Hoppa av och välj hållplats">
       <svg viewBox="0 0 24 24" fill="none" stroke="#2E1A66" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-8 7 8 7"/></svg>
     </button>
     <span class="trip-mid">
-      <span class="line-ends">mot ${l.b}</span>
+      <span class="line-ends">mot ${mot}</span>
       <button class="line-meta" data-trip="level" type="button" style="background:var(--paper-2);border:2px solid var(--ink);border-radius:999px;padding:2px 11px;cursor:pointer;font-family:inherit;color:inherit;white-space:nowrap">
-        ${at + 1}/${n} · ${talnivå.name}${talnivå.nuvarande ? " · " + talnivå.nuvarande : ""} · byt
+        ${k + 1}/${n} · ${talnivå.name}${talnivå.nuvarande ? " · " + talnivå.nuvarande : ""} · byt
       </button>
-      <span class="trip-bar"><span style="width:${Math.round(at / (n - 1) * 100)}%"></span></span>
+      <span class="trip-bar"><span style="width:${Math.round(k / (n - 1) * 100)}%"></span></span>
     </span>
     ${roundel(l)}`;
 
-  const egetFoto = fotonAv ? null : STOP_PHOTOS[l.stops[at]];
-  const foto = egetFoto || (fotonAv ? null : vagnFoto(l.stops[at]));
-  const altText = egetFoto ? "Foto på hållplatsen " + l.stops[at] : "En spårvagn i Göteborg";
+  const namn = l.stops[at];
+  const egetFoto = fotonAv ? null : STOP_PHOTOS[namn];
+  const foto = egetFoto || (fotonAv ? null : vagnFoto(namn));
+  const altText = egetFoto ? "Foto på hållplatsen " + namn : "En spårvagn i Göteborg";
   el("stopCard").innerHTML = `
     <div class="stop-card">
       <div class="scen-wrap${foto ? " har-foto" : ""}">
-        ${sceneSVG(l.stops[at])}
+        ${sceneSVG(namn)}
         ${foto ? `<img class="foto" id="stopFoto" src="${fotoSrc(foto)}" alt="${altText}">` : ""}
       </div>
       ${foto ? `<p class="foto-kred" id="stopKred">${egetFoto ? "" : "Spårvagn i Göteborg · "}Foto: ${foto.by || "okänd"} · ${foto.lic} · Wikimedia Commons</p>` : ""}
       <div class="stop-info">
         <span style="min-width:0">
-          <span class="stop-name" id="stopName">${l.stops[at]}</span><br>
-          <span class="stop-sub">${at === 0 ? "Ändstation – här börjar resan" : klar ? "Ändstation – hela linjen klar!" : "Du är här"}</span>
+          <span class="stop-name" id="stopName">${namn}</span><br>
+          <span class="stop-sub">${slut ? "Ändstation – byt vagn eller vänd" : k === 0 ? "Här börjar resan" : "Du är här"}</span>
         </span>
         <span class="stop-knappar">
         ${foto ? `<button class="icon-btn foto-knapp på" data-trip="foto" type="button" aria-label="Visa den tecknade bilden" title="Visa den tecknade bilden" aria-pressed="true">
@@ -3020,20 +3175,20 @@ function renderTrip(animera, visaBilden){
       </div>
     </div>`;
 
-  const visaFrån = animera && tripFrom != null ? tripFrom : at;
-  el("natkarta").innerHTML = natkartaSVG(l, visaFrån);
+  /* Rullar vagnen in ritas allt som det såg ut vid förra hållplatsen först */
+  const visaAt = animera && tripFrom != null ? tripFrom : at;
+  const visaK = ordn.indexOf(l.stops[visaAt]);
+  el("natkarta").innerHTML = natkartaSVG(l, visaAt, { besokta, utzoomad: natUtzoomad, rikt });
   el("route").style.setProperty("--linecol", l.col);
   el("route").innerHTML =
-    `<div class="route-line"><div class="done-part" style="height:${visaFrån * 52}px"></div></div>` +
-    l.stops.map((namn, i) => `
-      <div class="stop-row ${i < visaFrån ? "done" : ""} ${i === visaFrån ? "här" : ""}" data-stop="${i}">
+    `<div class="route-line"><div class="done-part" style="height:${visaK * 52}px"></div></div>` +
+    ordn.map((x, i) => `
+      <div class="stop-row ${besokta.has(x) && i !== visaK ? "done" : ""} ${i === visaK ? "här" : ""}" data-stop="${i}">
         <span class="stop-dot"></span>
-        <span class="stop-label">${namn}${i === 0 || i === n - 1 ? '<span class="stop-tag">Ändstation</span>' : ""}</span>
+        <span class="stop-label">${x}${i === 0 || i === n - 1 ? '<span class="stop-tag">Ändstation</span>' : ""}</span>
       </div>`).join("") +
-    `<div class="tram-marker ${animera ? "rullar" : ""}" id="tramMarker" style="top:${visaFrån * 52 + 26}px">${tramSVG(l.col, l.ref)}</div>`;
+    `<div class="tram-marker ${animera ? "rullar" : ""}" id="tramMarker" style="top:${visaK * 52 + 26}px">${tramSVG(l.col, l.ref)}</div>`;
 
-  /* Fotot är hållplatsen som den ser ut på riktigt, så det får stå kvar.
-     Teckningen är alternativet man växlar till med kameraknappen. */
   const fotoEl = el("stopFoto");
   if(fotoEl){
     fotoEl.addEventListener("error", () => {
@@ -3044,20 +3199,19 @@ function renderTrip(animera, visaBilden){
     }, { once: true });
   }
   /* Hämta nästa hållplats bild i förväg, så den är på plats vid framkomsten */
-  if(!fotonAv && at + 1 < n){
-    const nästaFoto = STOP_PHOTOS[l.stops[at + 1]] || vagnFoto(l.stops[at + 1]);
+  if(!fotonAv && nasta){
+    const nästaFoto = STOP_PHOTOS[nasta] || vagnFoto(nasta);
     if(nästaFoto) new Image().src = fotoSrc(nästaFoto);
   }
 
-  el("goBtn").className = "btn go-btn" + (klar ? " done" : "");
-  el("goBtn").textContent = klar ? "Åk hela linjen igen!" : "Åk till " + l.stops[at + 1] + "!";
+  el("goBtn").className = "btn go-btn" + (slut ? " done" : "");
+  el("goBtn").textContent = slut ? "Ändstation – välj ny vagn!" : "Åk till " + nasta + "!";
 
   if(animera && tripFrom != null && tripFrom !== at){
     requestAnimationFrame(() => later(() => rullaFram(at), 60));
   }else{
     tripFrom = null;
     if(visaBilden){
-      /* Nyss framme: bilden på hållplatsen är belöningen, visa den */
       window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
     }else if(el("allaStopp").open){
       const rad = el("route").querySelector(".stop-row.här");
@@ -3068,38 +3222,46 @@ function renderTrip(animera, visaBilden){
 
 /* Spårvagnen rullar fram till nästa hållplats */
 function rullaFram(till){
-  const l = lineByRef(tripRef), namn = l.stops[till];
+  const p = P(), { l, ordn } = resLage(p), namn = l.stops[till];
+  const k = ordn.indexOf(namn), fran = tripFrom;
   const vagn = el("tramMarker"), rader = el("route").querySelectorAll(".stop-row");
   const del = el("route").querySelector(".done-part");
   if(!vagn) return;
   SFX.tram();
   SFX.utrop();
   later(() => speakUtrop("Nästa hållplats: " + namn), 620);
-  vagn.style.top = (till * 52 + 26) + "px";
-  if(del) del.style.height = (till * 52) + "px";
+  vagn.style.top = (k * 52 + 26) + "px";
+  if(del) del.style.height = (k * 52) + "px";
   rader.forEach((r, i) => {
-    r.classList.toggle("done", i < till);
-    r.classList.toggle("här", i === till);
+    r.classList.toggle("done", i < k || r.classList.contains("done"));
+    r.classList.toggle("här", i === k);
   });
-  if(!reduceMotion) animeraNatkarta(l, till - 1, till, 900);
-  /* Kartan är det man tittar på när vagnen rullar */
+  if(!reduceMotion && fran != null) animeraNatkarta(l, fran, till, 900);
   el("natkarta").scrollIntoView({ block: "center", behavior: reduceMotion ? "auto" : "smooth" });
-  const rad = rader[till];
+  const rad = rader[k];
   if(rad && el("allaStopp").open) rad.scrollIntoView({ block: "center", behavior: reduceMotion ? "auto" : "smooth" });
   later(() => {
     vagn.classList.remove("rullar");
     tripFrom = null;
     SFX.pling();
-    confetti(innerWidth / 2, innerHeight * 0.4, till >= l.stops.length - 1 ? 70 : 22);
-    speakUtrop(till >= l.stops.length - 1 ? "Ändstation, " + namn + ". Hela linjen klar!" : namn);
+    const slut = k >= ordn.length - 1;
+    confetti(innerWidth / 2, innerHeight * 0.4, slut ? 70 : 22);
+    speakUtrop(slut ? "Ändstation, " + namn + "." : namn);
     renderTrip(false, true);
   }, reduceMotion ? 60 : 950);
 }
 
 el("tripHead").addEventListener("click", (e) => {
   const b = e.target.closest("[data-trip]"); if(!b) return;
-  if(b.dataset.trip === "back"){ SFX.tap(); renderLines(); show("lines"); }
+  if(b.dataset.trip === "back"){ SFX.tap(); renderStart(); show("lines"); }
   if(b.dataset.trip === "level"){ SFX.tap(); openTramLevelSheet(); }
+});
+document.querySelector(".trip-knappar").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-trip]"); if(!b) return;
+  const p = P();
+  SFX.tap();
+  if(b.dataset.trip === "byt") openPerrong(p.resa.pos, false);
+  if(b.dataset.trip === "av"){ renderStart(); show("lines"); }
 });
 
 /* Vilka tal ska man räkna under resan? */
@@ -3121,26 +3283,51 @@ el("stopCard").addEventListener("click", (e) => {
     return;
   }
   if(!e.target.closest('[data-trip="say"]')) return;
-  const l = lineByRef(tripRef), p = P();
+  const p = P();
   SFX.utrop();
-  later(() => speakUtrop("Hållplats " + l.stops[tramAt(p, tripRef)]), 620);
+  later(() => speakUtrop("Hållplats " + p.resa.pos), 620);
 });
 
+/* Tryck på en hållplats säger namnet; tryck på kartan zoomar ut till hela
+   nätet och in igen. */
 el("natkarta").addEventListener("click", (e) => {
-  const c = e.target.closest("[data-stopp]"); if(!c) return;
-  const l = lineByRef(tripRef), namn = l.stops[Number(c.dataset.stopp)];
-  SFX.tap();
-  speakUtrop(namn);
-});
-
-el("goBtn").addEventListener("click", () => {
-  const p = P(), l = lineByRef(tripRef);
-  SFX.ensure(); SFX.tap();
-  if(lineDone(p, tripRef)){
-    p.tram[tripRef] = 0; saveProfiles();
-    renderTrip(false);
+  const c = e.target.closest("[data-stopp]");
+  if(c){
+    const l = lineByRef(tripRef), namn = l.stops[Number(c.dataset.stopp)];
+    SFX.tap();
+    speakUtrop(namn);
     return;
   }
+  if(!e.target.closest("svg") && !e.target.closest(".nat-zoom")) return;
+  SFX.tap();
+  vaxlaZoom();
+});
+function vaxlaZoom(){
+  const p = P(); if(!p.resa) return;
+  const { l, at, rikt } = resLage(p);
+  const svg = el("natSvg");
+  const f0 = natUtzoomad ? HELA_NATET : natFonster(l, at);
+  natUtzoomad = !natUtzoomad;
+  const f1 = natUtzoomad ? HELA_NATET : natFonster(l, at);
+  const besokta = new Set(besoktaPa(p, l.ref));
+  const klar = () => { el("natkarta").innerHTML = natkartaSVG(l, at, { besokta, utzoomad: natUtzoomad, rikt }); };
+  if(reduceMotion || !svg){ klar(); return; }
+  const start = performance.now(), ms = 520;
+  const mjuk = (t) => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+  (function steg(nu){
+    const t = mjuk(Math.min(1, (nu - start) / ms));
+    svg.setAttribute("viewBox", viewBoxStr({
+      x: f0.x + (f1.x - f0.x) * t, y: f0.y + (f1.y - f0.y) * t,
+      w: f0.w + (f1.w - f0.w) * t, h: f0.h + (f1.h - f0.h) * t }));
+    if(t < 1) requestAnimationFrame(steg); else klar();
+  })(start);
+}
+
+el("goBtn").addEventListener("click", () => {
+  const p = P();
+  SFX.ensure(); SFX.tap();
+  const { slut } = resLage(p);
+  if(slut){ openPerrong(p.resa.pos, true); return; }
   startRound(tramLevelDef(p), p.tramMode, tripRef);
 });
 
@@ -3159,7 +3346,7 @@ function enterWorld(halsa, isNew){
   el("worldSwitch").querySelectorAll("[data-world]").forEach(b =>
     b.setAttribute("aria-pressed", String(b.dataset.world === (p.world || "land"))));
   if(p.world === "tram"){
-    renderLines(); show("lines");
+    renderStart(); show("lines");
   }else{
     renderMap(); show("map");
     const cur = el("node-" + nextLevelId(p));
@@ -3266,8 +3453,11 @@ sheet.addEventListener("click", (e) => {
     return;
   }
 
-  const startline = e.target.closest("[data-startline]");
-  if(startline){ SFX.ensure(); SFX.tap(); closeSheet(); openTrip(startline.dataset.startline, false); return; }
+  const stig = e.target.closest("[data-stig]");
+  if(stig){
+    const [ref, rikt, pos] = stig.dataset.stig.split("|");
+    SFX.ensure(); closeSheet(); stigPa(ref, Number(rikt), pos); return;
+  }
 
   const tl = e.target.closest("[data-tramlevel]");
   if(tl){
@@ -3275,7 +3465,7 @@ sheet.addEventListener("click", (e) => {
     speak(p.tramLevel === -1 ? "Stigande" : p.tramLevel === 0 ? "Blandat" : levelById(p.tramLevel).name);
     g.recent = [];   /* ny svårighet – börja om med färska tal */
     sheet.querySelectorAll("[data-tramlevel]").forEach(b => b.setAttribute("aria-pressed", String(Number(b.dataset.tramlevel) === p.tramLevel)));
-    if(el("screen-trip").classList.contains("is-active")) renderTrip(false);
+    if(el("screen-trip").classList.contains("is-active") && p.resa) renderTrip(false);
     return;
   }
   const tm = e.target.closest("[data-trammode]");
@@ -3799,8 +3989,7 @@ function finishRound(){
 
 /* Framme vid en hållplats: kort summering och en enda knapp vidare */
 function finishTramStop(p, perfect){
-  const l = lineByRef(g.tram);
-  const at = tramAt(p, g.tram);
+  const { l, rikt, at, slut } = resLage(p);
 
   /* Att åka spårvagn ska också föra spelaren framåt: en felfri hållplats på
      den svåraste banan man har öppen (eller på Blandat) öppnar nästa bana.
@@ -3814,14 +4003,14 @@ function finishTramStop(p, perfect){
     if(spelad) nyBana = oppnaEfter(p, spelad);
     if(!nyBana && spelad && spelad.id === 12 && !p.sidoUpp) nyBana = levelById(sidoOppen(p));
   }
-  const nästa = Math.min(at + 1, l.stops.length - 1);
-  p.tram = p.tram || {};
-  p.tram[g.tram] = nästa;
+  const nästa = slut ? at : at + rikt;
+  p.resa.pos = l.stops[nästa];
+  p.besokta = p.besokta || {};
+  for(const x of [l.stops[at], l.stops[nästa]])
+    if(!besoktaPa(p, l.ref).includes(x)) p.besokta[l.ref] = besoktaPa(p, l.ref).concat(x);
   p.stopsRidden = (p.stopsRidden || 0) + 1;
-  if(nästa >= l.stops.length - 1){
-    p.linesDone = p.linesDone || [];
-    if(!p.linesDone.includes(g.tram)) p.linesDone.push(g.tram);
-  }
+  p.linesDone = p.linesDone || [];
+  if(linjeKlar(p, l.ref) && !p.linesDone.includes(l.ref)) p.linesDone.push(l.ref);
   saveProfiles();
   tripFrom = at;
   const nya = newBadges(p);
@@ -3840,7 +4029,7 @@ function finishTramStop(p, perfect){
     <button class="btn btn-big" id="rideOnBtn" type="button">Åk vidare!</button>`;
   el("rideOnBtn").addEventListener("click", () => {
     SFX.tap();
-    openTrip(g.tram, true);
+    openTrip(true);
   }, { once: true });
 
   show("result");
@@ -3961,6 +4150,21 @@ function flyttaTillTvaSpar(p){
     p.linesDone = p.linesDone || [];
     p.settings = Object.assign({ sound:true, voice:true, dots:true, rate:1 }, p.settings || {});
     flyttaTillTvaSpar(p);
+    /* Förr åkte man en linje från ände till ände och läget var ett index per
+       linje. Nu är resan fri: åkta hållplatser per linje, och var man står. */
+    if(!p.frittAventyr){
+      p.besokta = p.besokta || {};
+      for(const ref of Object.keys(p.tram || {})){
+        const l = lineByRef(ref); if(!l) continue;
+        p.besokta[ref] = l.stops.slice(0, Math.min(p.tram[ref], l.stops.length - 1) + 1);
+      }
+      const l = p.tramLine && lineByRef(p.tramLine);
+      if(l){
+        const k = Math.min((p.tram || {})[l.ref] || 0, l.stops.length - 1);
+        p.resa = { pos: l.stops[k], ref: l.ref, rikt: k >= l.stops.length - 1 ? -1 : 1 };
+      }
+      p.frittAventyr = true; p.nyssFlyttad = true;
+    }
   });
   /* Flyttade sparfiler ska sparas direkt, inte först vid nästa omgång */
   if(profiles.some(p => p.nyssFlyttad)){ profiles.forEach(p => delete p.nyssFlyttad); saveProfiles(); }

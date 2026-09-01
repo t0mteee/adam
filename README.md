@@ -109,8 +109,16 @@ skatten växer. Köpen hör till spelaren, precis som stjärnor och märken.
 
 ## Spårvagn — Göteborgs linjenät
 
-Andra världen i spelet. Barnet väljer en av Göteborgs tolv spårvagnslinjer och
-åker från ändstation till ändstation, en hållplats i taget. Varje hållplats
+Andra världen i spelet – ett eget äventyr i Göteborgs spårvagnsnät. Barnet
+väljer var resan ska börja (ändstationerna först, alla 132 hållplatser eller en
+linjes hållplatser, som bildkort med foto och linjenummer), går ut på perrongen
+och väljer vagn och riktning bland dem som går därifrån – varje avgång visas
+som en vagnsfront i linjens färg med skylten *mot Angered* och nästa hållplats.
+Sedan åker man en hållplats i taget och kan vid varje hållplats byta vagn,
+vända eller hoppa av och börja någon annanstans. Vid en ändstation frågar
+spelet vilken vagn man tar nu. *Mina linjer* på startskärmen visar hur stor del
+av varje linje som är åkt, och en linje räknas som klar när alla hållplatser
+är besökta. Varje hållplats
 kostar fem uppgifter, och när de är klara rullar vagnen fram till nästa
 hållplats på linjekartan medan rösten ropar ut namnet. Utropet föregås av två
 mjuka toner, och läses lugnare och i lägre tonläge än matteuppgifterna så att det
@@ -143,7 +151,8 @@ låter som ett utrop och inte som en lekkamrat.
   fyllda och kommande vita. Namn visas på hållplatsen, grannarna och
   ändstationerna, och lägger sig där de inte krockar. När vagnen rullar
   panorerar kartan med till nästa hållplats. Ett tryck på en hållplats säger
-  namnet. Hållplatsernas lägen kommer från OpenStreetMap, omräknade så att
+  namnet, och ett tryck på kartan (eller knappen *Hela nätet*) zoomar ut till
+  hela Göteborg och in igen. Hållplatsernas lägen kommer från OpenStreetMap, omräknade så att
   centrum dragits isär – avståndet från Brunnsparken tas upphöjt till 0,62 –
   så Brunnsparken–Valand får lika mycket plats som Saltholmen–Långedrag medan
   kartan ändå liknar staden. Där flera linjer delar sträcka ritas de bredvid
