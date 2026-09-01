@@ -686,9 +686,12 @@ body.on-tram .world{ display: none; }
 .scen-wrap .foto.borta{ opacity: 0; pointer-events: none; }
 .foto-kred{
   margin: 0; padding: 4px 12px 0; font-size: 10px; line-height: 1.3;
-  color: var(--ink-2); text-align: right;
+  color: var(--ink-2); text-align: right; transition: opacity .5s ease;
 }
+.foto-kred.borta{ opacity: 0; }
 .foto-kred a{ color: inherit; }
+/* Kameraknappen visar att det finns ett foto även när teckningen tagit över */
+.foto-knapp.på{ background: var(--lemon); }
 
 /* Hållplatsbilden */
 .stop-card{
@@ -696,7 +699,8 @@ body.on-tram .world{ display: none; }
   box-shadow: var(--lift); overflow: hidden; margin-bottom: 14px;
 }
 .stop-card .scene{ display: block; width: 100%; height: auto; background: #CDEBFB; border-bottom: var(--stroke); }
-.stop-card .stop-info{ padding: 11px 15px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.stop-card .stop-info{ padding: 11px 15px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.stop-card .stop-knappar{ display: flex; gap: 8px; flex: none; }
 .stop-card .stop-name{ font-family: "Baloo 2", system-ui, sans-serif; font-weight: 800; font-size: var(--t-lg); line-height: 1.1; }
 .stop-card .stop-sub{ font-size: var(--t-xs); color: var(--ink-2); }
 
@@ -1616,6 +1620,11 @@ const STOP_PHOTOS = {
   "Östra Sjukhuset": { f:"ostra-sjukhuset", by:"Leif Jørgensen", lic:"CC BY-SA 4.0" }
 };
 
+/* Tom här: spelet hämtar bilderna ur mappen bilder/. En fristående kopia av
+   spelet, byggd med verktyg/bygg-fristaende.py, får i stället bilderna inbakade
+   här och behöver då ingen mapp bredvid sig. */
+const FOTO_DATA = {};
+
 /* Spårvagn framifrån, i linjens färg och med linjenumret i skylten */
 function ljusFarg(hex){
   const h = (hex || "#888").replace("#", "");
@@ -2283,9 +2292,16 @@ function openLineSheet(l){
 
 /* ── Resan längs linjen ─────────────────── */
 let tripRef = null, tripFrom = null;
-/* Kan bilderna inte hämtas alls, som i artifact-visaren där mappen saknas,
-   slutar vi be om dem i stället för att misslyckas vid varje hållplats. */
-let fotonAv = false;
+/* Kan bilderna inte hämtas alls – i en visare där bildmappen saknas – slutar vi
+   be om dem. Ett enstaka misslyckande räcker inte som bevis: då kan det lika
+   gärna vara en lucka i nätet, och resten av resan ska inte bli utan foton. */
+let fotoMissar = 0, fotonAv = false;
+
+/* Bilderna ligger som filer bredvid spelet. Bakas de in i stället (se
+   verktyg/bygg-fristaende.py) ligger de redan i FOTO_DATA. */
+function fotoSrc(foto){
+  return FOTO_DATA[foto.f] || "./bilder/" + foto.f + ".jpg";
+}
 
 function openTrip(ref, animera){
   const p = P();
@@ -2298,6 +2314,21 @@ function openTrip(ref, animera){
      upp både fotots övergång och autoscrollen som sådana. */
   show("trip");
   renderTrip(animera);
+}
+
+/* Fotot, dess byline och kameraknappen är samma sak för den som tittar,
+   så de får ändras tillsammans. */
+function visaFoto(på){
+  const bild = el("stopFoto"), kred = el("stopKred"),
+        knapp = el("stopCard").querySelector(".foto-knapp");
+  if(!bild) return;
+  bild.classList.toggle("borta", !på);
+  if(kred) kred.classList.toggle("borta", !på);
+  if(knapp){
+    knapp.classList.toggle("på", på);
+    knapp.setAttribute("aria-pressed", på ? "true" : "false");
+    knapp.setAttribute("aria-label", på ? "Dölj fotot på hållplatsen" : "Visa fotot på hållplatsen");
+  }
 }
 
 function renderTrip(animera, visaBilden){
@@ -2324,17 +2355,22 @@ function renderTrip(animera, visaBilden){
     <div class="stop-card">
       <div class="scen-wrap">
         ${sceneSVG(l.stops[at])}
-        ${foto ? `<img class="foto" id="stopFoto" src="./bilder/${foto.f}.jpg" alt="Foto på hållplatsen ${l.stops[at]}">` : ""}
+        ${foto ? `<img class="foto" id="stopFoto" src="${fotoSrc(foto)}" alt="Foto på hållplatsen ${l.stops[at]}">` : ""}
       </div>
-      ${foto ? `<p class="foto-kred">Foto: ${foto.by || "okänd"} · ${foto.lic} · Wikimedia Commons</p>` : ""}
+      ${foto ? `<p class="foto-kred" id="stopKred">Foto: ${foto.by || "okänd"} · ${foto.lic} · Wikimedia Commons</p>` : ""}
       <div class="stop-info">
         <span style="min-width:0">
           <span class="stop-name" id="stopName">${l.stops[at]}</span><br>
           <span class="stop-sub">${at === 0 ? "Ändstation – här börjar resan" : klar ? "Ändstation – hela linjen klar!" : "Du är här"}</span>
         </span>
+        <span class="stop-knappar">
+        ${foto ? `<button class="icon-btn foto-knapp på" data-trip="foto" type="button" aria-label="Visa fotot på hållplatsen" aria-pressed="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#2E1A66" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.7h3.4L8.2 6h7.6l1.8 2.7H21v9.6H3z"/><circle cx="12" cy="13.2" r="3.3"/></svg>
+        </button>` : ""}
         <button class="icon-btn" data-trip="say" type="button" aria-label="Hör hållplatsen">
           <svg viewBox="0 0 24 24" fill="none" stroke="#2E1A66" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13L7.5 14.5H4z" fill="#2E1A66"/><path d="M16 9.2a4 4 0 0 1 0 5.6"/><path d="M18.6 6.4a8 8 0 0 1 0 11.2"/></svg>
         </button>
+        </span>
       </div>
     </div>`;
 
@@ -2353,13 +2389,18 @@ function renderTrip(animera, visaBilden){
   const fotoEl = el("stopFoto");
   if(fotoEl){
     fotoEl.addEventListener("error", () => {
-      fotonAv = true;
+      if(++fotoMissar >= 3) fotonAv = true;
       fotoEl.remove();
-      const kred = el("stopCard").querySelector(".foto-kred");
-      if(kred) kred.remove();
+      el("stopCard").querySelectorAll(".foto-kred, .foto-knapp").forEach(x => x.remove());
     }, { once: true });
-    fotoEl.addEventListener("click", () => fotoEl.classList.toggle("borta"));
-    later(() => fotoEl.classList.add("borta"), reduceMotion ? 100 : 1900);
+    fotoEl.addEventListener("click", () => visaFoto(fotoEl.classList.contains("borta")));
+    /* Fotot får stå kvar tills man hunnit titta – sidan rullar upp först. */
+    later(() => visaFoto(false), reduceMotion ? 100 : 2800);
+  }
+  /* Hämta nästa hållplats bild i förväg, så den är på plats vid framkomsten */
+  if(!fotonAv && at + 1 < n){
+    const nästaFoto = STOP_PHOTOS[l.stops[at + 1]];
+    if(nästaFoto) new Image().src = fotoSrc(nästaFoto);
   }
 
   el("goBtn").className = "btn go-btn" + (klar ? " done" : "");
@@ -2423,6 +2464,11 @@ function openTramLevelSheet(){
     ${talvalHTML(p)}`);
 }
 el("stopCard").addEventListener("click", (e) => {
+  if(e.target.closest('[data-trip="foto"]')){
+    SFX.tap();
+    visaFoto(!el("stopCard").querySelector(".foto-knapp").classList.contains("på"));
+    return;
+  }
   if(!e.target.closest('[data-trip="say"]')) return;
   const l = lineByRef(tripRef), p = P();
   SFX.utrop();

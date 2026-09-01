@@ -65,9 +65,12 @@ låter som ett utrop och inte som en lekkamrat.
   1902. Linje 6 har 46 hållplatser, linje 10 bara 13 – bra att veta när man
   väljer hur lång resa det ska bli.
 - **Riktiga foton som tonar över i teckningen.** 83 av hållplatserna visar först
-  ett riktigt foto från platsen, som efter knappt två sekunder tonar över i
-  spelets egen tecknade bild. Trycker man på bilden kommer fotot tillbaka. Foton
-  och fotografer listas under *Bilderna och fotograferna* i inställningarna.
+  ett riktigt foto från platsen, som efter knappt tre sekunder tonar över i
+  spelets egen tecknade bild. Kameraknappen bredvid hållplatsnamnet visar att det
+  finns ett foto och tar tillbaka det hur många gånger som helst; den syns bara på
+  hållplatser som har ett. Nästa hållplats foto hämtas redan medan man räknar, så
+  det står färdigt vid framkomsten. Foton och fotografer listas under *Bilderna och
+  fotograferna* i inställningarna.
 - **Varje hållplats syns.** Alla 132 hållplatser har en egen liten bild, ritad
   efter vad namnet betyder: rymdraket i Bergsjön (Komettorget, Rymdtorget,
   Teleskopgatan), ädelstenar i Tynnered (Opaltorget, Smaragdgatan,
@@ -137,6 +140,17 @@ Deploy from a branch*, välj den här grenen och mappen `/ (root)`, spara. Efter
 minut ligger spelet på `https://<användarnamn>.github.io/adam/`. Vilken statisk
 webbserver som helst fungerar lika bra – det är bara filer.
 
+**Foton kräver att mappen `bilder/` följer med.** Delas bara `index.html` – i en
+förhandsvisare eller som en ensam fil – hittar spelet inga foton och visar de
+tecknade scenerna i stället. Behövs en enda fil som bär med sig allt:
+
+```
+python3 verktyg/bygg-fristaende.py
+```
+
+Den skriver `fristaende.html` med alla 83 fotona inbakade i filen (drygt 3 MB).
+Spelet i övrigt är identiskt.
+
 **Lägg till på iPhone eller iPad.** Öppna adressen i **Safari** (det måste vara
 Safari, inte Chrome), tryck på dela-ikonen och välj *Lägg till på hemskärmen*.
 Ikonen dyker upp bland apparna och spelet startar i helskärm.
@@ -149,7 +163,8 @@ Tre saker värda att veta:
 - **Framstegen ligger kvar i webbläsarens minne på den enheten.** De synkas inte
   mellan telefon och platta, och rensar man webbläsardata försvinner de.
 - **Efter en ändring i spelet**: höj `VERSION` i `sw.js`, annars fortsätter appen
-  visa den sparade versionen.
+  visa den sparade versionen. Hemskärmsappen hämtar den nya versionen först när
+  den stängts och öppnats igen.
 
 ## För vuxna
 
@@ -191,8 +206,9 @@ enligt sina licenser, till största delen CC BY-SA 3.0 och 4.0, några under CC 
 CC0 eller public domain. Fotograf och licens visas under varje bild i spelet och
 i listan under *Bilderna och fotograferna*. Bilderna är nedskalade till 640×300
 och beskurna i mitten. Av 132 hållplatser hittades en användbar bild för 83; de
-övriga visar bara den tecknade scenen, liksom alla hållplatser gör om bilderna
-inte kan hämtas.
+övriga visar bara den tecknade scenen. Går en enstaka bild inte att hämta hoppar
+spelet över just den; först efter tre bommar slutar det be om foton alls, så ett
+hack i nätet släcker inte resten av resan.
 
 ## Tester
 
