@@ -15,7 +15,7 @@ stjärnor i Räknelandet och besökta hållplatser i spårvagnen.
 
 ### Räknelandet
 
-Trettioen banor genom åtta områden, som var och ett ser ut som sitt namn –
+Trettiosju banor genom nio områden, som var och ett ser ut som sitt namn –
 blommor på Ängen, granar i Skogen, kristaller och droppstenar i Grottan,
 snöklädda toppar på Berget, moln högre upp, spårvagnar och
 kontaktledningsstolpar i Vagnhallen, stoppbockar och stationsklockor vid
@@ -23,12 +23,13 @@ kontaktledningsstolpar i Vagnhallen, stoppbockar och stationsklockor vid
 eller genom fyra rätt av fem på en hållplats i spårvagnsvärlden – och klarade
 banor går att spela om.
 
-Stigen har två spår. **Huvudspåret** går från Ängen till Ändstationen, 27 banor,
+Stigen har tre spår. **Huvudspåret** går från Ängen till Ändstationen, 27 banor,
 och det är där svårigheten stiger. **Sidospåret** Stjärnhimlen – räkna till 25,
 50, 75 och 100 i tioramar – öppnas när Berget är klart och spärrar ingenting.
 Så slipper den som kan räkna till hundra i huvudet räkna hundra prickar innan
 Vagnhallen öppnas, och den som älskar att räkna prickar kan göra det när som
-helst.
+helst. **Sidospåret** Gånger och delat öppnas när Mästarprovet är klarat och
+går att stänga av i inställningarna, för den som vill vänta med tabellerna.
 
 | Område | Banor | Innehåll |
 | --- | --- | --- |
@@ -40,6 +41,7 @@ helst.
 | Vagnhallen | 16–23 | Plus och minus över tian, hela tiotal, tiotal och ental, växla och låna, talföljder, gånger och hälften, Vagnhallens prov |
 | Ändstationen | 24–27 | Allt till 100, allt till 200, tre tal i rad, fyra tal i rad |
 | Stjärnhimlen (sidospår) | 28–31 | Räkna till 25, 50, 75 och 100 – i tioramar, tior och ental |
+| Gånger och delat (sidospår) | 32–37 | Två gånger, fem och tio gånger, delat med två, delat med fem och tio, tre och fyra gånger, tabellprovet |
 
 Från Berget och uppåt har varje bana ett minsta värde på det mindre talet, så
 att 15 + 1 och 16 − 15 inte dyker upp där talen annars slutat vara små: 3 på
@@ -75,8 +77,8 @@ valt.
 De åtta sista banorna är byggda för den som redan klarat mästarprovet. Att gå
 över tiotalet (8 + 7), räkna med hela tiotal (70 − 40), lägga ental till ett
 tvåsiffrigt tal (34 + 5), addera två tvåsiffriga (38 + 27), se mönstret i en
-talföljd (40, 50, 60, ?), gångertabellerna 2, 5 och 10 och hälften av ett tal –
-sorter som inte går att räkna sig till på fingrarna. Sista banan, *Vagnhallens
+talföljd (40, 50, 60, ?), dubbelt och hälften upp till 60 – sorter som inte går
+att räkna sig till på fingrarna. Sista banan, *Vagnhallens
 prov*, blandar alla åtta.
 
 ### Ändstationen
@@ -87,6 +89,16 @@ värda att räkna – 25 + 37 och 82 − 46, aldrig 38 + 1. De två sista banorn
 lägger tre respektive fyra tal på rad med blandade storlekar: 12 + 5 + 29 + 10.
 Bland svarsalternativen ligger felen som faktiskt görs där – summan av bara de
 två första talen, och summan där sista talet glömts bort.
+
+### Gånger och delat
+
+Tabellerna börjar snällt. *Två gånger* ritar 2 × 3 som två högar med tre saker
+i varje, och *Delat med två* är samma bild baklänges: tolv saker i två högar,
+hur många i varje? Sedan försvinner bilderna, och fem, tio, tre och fyra kommer
+i tur och ordning. Delat med går alltid jämnt ut – svaret lottas och talet
+räknas ut därifrån. Bland svarsalternativen ligger 2 + 3 för den som plussar i
+stället för att gångra, och 12 − 2 för den som drar ifrån i stället för att
+dela.
 
 ### Tior och ental
 
@@ -102,7 +114,7 @@ bland svarsalternativen ligger de vanligaste feltankarna – siffrorna omkastade
 Rätt på första försöket ger 10 guldmynt; tre rätt i rad dubblar och sex rätt i
 rad tredubblar. Rätt efter ett feltryck ger 5 mynt – aldrig minuspoäng. Efter
 varje omgång delas upp till tre stjärnor ut (4 rätt direkt ger en, 7 ger två, 9
-ger tre), och minst en stjärna öppnar nästa bana. Totalt finns 93 stjärnor och 25
+ger tre), och minst en stjärna öppnar nästa bana. Totalt finns 111 stjärnor (93 med gånger och delat avstängt) och 26
 märken att samla, från *Första stjärnan* och *Ändstation* till *Hela landet*.
 
 Mynten går att göra av med. Myntraden i topplisten öppnar **skattkistan** med
@@ -265,7 +277,8 @@ Tre saker värda att veta:
 ## För vuxna
 
 Kugghjulet uppe till höger: värld, ljud, uppläsning, rösthastighet, räknehjälp,
-byt kompisfigur, byt spelare och ta bort spelare. Inställningarna hör till
+gånger och delat med (av eller på), byt kompisfigur, byt spelare och ta bort
+spelare. Inställningarna hör till
 spelaren, så syskon kan ha olika. Kompisfiguren står längst ner på spelskärmen
 och hejar, så frågan och svaren får hela bredden; i skrivläget hamnar den under
 knappsatsen och är aldrig i vägen.

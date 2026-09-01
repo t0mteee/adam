@@ -6,7 +6,7 @@ import { dirname, join } from "node:path";
 import { REGIONS, LEVELS, SHOWN, buildRound, makeOptions, qNyckel, TRAM_LINES, STOP_PHOTOS, TRAM_PHOTOS, vagnFoto,
          THINGS, BAS_SAKER, BUTIK, TILLBEHOR, sakerFor,
          justeraSkill, nivaForSkill, buildStigandeRound,
-         HUVUD_MAX, SIDO_START, SIDO_MAX, huvudspar, arLast, oppnaEfter, sidoOppen, nastaBana, blandatLevel, levelById } from "./hamta.mjs";
+         HUVUD_MAX, SIDO_START, SIDO_MAX, GANGER_START, GANGER_MAX, huvudspar, arLast, oppnaEfter, sidoOppen, gangerOppen, sidosparEfter, synligaBanor, maxStars, nastaBana, blandatLevel, levelById } from "./hamta.mjs";
 
 const rot = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -241,15 +241,17 @@ test("Vagnhallens sorter räknar rätt och håller sig inom banans tal", () => {
       }
     }
   }
-  assert.ok(serier > 50 && ganger > 50 && halvor > 50,
-    `för få av någon sort: talföljd ${serier}, gånger ${ganger}, hälften ${halvor}`);
+  /* Gånger har flyttat till sitt eget spår; kvar i Vagnhallen är talföljder och hälften */
+  assert.ok(serier > 50 && halvor > 50 && ganger === 0,
+    `fel blandning: talföljd ${serier}, gånger ${ganger}, hälften ${halvor}`);
 });
 
 test("banorna med hjälpbilder behåller dem, räknebanorna sina figurer", () => {
   for(const L of LEVELS){
     const q = buildRound(L, 10)[0];
-    if(L.id <= 9 || REGIONS[L.r].sidospar) assert.ok(!q.utanHjalp, `${L.name} ska ha hjälpbilder`);
-    else assert.ok(q.utanHjalp, `${L.name} ska sakna hjälpbilder`);
+    if(L.id <= 9 || REGIONS[L.r].name === "Stjärnhimlen") assert.ok(!q.utanHjalp, `${L.name} ska ha hjälpbilder`);
+    else if(!REGIONS[L.r].sidospar) assert.ok(q.utanHjalp, `${L.name} ska sakna hjälpbilder`);
+    else assert.equal(!!q.utanHjalp, !!L.utanHjalp, `${L.name} följer inte sin egen regel`);
   }
 });
 
@@ -307,4 +309,42 @@ test("Ändstationens tal är stora nog och summerar rätt", () => {
     assert.ok(snitt > L.max * 0.25 && snitt < L.max * 0.85,
       `${L.name}: svaren ligger i snitt på ${Math.round(snitt)} av ${L.max}`);
   }
+});
+
+test("gånger och delat: rätt tabeller, jämna delningar, eget spår som går att stänga av", () => {
+  const banor = LEVELS.filter(L => L.spar === "ganger");
+  assert.equal(banor.length, 6);
+  assert.ok(!banor[0].utanHjalp && !banor[2].utanHjalp, "de första gånger- och delatbanorna ska ha bilder");
+  for(const L of banor){
+    for(let i = 0; i < 120; i++){
+      for(const q of buildRound(L, 10)){
+        assert.ok(q.answer >= 0 && q.answer <= L.max, `${q.kind} gav ${q.answer} på ${L.name}`);
+        if(q.kind === "mul"){
+          assert.equal(q.a * q.b, q.answer);
+          if(L.tabeller) assert.ok(L.tabeller.includes(q.a), `${q.a}:ans tabell hör inte hemma på ${L.name}`);
+        }
+        if(q.kind === "div"){
+          assert.equal(q.a, q.b * q.answer, `${q.a} / ${q.b} går inte jämnt ut`);
+          assert.ok(q.answer >= 1 && q.answer <= 10);
+          if(L.tabeller) assert.ok(L.tabeller.includes(q.b), `delat med ${q.b} hör inte hemma på ${L.name}`);
+        }
+        const alt = makeOptions(q, 4);
+        assert.ok(alt.includes(q.answer)); assert.equal(new Set(alt).size, 4);
+      }
+    }
+  }
+  /* Spåret öppnas av Mästarprovet, och försvinner helt när det är avstängt */
+  const p = { unlocked: 20, stars: { 15: 0 }, settings: { ganger: true } };
+  assert.ok(arLast(p, levelById(GANGER_START)), "stängt tills Mästarprovet är klarat");
+  p.stars[15] = 1;
+  assert.equal(sidosparEfter(p, levelById(15)).id, GANGER_START);
+  assert.ok(!arLast(p, levelById(GANGER_START)) && arLast(p, levelById(GANGER_START + 1)));
+  assert.equal(oppnaEfter(p, levelById(GANGER_START)).id, GANGER_START + 1);
+  assert.equal(synligaBanor(p).length, LEVELS.length);
+  assert.equal(maxStars(p), LEVELS.length * 3);
+  const av = { unlocked: 20, stars: { 15: 3 }, settings: { ganger: false } };
+  assert.ok(arLast(av, levelById(GANGER_START)), "avstängt spår är låst");
+  assert.equal(synligaBanor(av).length, LEVELS.length - 6);
+  assert.equal(maxStars(av), (LEVELS.length - 6) * 3);
+  assert.equal(sidosparEfter(av, levelById(15)), null);
 });
