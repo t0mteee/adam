@@ -1062,6 +1062,9 @@ const rnd  = (n) => Math.floor(Math.random() * n);
 const ri   = (a, b) => a + rnd(b - a + 1);
 const pick = (arr) => arr[rnd(arr.length)];
 const INK = "#2E1A66";
+/* Syns under Inställningar, så man kan se vilken version telefonen kör.
+   Höjs tillsammans med VERSION i sw.js. */
+const SPELVERSION = "10";
 function shuffle(a){ for(let i = a.length - 1; i > 0; i--){ const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
 function store(key, val){
@@ -3196,7 +3199,7 @@ function openSettings(){
   const p = P(), s = p.settings;
   openSheet(`
     <div class="sheet-head">
-      <div><h2>Inställningar</h2><p class="sheet-sub">Gäller för ${escapeHtml(p.name)}</p></div>
+      <div><h2>Inställningar</h2><p class="sheet-sub">Gäller för ${escapeHtml(p.name)} · version ${SPELVERSION}</p></div>
       ${CLOSE_BTN}
     </div>
     <div class="set-row">

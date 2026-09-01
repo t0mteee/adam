@@ -234,8 +234,10 @@ Tre saker värda att veta:
   in i appen.
 - **Framstegen ligger kvar i webbläsarens minne på den enheten.** De synkas inte
   mellan telefon och platta, och rensar man webbläsardata försvinner de.
-- **Efter en ändring i spelet**: höj `VERSION` i `sw.js`, annars fortsätter appen
-  visa den sparade versionen. Hemskärmsappen hämtar den nya versionen först när
+- **Efter en ändring i spelet**: höj `VERSION` i `sw.js` och `SPELVERSION` i
+  `index.html`, annars fortsätter appen visa den sparade versionen. Numret syns
+  under *Inställningar*, så man kan se vilken version en telefon kör. När en
+  nyare hämtats i bakgrunden visar appen en knapp för att ladda om. Hemskärmsappen hämtar den nya versionen först när
   den stängts och öppnats igen.
 
 ## För vuxna

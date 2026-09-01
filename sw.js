@@ -1,13 +1,17 @@
 /* Räknelandets servicearbetare — gör att spelet fungerar utan nätverk.
    Höj versionen när spelet ändras, så hämtas det nya vid nästa start. */
-const VERSION = "raknelandet-v9";
+const VERSION = "raknelandet-v10";
 const SKAL = [
   "./", "./index.html", "./manifest.webmanifest",
   "./apple-touch-icon.png", "./ikon-192.png", "./ikon-512.png"
 ];
 
 self.addEventListener("install", (e) => {
-  e.waitUntil(caches.open(VERSION).then(c => c.addAll(SKAL)).then(() => self.skipWaiting()));
+  /* Hämta skalet från servern, inte ur webbläsarens egen cache – GitHub Pages
+     låter sidan ligga kvar i tio minuter, och då blir det gamla sparat på nytt. */
+  e.waitUntil(caches.open(VERSION)
+    .then(c => c.addAll(SKAL.map(u => new Request(u, { cache: "reload" }))))
+    .then(() => self.skipWaiting()));
 });
 
 self.addEventListener("activate", (e) => {
@@ -28,7 +32,7 @@ self.addEventListener("fetch", (e) => {
      men faller tillbaka på det sparade när nätet saknas. */
   if(req.mode === "navigate" || (url.origin === location.origin && url.pathname.endsWith(".html"))){
     e.respondWith(
-      fetch(req).then(svar => {
+      fetch(req.url, { cache: "no-cache", credentials: "same-origin" }).then(svar => {
         const kopia = svar.clone();
         caches.open(VERSION).then(c => c.put(req, kopia));
         return svar;
