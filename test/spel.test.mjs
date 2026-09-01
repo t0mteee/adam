@@ -263,3 +263,41 @@ test("hållplatser utan eget foto får samma spårvagn varje gång", () => {
   assert.ok(spridning.size >= Math.min(6, TRAM_PHOTOS.length),
     `bara ${spridning.size} olika vagnar över ${utan.length} hållplatser`);
 });
+
+test("Ändstationens tal är stora nog och summerar rätt", () => {
+  const banor = LEVELS.filter(L => L.r === 7);
+  assert.equal(banor.length, 4, "Ändstationen ska ha fyra banor");
+  for(const L of banor){
+    assert.ok(L.utanHjalp, `${L.name} ska sakna hjälpbilder`);
+    const summor = [];
+    for(let i = 0; i < 150; i++){
+      for(const q of buildRound(L, 10)){
+        assert.ok(q.answer >= 0 && q.answer <= L.max, `${q.kind} gav ${q.answer} på ${L.name}`);
+        if(q.kind === "add"){
+          assert.equal(q.a + q.b, q.answer);
+          assert.ok(Math.min(q.a, q.b) >= L.minDel,
+            `${q.a} + ${q.b}: minsta talet under ${L.minDel} på ${L.name}`);
+        }
+        if(q.kind === "sub"){
+          assert.equal(q.a - q.b, q.answer);
+          assert.ok(q.b >= L.minDel && q.answer >= L.minDel,
+            `${q.a} − ${q.b}: för litet led på ${L.name}`);
+        }
+        if(q.kind === "flera"){
+          assert.equal(q.tal.length, L.termer, `${L.name} ska ha ${L.termer} tal`);
+          assert.equal(q.tal.reduce((n, t) => n + t, 0), q.answer);
+          assert.ok(q.tal.every(t => t >= 2), `för litet tal i ${q.tal}`);
+          assert.ok(q.tal.some(t => t >= 10), `bara småtal i ${q.tal}`);
+        }
+        summor.push(q.answer);
+        const alt = makeOptions(q, 4);
+        assert.ok(alt.includes(q.answer), `rätt svar saknas för ${q.kind}`);
+        assert.equal(new Set(alt).size, 4, `dubblett bland alternativen för ${q.kind}`);
+      }
+    }
+    /* Uppgifterna ska spänna över banans tal, inte klumpa ihop sig vid taket */
+    const snitt = summor.reduce((n, v) => n + v, 0) / summor.length;
+    assert.ok(snitt > L.max * 0.25 && snitt < L.max * 0.85,
+      `${L.name}: svaren ligger i snitt på ${Math.round(snitt)} av ${L.max}`);
+  }
+});

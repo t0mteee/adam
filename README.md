@@ -13,10 +13,11 @@ två världar högst upp på skärmen: **Räknelandet** eller **Spårvagn**. Bå
 
 ### Räknelandet
 
-Tjugosju banor på en slingrande stig genom sju områden, som var och ett ser ut
+Trettioen banor på en slingrande stig genom åtta områden, som var och ett ser ut
 som sitt namn – blommor på Ängen, granar i Skogen, kristaller och droppstenar i
-Grottan, snöklädda toppar på Berget, moln högre upp, stjärnor i Stjärnhimlen och
-spårvagnar, räls och kontaktledningsstolpar i Vagnhallen. En bana i taget låses
+Grottan, snöklädda toppar på Berget, moln högre upp, stjärnor i Stjärnhimlen,
+spårvagnar och kontaktledningsstolpar i Vagnhallen och stoppbockar och
+stationsklockor vid Ändstationen. En bana i taget låses
 upp genom att klaras med minst en stjärna – eller genom en felfri hållplats i
 spårvagnsvärlden – och klarade banor går att spela om.
 
@@ -29,6 +30,7 @@ spårvagnsvärlden – och klarade banor går att spela om.
 | Molnen | 13–15 | Tre tal, blandat till 20, mästarprovet |
 | Stjärnhimlen | 16–19 | Räkna till 25, 50, 75 och 100 – i tioramar, tior och ental |
 | Vagnhallen | 20–27 | Över tian, hela tiotal, tiotal och ental, plus till 100, talföljder, gånger och hälften, Vagnhallens prov |
+| Ändstationen | 28–31 | Allt till 100, allt till 200, tre tal i rad, fyra tal i rad |
 
 Varje bana är tio uppgifter och kan spelas på två sätt: **välj svar** (tre eller
 fyra rutor att trycka på) eller **skriv svar** (stor knappsats; fysiskt
@@ -60,6 +62,15 @@ talföljd (40, 50, 60, ?), gångertabellerna 2, 5 och 10 och hälften av ett tal
 sorter som inte går att räkna sig till på fingrarna. Sista banan, *Vagnhallens
 prov*, blandar alla åtta.
 
+### Ändstationen
+
+Där Vagnhallen övar en sort i taget släpper Ändstationen lös talen helt. *Allt
+till 100* och *Allt till 200* drar fria plus- och minustal där båda leden är
+värda att räkna – 25 + 37 och 82 − 46, aldrig 38 + 1. De två sista banorna
+lägger tre respektive fyra tal på rad med blandade storlekar: 12 + 5 + 29 + 10.
+Bland svarsalternativen ligger felen som faktiskt görs där – summan av bara de
+två första talen, och summan där sista talet glömts bort.
+
 ### Tior och ental
 
 De stora räknebanorna ritar talen i tioramar: tio saker per ram, så att sju
@@ -74,7 +85,7 @@ bland svarsalternativen ligger de vanligaste feltankarna – siffrorna omkastade
 Rätt på första försöket ger 10 guldmynt; tre rätt i rad dubblar och sex rätt i
 rad tredubblar. Rätt efter ett feltryck ger 5 mynt – aldrig minuspoäng. Efter
 varje omgång delas upp till tre stjärnor ut (4 rätt direkt ger en, 7 ger två, 9
-ger tre), och minst en stjärna öppnar nästa bana. Totalt finns 81 stjärnor och 21
+ger tre), och minst en stjärna öppnar nästa bana. Totalt finns 93 stjärnor och 22
 märken att samla, från *Första stjärnan* och *Ändstation* till *Hela landet*.
 
 Mynten går att göra av med. Myntraden i topplisten öppnar **skattkistan**, där
@@ -248,7 +259,7 @@ hack i nätet släcker inte resten av resan.
 
 ## Tester
 
-`node --test` kör arton tester som plockar ut spelets rena funktioner direkt
+`node --test` kör nitton tester som plockar ut spelets rena funktioner direkt
 ur `index.html`, så att de aldrig testar en kopia som glidit isär från källan. De
 täcker att uppgifterna håller sig inom banans tal och aldrig blir negativa, att
 rätt svar alltid finns bland alternativen, att samma sorts tal aldrig kommer mer

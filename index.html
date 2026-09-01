@@ -484,6 +484,8 @@ h1, h2, h3{ font-family: "Baloo 2", "Baloo 2 Fallback", system-ui, sans-serif; f
   line-height: 1.05; letter-spacing: .02em; font-variant-numeric: tabular-nums;
 }
 .q-equation.ord{ font-size: clamp(1.05rem, 4.9vw, 2.1rem); letter-spacing: 0; }
+/* Fyra tal på rad blir en lång rad siffror – då får de ta mindre plats */
+.q-equation.mellan{ font-size: clamp(1.2rem, 5.4vw, 2.6rem); letter-spacing: 0; }
 .q-equation .op{ color: var(--grape); padding: 0 .06em; }
 .q-equation .slot{ color: var(--melon); }
 .q-equation .facit{ color: var(--grass-deep); animation: right-pop .55s cubic-bezier(.3,1.6,.5,1); display: inline-block; }
@@ -1191,7 +1193,8 @@ const REGIONS = [
   { name:"Berget",  color:"#D9691F", tint:"#F6D0A6" },
   { name:"Molnen",  color:"#2FA9D8", tint:"#DCEFFC" },
   { name:"Stjärnhimlen", color:"#8E7BFF", tint:"#2F2A63" },
-  { name:"Vagnhallen", color:"#C0392B", tint:"#F7DAD3" }
+  { name:"Vagnhallen", color:"#C0392B", tint:"#F7DAD3" },
+  { name:"Ändstationen", color:"#1F7A6B", tint:"#CFE9E1" }
 ];
 
 const LEVELS = [
@@ -1222,7 +1225,12 @@ const LEVELS = [
   { id:24, r:6, name:"Plus till 100",          desc:"25 + 25 · 38 + 27",       kinds:["storAdd"],   max:100, opts:4, utanHjalp:true },
   { id:25, r:6, name:"Talföljder",             desc:"2 · 4 · 6 · ?",           kinds:["serie"],     max:100, opts:4, utanHjalp:true },
   { id:26, r:6, name:"Gånger och hälften",     desc:"5 × 4 · hälften av 18",   kinds:["mul","half"], max:100, opts:4, utanHjalp:true },
-  { id:27, r:6, name:"Vagnhallens prov",       desc:"Allt som finns",          kinds:["bridge","bridgeSub","tioAdd","tvaAdd","tvaSub","storAdd","serie","mul","half"], max:100, opts:4, utanHjalp:true }
+  { id:27, r:6, name:"Vagnhallens prov",       desc:"Allt som finns",          kinds:["bridge","bridgeSub","tioAdd","tvaAdd","tvaSub","storAdd","serie","mul","half"], max:100, opts:4, utanHjalp:true },
+  /* Ändstationen – fria tal, inga snälla ental att lägga till */
+  { id:28, r:7, name:"Allt till 100",          desc:"25 + 37 · 82 − 46",       kinds:["fritAdd","fritSub"], max:100, minDel:12, opts:4, utanHjalp:true },
+  { id:29, r:7, name:"Allt till 200",          desc:"137 + 48 · 172 − 85",     kinds:["fritAdd","fritSub"], max:200, minDel:15, opts:4, utanHjalp:true },
+  { id:30, r:7, name:"Tre tal i rad",          desc:"12 + 5 + 29",             kinds:["flera"], termer:3, max:100, opts:4, utanHjalp:true },
+  { id:31, r:7, name:"Fyra tal i rad",         desc:"12 + 5 + 29 + 10",        kinds:["flera"], termer:4, max:200, opts:4, utanHjalp:true }
 ];
 const MAX_STARS = LEVELS.length * 3;
 const levelById = (id) => LEVELS.find(l => l.id === id);
@@ -1277,14 +1285,41 @@ const MAKE = {
      antingen under tjugo, eller ett jämnt femtal. */
   half:      L => { const max = L.max || 100;
                     const svar = rnd(2) === 0 ? ri(2, 20) : ri(1, Math.floor(max / 10)) * 5;
-                    return { kind:"half", a:svar * 2, answer:svar }; }
+                    return { kind:"half", a:svar * 2, answer:svar }; },
+
+  /* ── Ändstationen ────────────────────────────────────────────────────
+     Fria tal: båda leden ska vara värda att räkna, så inget 38 + 1. */
+  fritAdd:   L => { const max = L.max || 100, minst = L.minDel || 12;
+                    const a = ri(minst, max - minst), b = ri(minst, max - a);
+                    return { kind:"add", a, b, answer:a + b }; },
+  fritSub:   L => { const max = L.max || 100, minst = L.minDel || 12;
+                    const a = ri(minst * 2, max), b = ri(minst, a - minst);
+                    return { kind:"sub", a, b, answer:a - b }; },
+  /* Tre eller fyra tal på rad med blandade storlekar: 12 + 5 + 29 + 10 */
+  flera:     L => { const antal = L.termer || 3, max = L.max || 100;
+                    /* Taket per tal följer hur många de är, annars fylls
+                       summan upp av de första och sista talet blir en tvåa. */
+                    const stor = Math.max(12, Math.floor(max / antal));
+                    const tal = []; let sum = 0;
+                    for(let i = 0; i < antal; i++){
+                      const kvar = antal - i - 1;
+                      const tak = Math.max(2, Math.min(stor, max - sum - 2 * kvar));
+                      /* Minst ett stort tal, resten blandas mellan smått och stort */
+                      const litet = i > 0 && rnd(2) === 0;
+                      const t = litet ? ri(2, Math.min(9, tak)) : ri(Math.min(10, tak), tak);
+                      tal.push(t); sum += t;
+                    }
+                    shuffle(tal);
+                    return { kind:"flera", tal, a:tal[0], b:tal[1], c:tal[2],
+                             sum:tal[3], answer:sum }; }
 };
 
 /* Hur uppgiften ser ut på skärmen. "Dubbelt" ritas som ett plustal och
    "tiokompisar" som ett fattas-tal, så de räknas som samma sort här. */
 const SHOWN = { count:"count", add:"add", sub:"sub", missing:"missing", double:"add", ten:"missing",
                 add3:"add3", tiotal:"tiotal", bridge:"add", bridgeSub:"sub", tioAdd:"add", tioSub:"sub",
-                tvaAdd:"add", tvaSub:"sub", storAdd:"add", serie:"serie", mul:"mul", half:"half" };
+                tvaAdd:"add", tvaSub:"sub", storAdd:"add", serie:"serie", mul:"mul", half:"half",
+                fritAdd:"add", fritSub:"sub", flera:"flera" };
 
 /* Lägg sorterna i en ordning där samma sort aldrig kommer tre gånger i rad:
    ta alltid den sort det finns flest kvar av, men aldrig en som just
@@ -1358,6 +1393,7 @@ const BADGES = [
   { id:"reg4",    name:"Molnen klara",    desc:"Alla banor i Molnen",    art:"cloud", test:p => regionDone(p, 4) },
   { id:"reg5",    name:"Stjärnhimlen klar", desc:"Alla räknebanor",       art:"star",  test:p => regionDone(p, 5) },
   { id:"reg6",    name:"Vagnhallen klar",  desc:"Alla banor i Vagnhallen", art:"tram", test:p => regionDone(p, 6) },
+  { id:"reg7",    name:"Ändstationen",     desc:"Alla banor vid Ändstationen", art:"spar", test:p => regionDone(p, 7) },
   { id:"perfect", name:"Felfritt",        desc:"En bana helt utan fel",  art:"medal", test:p => (p.perfect || 0) >= 1 },
   { id:"streak10",name:"Tio i rad",       desc:"Tio rätt i rad",         art:"bolt",  test:p => (p.bestStreak || 0) >= 10 },
   { id:"coin300", name:"300 mynt",        desc:"Samla 300 guldmynt",     art:"coin",  test:p => p.coins >= 300 },
@@ -2235,6 +2271,8 @@ const D = {
   vagn:   `<svg viewBox="0 0 76 46"><path d="M38 10V3" stroke="${INK}" stroke-width="2.6" stroke-linecap="round"/><rect x="4" y="9" width="68" height="26" rx="7" fill="#FFFDF7" stroke="${INK}" stroke-width="3"/><path d="M4 25h68v3a7 7 0 0 1-7 7H11a7 7 0 0 1-7-7z" fill="#62CDF2" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/><g fill="#A6E7FF" stroke="${INK}" stroke-width="2.4"><rect x="9" y="13" width="12" height="9" rx="2"/><rect x="25" y="13" width="12" height="9" rx="2"/><rect x="41" y="13" width="12" height="9" rx="2"/><rect x="57" y="13" width="10" height="9" rx="2"/></g><circle cx="19" cy="38" r="5" fill="#5B47A0" stroke="${INK}" stroke-width="2.6"/><circle cx="57" cy="38" r="5" fill="#5B47A0" stroke="${INK}" stroke-width="2.6"/></svg>`,
   rals:   `<svg viewBox="0 0 62 24"><g stroke="${INK}" stroke-width="3.4" stroke-linecap="round"><path d="M13 4v16M31 4v16M49 4v16"/><path d="M5 8h52M5 17h52"/></g></svg>`,
   stolpe: `<svg viewBox="0 0 32 64"><path d="M16 64V12" stroke="#5B47A0" stroke-width="5.5" stroke-linecap="round"/><path d="M16 15h13" stroke="#5B47A0" stroke-width="4.5" stroke-linecap="round"/><circle cx="16" cy="8" r="5" fill="#FFC42E" stroke="${INK}" stroke-width="3"/></svg>`,
+  stopbock: `<svg viewBox="0 0 50 42"><g stroke="${INK}" stroke-width="3.2" stroke-linecap="round"><path d="M6 40V20M44 40V20M4 34h42"/></g><rect x="9" y="8" width="32" height="13" rx="3.5" fill="#FF6B6B" stroke="${INK}" stroke-width="3"/><g stroke="#FFFDF7" stroke-width="3.4" stroke-linecap="round"><path d="M15 19l6-9M27 19l6-9"/></g></svg>`,
+  klocka:  `<svg viewBox="0 0 40 56"><path d="M20 56V27" stroke="#5B47A0" stroke-width="5.5" stroke-linecap="round"/><circle cx="20" cy="16" r="13" fill="#FFFDF7" stroke="${INK}" stroke-width="3"/><path d="M20 16V8M20 16l6.5 4" fill="none" stroke="${INK}" stroke-width="3.2" stroke-linecap="round"/></svg>`,
   mane:   `<svg viewBox="0 0 48 48"><path d="M30 2a22 22 0 1 0 16 30A18 18 0 0 1 30 2z" fill="#FFE9A8" stroke="${INK}" stroke-width="3.4" stroke-linejoin="round"/><circle cx="20" cy="20" r="3.5" fill="#F2D98A"/><circle cx="15" cy="31" r="2.6" fill="#F2D98A"/></svg>`,
   planet: `<svg viewBox="0 0 56 44"><circle cx="28" cy="22" r="15" fill="#FF8AD0" stroke="${INK}" stroke-width="3.4"/><ellipse cx="28" cy="22" rx="26" ry="6" fill="none" stroke="#FFC42E" stroke-width="4" transform="rotate(-16 28 22)"/></svg>`
 };
@@ -2254,7 +2292,9 @@ const LANDSKAP = [
   [ {a: D.mane, w:52}, {a: D.stjarna, w:26}, {a: D.planet, w:56}, {a: D.stjarna, w:34},
     {a: D.stjarna, w:22}, {a: D.planet, w:44}, {a: D.stjarna, w:30} ],
   [ {a: D.vagn, w:78}, {a: D.stolpe, w:30}, {a: D.rals, w:56}, {a: D.vagn, w:64},
-    {a: D.stolpe, w:26}, {a: D.rals, w:48}, {a: D.vagn, w:70} ]
+    {a: D.stolpe, w:26}, {a: D.rals, w:48}, {a: D.vagn, w:70} ],
+  [ {a: D.stopbock, w:52}, {a: D.klocka, w:34}, {a: D.vagn, w:74}, {a: D.rals, w:52},
+    {a: D.klocka, w:30}, {a: D.stopbock, w:44}, {a: D.vagn, w:66} ]
 ];
 
 function slumpFast(n){ const x = Math.sin(n * 127.1 + 11.7) * 43758.5453; return x - Math.floor(x); }
@@ -2998,6 +3038,7 @@ function speechFor(q){
   if(q.kind === "mul")     return `Vad blir ${q.a} gånger ${q.b}?`;
   if(q.kind === "half")    return `Vad är hälften av ${q.a}?`;
   if(q.kind === "serie")   return `Vilket tal kommer sen? ${q.tal.join(", ")}, ...`;
+  if(q.kind === "flera")   return "Vad blir " + q.tal.join(" plus ") + "?";
   return "";
 }
 function labelFor(q){
@@ -3015,6 +3056,7 @@ function equationHTML(q){
   if(q.kind === "sub")     return `${q.a} ${op("−")} ${q.b} ${op("=")} <span class="slot">?</span>`;
   if(q.kind === "add3")    return `${q.a} ${op("+")} ${q.b} ${op("+")} ${q.c} ${op("=")} <span class="slot">?</span>`;
   if(q.kind === "missing") return `${q.a} ${op("+")} <span class="slot">?</span> ${op("=")} ${q.sum}`;
+  if(q.kind === "flera")    return `${q.tal.join(" " + op("+") + " ")} ${op("=")} <span class="slot">?</span>`;
   if(q.kind === "mul")      return `${q.a} ${op("×")} ${q.b} ${op("=")} <span class="slot">?</span>`;
   if(q.kind === "half")     return `Hälften av ${q.a} ${op("=")} <span class="slot">?</span>`;
   if(q.kind === "serie")    return `${q.tal.join(op(",") + " ")}${op(",")} <span class="slot">?</span>`;
@@ -3088,7 +3130,9 @@ function paintQuestion(){
   qVisual.className = "q-visual" + storlek + (q.kind === "add3" && !ramar ? " trio packed" : "");
   qEquation.innerHTML = equationHTML(q);
   /* "8 tior + 7 ental = ?" är ord, inte siffror, och behöver mindre stil */
-  qEquation.className = "q-equation" + (q.kind === "tiotal" || q.kind === "half" ? " ord" : "");
+  qEquation.className = "q-equation"
+    + (q.kind === "tiotal" || q.kind === "half" ? " ord" : "")
+    + (q.kind === "flera" ? " mellan" : "");
   qEquation.style.display = q.kind === "count" ? "none" : "";
 }
 
@@ -3106,6 +3150,12 @@ function makeOptions(q, n){
   if(q.kind === "half")    near.push(q.a, q.answer + 1, q.answer - 1, q.a + 2);
   if(q.kind === "serie")   near.push(q.answer + q.steg, q.answer - q.steg,
                                      q.tal[2], q.answer + 1, q.answer - 1);
+  if(q.kind === "flera"){
+    /* Att glömma sista talet eller lägga ihop bara de två första är de fel
+       som faktiskt görs när talen står på rad. */
+    near.push(q.answer - q.tal[q.tal.length - 1], q.tal[0] + q.tal[1],
+              q.answer + q.tal[0], q.answer + 10, q.answer - 10);
+  }
   if(q.answer > 20)        near.push(q.answer + 10, q.answer - 10);
   near.push(q.answer + 1, q.answer - 1, q.answer + 2, q.answer - 2, q.answer + 3, q.answer - 3, q.answer + 4);
   const tak = Math.max(30, q.answer + 12);
