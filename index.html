@@ -234,14 +234,16 @@ h1, h2, h3{ font-family: "Baloo 2", "Baloo 2 Fallback", system-ui, sans-serif; f
   background: var(--paper); border: 2.5px solid var(--ink); border-radius: 999px;
   padding: 3px 15px; white-space: nowrap; box-shadow: 0 3px 0 var(--ink);
 }
+.deco{ position: absolute; transform: translate(-50%, -50%); pointer-events: none; z-index: 1; }
+.deco svg{ width: 100%; height: auto; display: block; filter: drop-shadow(0 3px 0 rgba(46,26,102,.18)); }
 .trail-dot{
-  position: absolute; width: 12px; height: 12px; border-radius: 50%;
+  position: absolute; z-index: 2; width: 12px; height: 12px; border-radius: 50%;
   background: var(--paper); border: 2.5px solid var(--ink);
   transform: translate(-50%, -50%);
 }
 .trail-dot.locked{ background: rgba(255,253,247,.5); border-color: rgba(46,26,102,.45); }
 .node{
-  position: absolute; transform: translate(-50%, -50%);
+  position: absolute; transform: translate(-50%, -50%); z-index: 3;
   width: 68px; padding: 0; background: none; border: none; cursor: pointer;
   display: grid; justify-items: center; gap: 3px; touch-action: manipulation;
   font-family: inherit; color: inherit;
@@ -532,6 +534,147 @@ h1, h2, h3{ font-family: "Baloo 2", "Baloo 2 Fallback", system-ui, sans-serif; f
 #fx{ position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 90; }
 .footnote{ text-align: center; font-size: var(--t-xs); color: rgba(46,26,102,.62); margin-top: 6px; }
 
+
+/* ── Spårvagnsvärlden: ljus kartbotten så linjefärgerna syns ── */
+body.on-tram{
+  background: #EEF2F6;
+  background-image:
+    linear-gradient(rgba(46,26,102,.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(46,26,102,.055) 1px, transparent 1px);
+  background-size: 26px 26px;
+  background-attachment: fixed;
+}
+body.on-tram .world{ display: none; }
+
+/* Världsväxlaren */
+.world-switch{
+  display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+  background: var(--paper); border: var(--stroke); border-radius: 18px;
+  box-shadow: var(--lift-sm); padding: 5px; margin-bottom: 14px;
+}
+.world-switch button{
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  font-family: "Baloo 2", system-ui, sans-serif; font-weight: 800; font-size: var(--t-sm);
+  padding: 8px 6px; border-radius: 13px; border: 2.5px solid transparent;
+  background: none; color: var(--ink-2); cursor: pointer; touch-action: manipulation;
+  transition: background-color .15s ease, color .15s ease;
+}
+.world-switch button svg{ width: 22px; height: 22px; flex: none; }
+.world-switch button[aria-pressed="true"]{ background: var(--sun); color: var(--ink); border-color: var(--ink); }
+.world-switch button:focus-visible{ outline: 3px dashed var(--grape); outline-offset: 2px; }
+
+/* Linjeväljaren – uppställd som en linjekarta */
+.line-list{ display: grid; gap: 9px; }
+.line-row{
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px;
+  background: var(--paper); border: var(--stroke); border-radius: 20px;
+  box-shadow: var(--lift-sm); padding: 9px 13px 9px 9px;
+  cursor: pointer; touch-action: manipulation; font-family: inherit; color: inherit; text-align: left;
+  position: relative; overflow: hidden;
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.line-row::before{
+  content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 9px;
+  background: var(--linecol); border-right: 2.5px solid var(--ink);
+}
+.line-row:active{ transform: translateY(4px); box-shadow: 0 0 0 var(--ink); }
+.line-row:focus-visible{ outline: 4px dashed var(--grape); outline-offset: 3px; }
+.roundel{
+  width: 46px; height: 46px; border-radius: 50%; flex: none;
+  display: grid; place-items: center; border: var(--stroke);
+  font-family: "Lilita One", system-ui, sans-serif; font-size: 1.45rem; line-height: 1; padding-top: 3px;
+  box-shadow: 0 3px 0 var(--ink);
+}
+.roundel.sm{ width: 34px; height: 34px; font-size: 1.1rem; border-width: 2.5px; box-shadow: 0 2px 0 var(--ink); }
+.roundel.lg{ width: 60px; height: 60px; font-size: 1.9rem; }
+.line-ends{ font-family: "Baloo 2", system-ui, sans-serif; font-weight: 800; font-size: var(--t-md); line-height: 1.15; }
+.line-meta{ font-size: var(--t-xs); color: var(--ink-2); }
+.line-prog{
+  font-size: var(--t-xs); background: var(--paper-2); border: 2px solid var(--ink);
+  border-radius: 999px; padding: 3px 9px; white-space: nowrap; font-variant-numeric: tabular-nums;
+}
+.line-prog.klar{ background: var(--grass); color: #fff; }
+
+/* Resans vy */
+.trip-head{
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 11px;
+  background: var(--paper); border: var(--stroke); border-radius: 20px;
+  box-shadow: var(--lift-sm); padding: 9px 11px; margin-bottom: 12px;
+  position: sticky; top: 0; z-index: 20;
+}
+.trip-mid{ min-width: 0; display: grid; gap: 4px; justify-items: start; width: 100%; }
+.trip-mid .line-meta{ max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.trip-bar{ display: block; width: 100%; height: 11px; border-radius: 999px; background: var(--paper-2); border: 2.5px solid var(--ink); overflow: hidden; }
+.trip-mid .line-ends{ white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.trip-bar span{ display: block; height: 100%; background: var(--linecol); transition: width .6s cubic-bezier(.3,1.1,.5,1); }
+
+/* Hållplatsbilden */
+.stop-card{
+  background: var(--paper); border: var(--stroke); border-radius: 24px;
+  box-shadow: var(--lift); overflow: hidden; margin-bottom: 14px;
+}
+.stop-card .scene{ display: block; width: 100%; height: auto; background: #CDEBFB; border-bottom: var(--stroke); }
+.stop-card .stop-info{ padding: 11px 15px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.stop-card .stop-name{ font-family: "Baloo 2", system-ui, sans-serif; font-weight: 800; font-size: var(--t-lg); line-height: 1.1; }
+.stop-card .stop-sub{ font-size: var(--t-xs); color: var(--ink-2); }
+
+/* Linjediagram i kollektivtrafikstil */
+.route{ position: relative; padding-left: 4px; }
+.route-line{
+  position: absolute; left: 30px; top: 26px; bottom: 26px; width: 12px;
+  border-radius: 999px; background: var(--linecol);
+  border: 2.5px solid var(--ink);
+}
+.route-line .done-part{
+  position: absolute; left: -2.5px; right: -2.5px; top: -2.5px;
+  border-radius: 999px; background: var(--ink); opacity: .28;
+  transition: height .6s cubic-bezier(.3,1.1,.5,1);
+}
+.stop-row{
+  position: relative; display: grid; grid-template-columns: 60px 1fr; align-items: center;
+  height: 52px; gap: 8px;
+}
+.stop-dot{
+  justify-self: center; width: 22px; height: 22px; border-radius: 50%;
+  background: var(--paper); border: 3.5px solid var(--ink); z-index: 2;
+  transition: transform .2s ease, background-color .3s ease;
+}
+.stop-row.done .stop-dot{ background: var(--ink); }
+.stop-row.här .stop-dot{ width: 30px; height: 30px; background: var(--sun); transform: scale(1); box-shadow: 0 0 0 5px rgba(255,196,46,.45); }
+.stop-row .stop-label{
+  font-weight: 800; font-size: var(--t-sm); line-height: 1.15; color: var(--ink-2);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.stop-row.done .stop-label{ color: rgba(46,26,102,.45); }
+.stop-row.här .stop-label{ color: var(--ink); font-family: "Baloo 2", system-ui, sans-serif; font-size: var(--t-md); }
+.stop-row .stop-tag{
+  display: inline-block; font-size: 10px; font-weight: 800; margin-left: 6px;
+  background: var(--sun); border: 2px solid var(--ink); border-radius: 999px;
+  padding: 1px 8px 2px; line-height: 1.5; vertical-align: 2px;
+}
+.tram-marker{
+  position: absolute; left: 6px; width: 54px; z-index: 4;
+  transform: translateY(-50%);
+  transition: top .85s cubic-bezier(.45,.05,.3,1);
+  filter: drop-shadow(0 5px 4px rgba(46,26,102,.3));
+}
+.tram-marker svg{ width: 100%; height: auto; }
+.tram-marker.rullar svg{ animation: skaka .28s linear infinite; }
+@keyframes skaka{ 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-1.5px); } }
+
+.go-btn{
+  position: sticky; bottom: 10px; z-index: 22;
+  display: block; width: 100%; margin-top: 14px;
+  padding: 17px; font-size: clamp(1.3rem, 5vw, 1.9rem);
+  background: var(--sun); border-radius: 24px;
+}
+.go-btn.done{ background: var(--grass); color: #fff; }
+
+/* Resultat efter en hållplats – kort och gott */
+.arrive-card{ text-align: center; }
+.arrive-card .scene{ display: block; width: 100%; height: auto; border: var(--stroke); border-radius: 20px; background: #CDEBFB; margin-bottom: 12px; }
+.arrive-card h2{ font-size: var(--t-xl); }
+
 /* ── Låga skärmar ───────────────────────── */
 @media (max-height: 740px){
   #app{ padding-top: 10px; padding-bottom: 8px; }
@@ -604,8 +747,8 @@ h1, h2, h3{ font-family: "Baloo 2", "Baloo 2 Fallback", system-ui, sans-serif; f
     <button class="btn" id="cancelCreate" type="button" style="width:100%;margin-top:10px;background:var(--paper-2)">Tillbaka</button>
   </section>
 
-  <!-- ── KARTAN ─────────────────────────── -->
-  <section id="screen-map" class="screen">
+  <!-- ── Delad topplist för båda kartorna ─ -->
+  <div id="mapHeader" hidden>
     <div class="top-bar">
       <button class="who" id="whoBtn" type="button" style="background:none;border:none;padding:0;cursor:pointer;text-align:left;font-family:inherit;color:inherit">
         <span id="whoArt"></span>
@@ -624,7 +767,35 @@ h1, h2, h3{ font-family: "Baloo 2", "Baloo 2 Fallback", system-ui, sans-serif; f
         </svg>
       </button>
     </div>
+    <div class="world-switch" id="worldSwitch" role="group" aria-label="Välj värld">
+      <button type="button" data-world="land" aria-pressed="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M3 7l6-3 6 3 6-3v14l-6 3-6-3-6 3z"/><path d="M9 4v14M15 7v14"/></svg>
+        Räknelandet
+      </button>
+      <button type="button" data-world="tram" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><rect x="5" y="3.5" width="14" height="14" rx="3.5"/><path d="M5 9h14M9.5 3.5V2M14.5 3.5V2M8 21l2-3.5M16 21l-2-3.5M4 21h16"/><circle cx="9" cy="13.5" r="1.1" fill="currentColor"/><circle cx="15" cy="13.5" r="1.1" fill="currentColor"/></svg>
+        Spårvagn
+      </button>
+    </div>
+  </div>
+
+  <!-- ── RÄKNELANDETS KARTA ─────────────── -->
+  <section id="screen-map" class="screen">
     <div class="map" id="map"></div>
+  </section>
+
+  <!-- ── SPÅRVAGN: VÄLJ LINJE ───────────── -->
+  <section id="screen-lines" class="screen">
+    <div class="line-list" id="lineList"></div>
+    <p class="footnote" id="tramCredit"></p>
+  </section>
+
+  <!-- ── SPÅRVAGN: RESAN ────────────────── -->
+  <section id="screen-trip" class="screen">
+    <div class="trip-head" id="tripHead"></div>
+    <div id="stopCard"></div>
+    <div class="route" id="route"></div>
+    <button class="btn go-btn" id="goBtn" type="button">Åk till nästa hållplats!</button>
   </section>
 
   <!-- ── SPEL ───────────────────────────── -->
@@ -659,7 +830,7 @@ h1, h2, h3{ font-family: "Baloo 2", "Baloo 2 Fallback", system-ui, sans-serif; f
 
   <!-- ── RESULTAT ───────────────────────── -->
   <section id="screen-result" class="screen">
-    <div class="panel result-card">
+    <div class="panel result-card" id="resultLand">
       <div class="result-buddy" id="resultBuddy" aria-hidden="true"></div>
       <h2 id="resultTitle"></h2>
       <p id="resultSub" style="margin:6px 0 0;font-size:var(--t-sm)"></p>
@@ -671,6 +842,7 @@ h1, h2, h3{ font-family: "Baloo 2", "Baloo 2 Fallback", system-ui, sans-serif; f
         <button class="btn home" id="backBtn" type="button">Till kartan</button>
       </div>
     </div>
+    <div class="panel arrive-card" id="resultTram" hidden></div>
   </section>
 
 </main>
@@ -850,7 +1022,9 @@ function badgeArt(kind){
     tree:  frame("#DFF3E3") + `<rect x="27" y="34" width="7" height="14" rx="2" fill="#C97A3A" stroke="${INK}" stroke-width="3"/><path d="M30 10l13 24H17z" fill="#3E9E51" stroke="${INK}" stroke-width="3.4" stroke-linejoin="round"/><path d="M30 19l10 15H20z" fill="#57C96B" stroke="${INK}" stroke-width="3.2" stroke-linejoin="round"/>`,
     gem:   frame("#EDE6FF") + `<path d="M19 20h22l7 10-18 20-18-20z" fill="#9061F9" stroke="${INK}" stroke-width="3.4" stroke-linejoin="round"/><path d="M12 30h36M19 20l11 30M41 20L30 50" fill="none" stroke="${INK}" stroke-width="2.6"/>`,
     mount: frame("#FFEBD9") + `<path d="M8 45L24 17l10 16 5-7 13 19z" fill="#E2762A" stroke="${INK}" stroke-width="3.4" stroke-linejoin="round"/><path d="M18 30l6-10 5 8-4 5z" fill="#FFFDF7" stroke="${INK}" stroke-width="2.6" stroke-linejoin="round"/>`,
-    cloud: frame("#DFF2FD") + `<path d="M18 40a8 8 0 0 1 1-16 11 11 0 0 1 21-2 8 8 0 0 1 1 18z" fill="#FFFDF7" stroke="${INK}" stroke-width="3.4" stroke-linejoin="round"/>`
+    cloud: frame("#DFF2FD") + `<path d="M18 40a8 8 0 0 1 1-16 11 11 0 0 1 21-2 8 8 0 0 1 1 18z" fill="#FFFDF7" stroke="${INK}" stroke-width="3.4" stroke-linejoin="round"/>`,
+    tram:  frame("#DFF2FD") + `<rect x="17" y="14" width="26" height="32" rx="7" fill="#FF6B6B" stroke="${INK}" stroke-width="3.4"/><rect x="21" y="20" width="18" height="10" rx="3" fill="#A6E7FF" stroke="${INK}" stroke-width="2.6"/><circle cx="24" cy="40" r="3" fill="${INK}"/><circle cx="36" cy="40" r="3" fill="${INK}"/><path d="M30 14V8" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>`,
+    spar:  frame("#EDE6FF") + `<path d="M20 48V16M40 48V16" stroke="${INK}" stroke-width="4" stroke-linecap="round"/><path d="M14 22h32M14 32h32M14 42h32" stroke="#9061F9" stroke-width="4" stroke-linecap="round"/>`
   };
   return `<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">${art[kind] || art.star}</svg>`;
 }
@@ -859,11 +1033,11 @@ function badgeArt(kind){
    Räknelandet: fem områden, femton banor
    ═══════════════════════════════════════════ */
 const REGIONS = [
-  { name:"Ängen",   color:"#57C96B", tint:"#DDF6D6" },
-  { name:"Skogen",  color:"#2F8C45", tint:"#BCE4C2" },
-  { name:"Grottan", color:"#7B4BE0", tint:"#DCCFF7" },
-  { name:"Berget",  color:"#D9691F", tint:"#FBDCC0" },
-  { name:"Molnen",  color:"#2FA9D8", tint:"#D8EFFC" }
+  { name:"Ängen",   color:"#57C96B", tint:"#D8F5CE" },
+  { name:"Skogen",  color:"#2F8C45", tint:"#A9DCB6" },
+  { name:"Grottan", color:"#7B4BE0", tint:"#C4B0EC" },
+  { name:"Berget",  color:"#D9691F", tint:"#F6D0A6" },
+  { name:"Molnen",  color:"#2FA9D8", tint:"#DCEFFC" }
 ];
 
 const LEVELS = [
@@ -966,8 +1140,314 @@ const BADGES = [
   { id:"streak10",name:"Tio i rad",       desc:"Tio rätt i rad",         art:"bolt",  test:p => (p.bestStreak || 0) >= 10 },
   { id:"coin300", name:"300 mynt",        desc:"Samla 300 guldmynt",     art:"coin",  test:p => p.coins >= 300 },
   { id:"coin1000",name:"1000 mynt",       desc:"Samla 1000 guldmynt",    art:"chest", test:p => p.coins >= 1000 },
-  { id:"star45",  name:"Hela landet",     desc:"Alla 45 stjärnor",       art:"crown", test:p => totalStars(p) >= MAX_STARS }
+  { id:"star45",  name:"Hela landet",     desc:"Alla 45 stjärnor",       art:"crown", test:p => totalStars(p) >= MAX_STARS },
+  { id:"tram1",   name:"Första resan",    desc:"Åk en hållplats",        art:"tram",  test:p => (p.stopsRidden || 0) >= 1 },
+  { id:"tram25",  name:"25 hållplatser",  desc:"Åk 25 hållplatser",      art:"tram",  test:p => (p.stopsRidden || 0) >= 25 },
+  { id:"tramline",name:"Ändstation",      desc:"Åk en hel linje",        art:"spar",  test:p => (p.linesDone || []).length >= 1 },
+  { id:"tram3",   name:"Tre linjer",      desc:"Åk tre hela linjer",     art:"spar",  test:p => (p.linesDone || []).length >= 3 }
 ];
+
+
+/* ── Göteborgs spårvagnslinjer ────────────────────────────────────
+   Hållplatser och linjefärger hämtade från OpenStreetMaps rutt-
+   relationer (© OpenStreetMap-bidragsgivare, ODbL) i september 2026.
+   Vill du rätta något är det bara att ändra i listan här nedanför.
+   ──────────────────────────────────────────────────────────────── */
+const TRAM_LINES = [
+  { ref:"1", col:"#FFFFFF", a:"Östra Sjukhuset", b:"Opaltorget",
+    stops:["Östra Sjukhuset","Tingvallsvägen","Kaggeledstorget","Munkebäckstorget","Härlanda","Stockholmsgatan","Redbergsplatsen","Olskrokstorget","Svingeln","Ullevi Norra","Drottningtorget","Brunnsparken","Stenpiren","Järntorget","Prinsgatan","Olivedalsgatan","Linnéplatsen","Botaniska Trädgården","Marklandsgatan","Axel Dahlströms torg","Lantmilsgatan","Nymilsgatan","Musikvägen","Positivgatan","Frölunda Torg","Briljantgatan","Smaragdgatan","Opaltorget"] },
+  { ref:"2", col:"#FDDD04", a:"Väderilsgatan", b:"Axel Dahlströms torg",
+    stops:["Väderilsgatan","Friskväderstorget","Önskevädersgatan","Mildvädersgatan","Vårväderstorget","Sälöfjordsgatan","Eketrägatan","Gropegårdsgatan","Rambergsvallen","Wieselgrensplatsen","Vågmästareplatsen","Hjalmar Brantingsplatsen","Frihamnen","Nils Ericsonsplatsen","Brunnsparken","Domkyrkan","Grönsakstorget","Vasaplatsen","Vasa Viktoriagatan","Handelshögskolan","Brunnsgatan","Seminariegatan","Olivedalsgatan","Linnéplatsen","Botaniska Trädgården","Marklandsgatan","Axel Dahlströms torg"] },
+  { ref:"3", col:"#0079C2", a:"Kålltorp", b:"Marklandsgatan",
+    stops:["Virginsgatan","Solrosgatan","Härlanda","Stockholmsgatan","Redbergsplatsen","Olskrokstorget","Svingeln","Ullevi Norra","Drottningtorget","Brunnsparken","Kungsportsplatsen","Valand","Vasaplatsen","Vasa Viktoriagatan","Hagakyrkan","Järntorget","Masthuggstorget","Stigbergstorget","Kaptensgatan","Chapmans Torg","Jægerdorffsplatsen","Vagnhallen Majorna","Ostindiegatan","Mariaplan","Godhemsgatan","Klintens Väg","Högsbogatan","Bokekullsgatan","Marklandsgatan"] },
+  { ref:"4", col:"#00A261", a:"Mölndal", b:"Angered Centrum",
+    stops:["Mölndals Innerstad","Mölndals sjukhus","Lackarebäck","Krokslätts Fabriker","Krokslätts torg","Lana","Varbergsgatan","Elisedal","Almedal","Liseberg Södra","Berzeliigatan","Valand","Kungsportsplatsen","Brunnsparken","Drottningtorget","Gamlestads Torg","Hjällbo","Hammarkullen","Storås","Angered Centrum"] },
+  { ref:"5", col:"#EE3A41", a:"Länsmansgården", b:"Östra Sjukhuset",
+    stops:["Varmfrontsgatan","Temperaturgatan","Väderilsgatan","Friskväderstorget","Önskevädersgatan","Mildvädersgatan","Vårväderstorget","Sälöfjordsgatan","Eketrägatan","Gropegårdsgatan","Rambergsvallen","Wieselgrensplatsen","Vågmästareplatsen","Hjalmar Brantingsplatsen","Frihamnen","Lilla Bommen","Brunnsparken","Kungsportsplatsen","Valand","Berzeliigatan","Korsvägen","Liseberg Station","Sankt Sigfrids Plan","Ekmanska","Bögatan","Töpelsgatan","Welandergatan","Virginsgatan","Solrosgatan","Munkebäckstorget","Kaggeledstorget","Tingvallsvägen","Östra Sjukhuset"] },
+  { ref:"6", col:"#F79727", a:"Varmfrontsgatan", b:"Aprilgatan",
+    stops:["Varmfrontsgatan","Temperaturgatan","Väderilsgatan","Friskväderstorget","Önskevädersgatan","Mildvädersgatan","Vårväderstorget","Sälöfjordsgatan","Eketrägatan","Gropegårdsgatan","Rambergsvallen","Wieselgrensplatsen","Vågmästareplatsen","Hjalmar Brantingsplatsen","Frihamnen","Nils Ericsonsplatsen","Brunnsparken","Domkyrkan","Grönsakstorget","Hagakyrkan","Järntorget","Prinsgatan","Olivedalsgatan","Linnéplatsen","Sahlgrenska Huvudentré","Medicinaregatan","Wavrinskys Plats","Chalmers","Scandinavium","Ullevi Södra","Ullevi Norra","Svingeln","Olskrokstorget","Redbergsplatsen","Ejdergatan","Gamlestads Torg","SKF","Bellevue","Kviberg","Beväringsgatan","Nymånegatan","Runstavsgatan","Kortedala Torg","Allhelgonakyrkan","Aprilgatan"] },
+  { ref:"7", col:"#7D4313", a:"Tynnered", b:"Bergsjön",
+    stops:["Opaltorget","Smaragdgatan","Briljantgatan","Frölunda Torg","Positivgatan","Musikvägen","Nymilsgatan","Lantmilsgatan","Axel Dahlströms torg","Marklandsgatan","Botaniska Trädgården","Sahlgrenska Huvudentré","Medicinaregatan","Wavrinskys Plats","Chalmers","Kapellplatsen","Vasaplatsen","Valand","Kungsportsplatsen","Brunnsparken","Drottningtorget","Gamlestads Torg","SKF","Bellevue","Kviberg","Beväringsgatan","Nymånegatan","Runstavsgatan","Kortedala Torg","Allhelgonakyrkan","Januarigatan","Galileis Gata","Teleskopgatan","Rymdtorget","Komettorget"] },
+  { ref:"8", col:"#872387", a:"Angered Centrum", b:"Frölunda Torg",
+    stops:["Angered Centrum","Storås","Hammarkullen","Hjällbo","Gamlestads Torg","Ejdergatan","Redbergsplatsen","Olskrokstorget","Svingeln","Ullevi Norra","Ullevi Södra","Scandinavium","Chalmers","Wavrinskys Plats","Medicinaregatan","Sahlgrenska Huvudentré","Botaniska Trädgården","Marklandsgatan","Axel Dahlströms torg","Lantmilsgatan","Nymilsgatan","Musikvägen","Positivgatan","Frölunda Torg"] },
+  { ref:"9", col:"#B9E2F8", a:"Angered Centrum", b:"Kungssten",
+    stops:["Angered Centrum","Storås","Hammarkullen","Hjällbo","Gamlestads Torg","Drottningtorget","Brunnsparken","Domkyrkan","Grönsakstorget","Hagakyrkan","Järntorget","Masthuggstorget","Stigbergstorget","Kaptensgatan","Chapmans Torg","Jægerdorffsplatsen","Vagnhallen Majorna","Ostindiegatan","Sannaplan","Sandarna","Kungssten"] },
+  { ref:"10", col:"#C7DF8E", a:"Lindholmen", b:"Guldheden",
+    stops:["Lindholmen","Pumpgatan","Jubileumsparken","Lilla Bommen","Brunnsparken","Kungsportsplatsen","Valand","Vasaplatsen","Kapellplatsen","Chalmers","Wavrinskys Plats","Doktor Fries Torg","Doktor Sydows Gata"] },
+  { ref:"11", col:"#231F20", a:"Saltholmen", b:"Bergsjön",
+    stops:["Saltholmen","Långedrag","Hinsholmen","Käringberget","Tranered","Hagen","Nya Varvsallén","Kungssten","Sandarna","Sannaplan","Mariaplan","Godhemsgatan","Ekedal","Majvallen","Fjällgatan","Stigbergstorget","Masthuggstorget","Järntorget","Stenpiren","Brunnsparken","Drottningtorget","Gamlestads Torg","SKF","Bellevue","Kviberg","Beväringsgatan","Nymånegatan","Runstavsgatan","Kortedala Torg","Allhelgonakyrkan","Januarigatan","Galileis Gata","Teleskopgatan","Rymdtorget","Komettorget"] },
+  { ref:"12", col:"#57B9A8", a:"Mölndals Innerstad", b:"Lindholmen",
+    stops:["Mölndals Innerstad","Mölndals sjukhus","Lackarebäck","Krokslätts Fabriker","Krokslätts torg","Lana","Varbergsgatan","Elisedal","Almedal","Liseberg Södra","Korsvägen","Scandinavium","Ullevi Södra","Drottningtorget","Nils Ericsonsplatsen","Jubileumsparken","Pumpgatan","Lindholmen"] }
+];
+
+/* Hållplatser vars namn förtjänar en egen bild. Övriga får sin bild
+   av namnets ändelse: torg, plats, kyrka, sjukhus – annars en gata. */
+const STOP_ART = {
+ "Allhelgonakyrkan":"kyrka",
+ "Angered Centrum":"hoghus",
+ "Aprilgatan":"hoghus",
+ "Axel Dahlströms torg":"affar",
+ "Bellevue":"skog",
+ "Berzeliigatan":"noje",
+ "Beväringsgatan":"hoghus",
+ "Botaniska Trädgården":"blomma",
+ "Briljantgatan":"sten",
+ "Brunnsparken":"fontan",
+ "Bögatan":"skog",
+ "Chalmers":"skola",
+ "Doktor Fries Torg":"skola",
+ "Doktor Sydows Gata":"skola",
+ "Domkyrkan":"kyrka",
+ "Drottningtorget":"station",
+ "Ekmanska":"sjukhus",
+ "Fjällgatan":"hav",
+ "Frihamnen":"hamn",
+ "Friskväderstorget":"vader",
+ "Frölunda Torg":"affar",
+ "Galileis Gata":"rymd",
+ "Gamlestads Torg":"station",
+ "Gropegårdsgatan":"fabrik",
+ "Hagakyrkan":"kyrka",
+ "Hagen":"skog",
+ "Hammarkullen":"hoghus",
+ "Handelshögskolan":"skola",
+ "Hinsholmen":"hav",
+ "Hjällbo":"hoghus",
+ "Härlanda":"skog",
+ "Januarigatan":"hoghus",
+ "Jubileumsparken":"hamn",
+ "Kapellplatsen":"skola",
+ "Komettorget":"rymd",
+ "Korsvägen":"noje",
+ "Kortedala Torg":"hoghus",
+ "Krokslätts Fabriker":"fabrik",
+ "Kungsportsplatsen":"noje",
+ "Kviberg":"arena",
+ "Käringberget":"hav",
+ "Lilla Bommen":"hamn",
+ "Lindholmen":"hamn",
+ "Linnéplatsen":"skog",
+ "Liseberg Station":"station",
+ "Liseberg Södra":"noje",
+ "Långedrag":"hav",
+ "Mariaplan":"affar",
+ "Marklandsgatan":"affar",
+ "Masthuggstorget":"hamn",
+ "Medicinaregatan":"sjukhus",
+ "Mildvädersgatan":"vader",
+ "Musikvägen":"musik",
+ "Mölndals Innerstad":"station",
+ "Mölndals sjukhus":"sjukhus",
+ "Nils Ericsonsplatsen":"station",
+ "Nya Varvsallén":"hamn",
+ "Nymånegatan":"hoghus",
+ "Opaltorget":"sten",
+ "Ostindiegatan":"hamn",
+ "Positivgatan":"musik",
+ "Pumpgatan":"hamn",
+ "Rambergsvallen":"arena",
+ "Runstavsgatan":"hoghus",
+ "Rymdtorget":"rymd",
+ "SKF":"fabrik",
+ "Sahlgrenska Huvudentré":"sjukhus",
+ "Saltholmen":"hav",
+ "Scandinavium":"arena",
+ "Seminariegatan":"skola",
+ "Smaragdgatan":"sten",
+ "Solrosgatan":"blomma",
+ "Stenpiren":"hamn",
+ "Storås":"hoghus",
+ "Svingeln":"station",
+ "Sälöfjordsgatan":"hav",
+ "Teleskopgatan":"rymd",
+ "Temperaturgatan":"vader",
+ "Tranered":"skog",
+ "Ullevi Norra":"arena",
+ "Ullevi Södra":"arena",
+ "Vagnhallen Majorna":"vagnhall",
+ "Valand":"noje",
+ "Varmfrontsgatan":"vader",
+ "Vasa Viktoriagatan":"skola",
+ "Väderilsgatan":"vader",
+ "Vårväderstorget":"vader",
+ "Wavrinskys Plats":"skola",
+ "Önskevädersgatan":"vader",
+ "Östra Sjukhuset":"sjukhus"
+};
+
+/* ═══════════════════════════════════════════
+   Hållplatsbilder — en liten scen per miljö
+   ═══════════════════════════════════════════ */
+const HIMMEL = `<rect width="320" height="150" fill="#BFE6FA"/><circle cx="268" cy="30" r="17" fill="#FFC42E" stroke="${INK}" stroke-width="3"/>`;
+const MARK   = `<rect y="112" width="320" height="38" fill="#8FD98F" stroke="${INK}" stroke-width="3"/>`;
+const GATA   = `<rect y="112" width="320" height="38" fill="#B9AFD6" stroke="${INK}" stroke-width="3"/><path d="M0 131h34M56 131h34M112 131h34M168 131h34M224 131h34M280 131h34" stroke="#FFFDF7" stroke-width="4" stroke-linecap="round"/>`;
+const hus = (x, w, h, f) => `<rect x="${x}" y="${112 - h}" width="${w}" height="${h}" rx="4" fill="${f}" stroke="${INK}" stroke-width="3"/>`;
+const fonster = (x, y, n, m) => { let o = ""; for(let i = 0; i < n; i++) for(let j = 0; j < m; j++) o += `<rect x="${x + i * 16}" y="${y + j * 17}" width="10" height="11" rx="2" fill="#FFF3B0" stroke="${INK}" stroke-width="2"/>`; return o; };
+const gran = (x, y, s) => `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-4" y="0" width="8" height="14" fill="#8A5A2B" stroke="${INK}" stroke-width="2.6"/><path d="M0-46l20 26h-40zM0-30l24 30h-48z" fill="#3E9E51" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/></g>`;
+const lov  = (x, y, s, f) => `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-4" y="-14" width="8" height="16" fill="#8A5A2B" stroke="${INK}" stroke-width="2.6"/><circle cy="-28" r="21" fill="${f || "#57C96B"}" stroke="${INK}" stroke-width="3"/></g>`;
+const moln = (x, y, s) => `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-26 8a13 13 0 0 1 2-26 18 18 0 0 1 34-3 13 13 0 0 1 2 29z" fill="#FFFDF7" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/></g>`;
+
+const SCENES = {
+  gata:    HIMMEL + moln(70, 34, .8) + GATA + hus(18, 74, 66, "#FF9E9E") + fonster(30, 60, 3, 2) +
+           hus(104, 62, 52, "#FFD98A") + fonster(114, 74, 2, 2) + hus(180, 82, 74, "#A8D8F0") + fonster(194, 52, 3, 3) +
+           `<path d="M282 112V58" stroke="${INK}" stroke-width="5" stroke-linecap="round"/><circle cx="282" cy="52" r="9" fill="#FFC42E" stroke="${INK}" stroke-width="3"/>`,
+
+  torg:    HIMMEL + moln(58, 30, .75) + `<rect y="112" width="320" height="38" fill="#D9CFC0" stroke="${INK}" stroke-width="3"/>` +
+           hus(6, 56, 60, "#F2B8D8") + hus(250, 64, 66, "#B8E0C8") +
+           `<g><rect x="76" y="76" width="72" height="36" fill="#FFFDF7" stroke="${INK}" stroke-width="3"/><path d="M70 76h84l-10-18H80z" fill="#FF6B6B" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
+            <circle cx="96" cy="94" r="7" fill="#FFC42E" stroke="${INK}" stroke-width="2.6"/><circle cx="118" cy="94" r="7" fill="#57C96B" stroke="${INK}" stroke-width="2.6"/><circle cx="140" cy="94" r="7" fill="#FF8AD0" stroke="${INK}" stroke-width="2.6"/></g>` +
+           `<g><rect x="168" y="80" width="62" height="32" fill="#FFFDF7" stroke="${INK}" stroke-width="3"/><path d="M162 80h74l-9-16h-56z" fill="#62CDF2" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/></g>`,
+
+  hoghus:  HIMMEL + moln(46, 28, .7) + MARK + hus(14, 58, 96, "#C9B9E8") + fonster(24, 30, 3, 5) +
+           hus(88, 52, 74, "#F5C7A0") + fonster(98, 52, 2, 4) + hus(154, 64, 108, "#9ED4E8") + fonster(166, 18, 3, 6) +
+           hus(232, 60, 82, "#F3B7C8") + fonster(244, 44, 3, 4),
+
+  park:    HIMMEL + moln(60, 30, .8) + MARK + lov(52, 112, 1) + lov(250, 112, .85, "#8FE07E") + gran(160, 112, .7) +
+           `<g><rect x="118" y="88" width="66" height="7" rx="3" fill="#C98A4A" stroke="${INK}" stroke-width="2.6"/><path d="M124 95v16M178 95v16" stroke="${INK}" stroke-width="4" stroke-linecap="round"/></g>` +
+           `<circle cx="212" cy="104" r="8" fill="#FF8AD0" stroke="${INK}" stroke-width="2.6"/><circle cx="96" cy="106" r="7" fill="#FFC42E" stroke="${INK}" stroke-width="2.6"/>`,
+
+  skog:    HIMMEL + moln(56, 26, .7) + `<path d="M0 112c60-46 120-30 170-52s110-6 150 12v78H0z" fill="#6BC97E" stroke="${INK}" stroke-width="3"/>` +
+           gran(46, 108, .95) + gran(104, 116, .8) + gran(214, 96, .85) + gran(268, 108, 1) + lov(158, 118, .7),
+
+  hav:     `<rect width="320" height="150" fill="#BFE6FA"/><circle cx="266" cy="28" r="16" fill="#FFC42E" stroke="${INK}" stroke-width="3"/>` +
+           `<rect y="96" width="320" height="54" fill="#4FB6E8" stroke="${INK}" stroke-width="3"/>` +
+           `<path d="M10 116q12-7 24 0t24 0M74 132q12-7 24 0t24 0M180 116q12-7 24 0t24 0M252 134q12-7 24 0t24 0" fill="none" stroke="#FFFDF7" stroke-width="3.4" stroke-linecap="round"/>` +
+           `<g><path d="M120 96l16-56 30 56z" fill="#FFFDF7" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/><path d="M112 96h64l-10 14h-44z" fill="#FF6B6B" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/></g>` +
+           `<g><rect x="30" y="46" width="22" height="50" fill="#FFFDF7" stroke="${INK}" stroke-width="3"/><rect x="26" y="36" width="30" height="12" rx="4" fill="#FF6B6B" stroke="${INK}" stroke-width="3"/><rect x="35" y="56" width="12" height="12" fill="#FFC42E" stroke="${INK}" stroke-width="2.6"/></g>`,
+
+  hamn:    HIMMEL + `<rect y="104" width="320" height="46" fill="#4FB6E8" stroke="${INK}" stroke-width="3"/>` +
+           `<g stroke="${INK}" stroke-width="3.4" fill="none"><path d="M40 104V34h96M40 46h22"/><path d="M136 34v22"/></g>` +
+           `<rect x="26" y="104" width="30" height="0" fill="none"/><rect x="124" y="56" width="24" height="18" rx="3" fill="#FFC42E" stroke="${INK}" stroke-width="3"/>` +
+           `<g><rect x="176" y="72" width="118" height="32" rx="5" fill="#FF6B6B" stroke="${INK}" stroke-width="3"/><rect x="196" y="52" width="40" height="22" rx="4" fill="#FFFDF7" stroke="${INK}" stroke-width="3"/><rect x="246" y="76" width="18" height="14" fill="#FFC42E" stroke="${INK}" stroke-width="2.6"/></g>` +
+           `<path d="M10 124q12-7 24 0t24 0M96 132q12-7 24 0t24 0M220 126q12-7 24 0t24 0" fill="none" stroke="#FFFDF7" stroke-width="3.4" stroke-linecap="round"/>`,
+
+  station: HIMMEL + GATA + `<rect x="46" y="36" width="228" height="76" rx="6" fill="#E8B98A" stroke="${INK}" stroke-width="3"/>` +
+           `<path d="M38 40h244l-18-22H56z" fill="#B36A3A" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>` +
+           `<circle cx="160" cy="60" r="15" fill="#FFFDF7" stroke="${INK}" stroke-width="3"/><path d="M160 52v9l6 4" stroke="${INK}" stroke-width="3" stroke-linecap="round" fill="none"/>` +
+           `<rect x="140" y="82" width="40" height="30" rx="4" fill="#7B5B3A" stroke="${INK}" stroke-width="3"/>` +
+           fonster(64, 78, 3, 1) + fonster(212, 78, 3, 1),
+
+  sjukhus: HIMMEL + GATA + hus(52, 216, 84, "#FFFDF7") + fonster(70, 46, 4, 3) +
+           `<g transform="translate(232 56)"><rect x="-9" y="-26" width="18" height="52" rx="3" fill="#FF6B6B" stroke="${INK}" stroke-width="3"/><rect x="-26" y="-9" width="52" height="18" rx="3" fill="#FF6B6B" stroke="${INK}" stroke-width="3"/></g>`,
+
+  skola:   HIMMEL + GATA + `<rect x="40" y="52" width="240" height="60" fill="#FFE9C4" stroke="${INK}" stroke-width="3"/>` +
+           `<path d="M30 52h260L160 16z" fill="#6FA8DC" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>` +
+           `<g fill="#FFFDF7" stroke="${INK}" stroke-width="3"><rect x="58" y="64" width="16" height="48"/><rect x="102" y="64" width="16" height="48"/><rect x="202" y="64" width="16" height="48"/><rect x="246" y="64" width="16" height="48"/></g>` +
+           `<rect x="142" y="70" width="36" height="42" rx="3" fill="#8A5A2B" stroke="${INK}" stroke-width="3"/>`,
+
+  kyrka:   HIMMEL + MARK + `<rect x="96" y="60" width="128" height="52" fill="#FFE3C4" stroke="${INK}" stroke-width="3"/>` +
+           `<g><rect x="140" y="20" width="40" height="42" fill="#FFFDF7" stroke="${INK}" stroke-width="3"/><path d="M134 22h52l-26-20z" fill="#8FBEDC" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/><path d="M160 2V-8M152-2h16" stroke="${INK}" stroke-width="3.4" stroke-linecap="round"/></g>` +
+           `<path d="M148 112V84a12 12 0 0 1 24 0v28z" fill="#8A5A2B" stroke="${INK}" stroke-width="3"/>` +
+           `<circle cx="118" cy="82" r="9" fill="#A6E7FF" stroke="${INK}" stroke-width="2.6"/><circle cx="202" cy="82" r="9" fill="#A6E7FF" stroke="${INK}" stroke-width="2.6"/>`,
+
+  arena:   HIMMEL + MARK + `<path d="M30 112V72a130 26 0 0 1 260 0v40z" fill="#D9DEE8" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>` +
+           `<ellipse cx="160" cy="72" rx="130" ry="26" fill="#8FD98F" stroke="${INK}" stroke-width="3"/>` +
+           `<g stroke="${INK}" stroke-width="3.4"><path d="M46 60V24M274 60V24" fill="none"/><rect x="30" y="10" width="32" height="16" rx="4" fill="#FFC42E"/><rect x="258" y="10" width="32" height="16" rx="4" fill="#FFC42E"/></g>` +
+           `<circle cx="160" cy="72" r="11" fill="#FFFDF7" stroke="${INK}" stroke-width="3"/>`,
+
+  noje:    HIMMEL + MARK +
+           `<g stroke="${INK}" stroke-width="3.4"><path d="M110 112l40-46 40 46" fill="none"/><circle cx="150" cy="56" r="46" fill="#FFFDF7"/><circle cx="150" cy="56" r="9" fill="#FFC42E"/>
+            <path d="M150 10v92M104 56h92M117 23l66 66M183 23l-66 66" fill="none"/></g>` +
+           `<g stroke="${INK}" stroke-width="2.6"><circle cx="150" cy="10" r="8" fill="#FF6B6B"/><circle cx="150" cy="102" r="8" fill="#62CDF2"/><circle cx="104" cy="56" r="8" fill="#57C96B"/><circle cx="196" cy="56" r="8" fill="#FF8AD0"/></g>` +
+           `<g><rect x="238" y="80" width="56" height="32" fill="#FFFDF7" stroke="${INK}" stroke-width="3"/><path d="M232 80h68l-8-16h-52z" fill="#FF6B6B" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/></g>`,
+
+  rymd:    `<rect width="320" height="150" fill="#2B2A6E"/>` +
+           `<g fill="#FFFDF7"><circle cx="30" cy="26" r="2.6"/><circle cx="86" cy="14" r="2"/><circle cx="140" cy="34" r="2.6"/><circle cx="228" cy="18" r="2"/><circle cx="288" cy="42" r="2.6"/><circle cx="58" cy="62" r="2"/><circle cx="196" cy="58" r="2"/></g>` +
+           `<g transform="translate(252 40)"><circle r="24" fill="#FF8AD0" stroke="${INK}" stroke-width="3"/><ellipse rx="38" ry="9" fill="none" stroke="#FFC42E" stroke-width="5" transform="rotate(-18)"/></g>` +
+           `<rect y="118" width="320" height="32" fill="#6B5BB5" stroke="${INK}" stroke-width="3"/>` +
+           `<g transform="translate(120 66)"><path d="M0-46c14 14 18 34 18 50H-18c0-16 4-36 18-50z" fill="#FFFDF7" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
+            <path d="M-18 22l-16 18 16-6zM18 22l16 18-16-6z" fill="#FF6B6B" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
+            <circle cy="-14" r="8" fill="#62CDF2" stroke="${INK}" stroke-width="3"/>
+            <path d="M-9 40q9 18 18 0z" fill="#FFC42E" stroke="${INK}" stroke-width="2.6"/></g>`,
+
+  sten:    `<rect width="320" height="150" fill="#3E2E6B"/>` +
+           `<path d="M0 118h320v32H0z" fill="#6B5BB5" stroke="${INK}" stroke-width="3"/>` +
+           `<g stroke="${INK}" stroke-width="3" stroke-linejoin="round">
+              <path d="M74 118L48 74l26-30 26 30z" fill="#62CDF2"/><path d="M74 44l26 30-26 44-26-44z" fill="#A6E7FF" opacity=".8"/>
+              <path d="M172 118l-20-34 20-24 20 24z" fill="#57C96B"/>
+              <path d="M254 118l-24-40 24-28 24 28z" fill="#FF8AD0"/></g>` +
+           `<g fill="#FFFDF7"><circle cx="120" cy="34" r="3"/><circle cx="208" cy="24" r="2.4"/><circle cx="40" cy="30" r="2.4"/></g>`,
+
+  vader:   `<rect width="320" height="150" fill="#CDEBFB"/>` +
+           `<circle cx="72" cy="48" r="26" fill="#FFC42E" stroke="${INK}" stroke-width="3"/>` +
+           `<g stroke="${INK}" stroke-width="3.4" stroke-linecap="round"><path d="M72 8v-2M72 92v2M32 48h-2M114 48h2M44 20l-2-2M100 76l2 2M100 20l2-2M44 76l-2 2"/></g>` +
+           moln(196, 44, 1.2) + moln(258, 74, .85) + MARK +
+           `<g stroke="#4FB6E8" stroke-width="4.5" stroke-linecap="round"><path d="M182 66v14M200 70v14M218 66v14"/></g>`,
+
+  fabrik:  HIMMEL + moln(62, 24, .7) + GATA + hus(40, 200, 62, "#C4B5A0") + fonster(58, 74, 5, 1) +
+           `<g><rect x="204" y="14" width="26" height="96" fill="#B04B4B" stroke="${INK}" stroke-width="3"/><rect x="248" y="34" width="26" height="76" fill="#B04B4B" stroke="${INK}" stroke-width="3"/></g>` +
+           moln(214, 6, .55) + moln(258, 26, .45) +
+           `<path d="M40 50h200l-24-22H64z" fill="#8A7A66" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>`,
+
+  vagnhall:HIMMEL + GATA + `<rect x="24" y="34" width="272" height="78" rx="6" fill="#D8CFE8" stroke="${INK}" stroke-width="3"/>` +
+           `<path d="M16 38h288l-20-20H36z" fill="#9061F9" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>` +
+           `<g><rect x="46" y="56" width="90" height="56" rx="5" fill="#2B1B54" stroke="${INK}" stroke-width="3"/>
+              <rect x="58" y="66" width="66" height="46" rx="5" fill="#FF6B6B" stroke="${INK}" stroke-width="3"/>
+              <rect x="66" y="74" width="50" height="18" rx="3" fill="#A6E7FF" stroke="${INK}" stroke-width="2.6"/></g>` +
+           `<g><rect x="180" y="56" width="90" height="56" rx="5" fill="#2B1B54" stroke="${INK}" stroke-width="3"/>
+              <rect x="192" y="66" width="66" height="46" rx="5" fill="#62CDF2" stroke="${INK}" stroke-width="3"/>
+              <rect x="200" y="74" width="50" height="18" rx="3" fill="#A6E7FF" stroke="${INK}" stroke-width="2.6"/></g>`,
+
+  blomma:  HIMMEL + MARK +
+           `<g stroke="${INK}" stroke-width="3"><path d="M64 112V78M160 112V70M256 112V82" fill="none" stroke-width="4"/></g>` +
+           `<g transform="translate(64 70)"><g stroke="${INK}" stroke-width="3"><circle cx="0" cy="-12" r="10" fill="#FF6B6B"/><circle cx="12" cy="0" r="10" fill="#FF6B6B"/><circle cx="0" cy="12" r="10" fill="#FF6B6B"/><circle cx="-12" cy="0" r="10" fill="#FF6B6B"/><circle r="8" fill="#FFC42E"/></g></g>` +
+           `<g transform="translate(160 60)"><g stroke="${INK}" stroke-width="3"><circle cx="0" cy="-14" r="11" fill="#FF8AD0"/><circle cx="14" cy="0" r="11" fill="#FF8AD0"/><circle cx="0" cy="14" r="11" fill="#FF8AD0"/><circle cx="-14" cy="0" r="11" fill="#FF8AD0"/><circle r="9" fill="#FFC42E"/></g></g>` +
+           `<g transform="translate(256 74)"><g stroke="${INK}" stroke-width="3"><circle cx="0" cy="-11" r="9" fill="#9061F9"/><circle cx="11" cy="0" r="9" fill="#9061F9"/><circle cx="0" cy="11" r="9" fill="#9061F9"/><circle cx="-11" cy="0" r="9" fill="#9061F9"/><circle r="7" fill="#FFC42E"/></g></g>` +
+           `<path d="M28 112q10-14 22 0M280 112q10-14 22 0" fill="none" stroke="#3E9E51" stroke-width="4" stroke-linecap="round"/>`,
+
+  affar:   HIMMEL + GATA + `<rect x="34" y="44" width="252" height="68" rx="5" fill="#FFE9C4" stroke="${INK}" stroke-width="3"/>` +
+           `<rect x="26" y="30" width="268" height="20" rx="6" fill="#FF6B6B" stroke="${INK}" stroke-width="3"/>` +
+           `<g fill="#FFFDF7" stroke="${INK}" stroke-width="2.6"><circle cx="70" cy="40" r="5"/><circle cx="110" cy="40" r="5"/><circle cx="150" cy="40" r="5"/><circle cx="190" cy="40" r="5"/><circle cx="230" cy="40" r="5"/></g>` +
+           `<g fill="#A6E7FF" stroke="${INK}" stroke-width="3"><rect x="50" y="62" width="60" height="50" rx="4"/><rect x="210" y="62" width="60" height="50" rx="4"/></g>` +
+           `<rect x="134" y="66" width="52" height="46" rx="4" fill="#8FD98F" stroke="${INK}" stroke-width="3"/>`,
+
+  musik:   HIMMEL + GATA + hus(20, 80, 70, "#C9B9E8") + fonster(34, 56, 3, 2) + hus(214, 84, 60, "#FFD98A") + fonster(228, 66, 3, 1) +
+           `<g stroke="${INK}" stroke-width="3.4" fill="${INK}"><g transform="translate(126 40)"><ellipse cx="0" cy="34" rx="11" ry="8" transform="rotate(-20)"/><path d="M9 32V-2l26-8v34" fill="none"/><ellipse cx="35" cy="26" rx="11" ry="8" transform="rotate(-20 35 26)"/></g></g>` +
+           `<g stroke="${INK}" stroke-width="3" fill="#FF6B6B"><ellipse cx="188" cy="44" rx="9" ry="7" transform="rotate(-20 188 44)"/><path d="M196 42V16" fill="none" stroke-width="3.4"/><path d="M196 16q12 2 12 12" fill="none" stroke-width="3.4"/></g>`,
+
+  fontan:  HIMMEL + `<rect y="112" width="320" height="38" fill="#D9CFC0" stroke="${INK}" stroke-width="3"/>` +
+           hus(6, 62, 62, "#F2B8D8") + hus(258, 56, 68, "#A8D8F0") + lov(88, 112, .62) +
+           `<g><ellipse cx="176" cy="106" rx="58" ry="16" fill="#4FB6E8" stroke="${INK}" stroke-width="3"/>
+              <rect x="170" y="58" width="12" height="42" fill="#C4B5A0" stroke="${INK}" stroke-width="3"/>
+              <ellipse cx="176" cy="58" rx="26" ry="8" fill="#C4B5A0" stroke="${INK}" stroke-width="3"/>
+              <path d="M176 50V34M162 56q-8-16-20-18M190 56q8-16 20-18" fill="none" stroke="#7FD9F6" stroke-width="4.5" stroke-linecap="round"/>
+              <circle cx="176" cy="30" r="5" fill="#7FD9F6" stroke="${INK}" stroke-width="2.6"/></g>`
+};
+
+function stopKind(namn){
+  if(STOP_ART[namn]) return STOP_ART[namn];
+  if(/(torg|torget)$/i.test(namn)) return "torg";
+  if(/(platsen|plats|plan|vallen)$/i.test(namn)) return "torg";
+  if(/kyrka/i.test(namn)) return "kyrka";
+  if(/sjukhus/i.test(namn)) return "sjukhus";
+  return "gata";
+}
+function sceneSVG(namn){
+  return `<svg class="scene" viewBox="0 0 320 150" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round">${SCENES[stopKind(namn)] || SCENES.gata}</svg>`;
+}
+
+/* Spårvagn framifrån, i linjens färg och med linjenumret i skylten */
+function ljusFarg(hex){
+  const h = (hex || "#888").replace("#", "");
+  const n = h.length === 3 ? h.split("").map(c => c + c).join("") : h;
+  const r = parseInt(n.slice(0,2), 16), g2 = parseInt(n.slice(2,4), 16), b = parseInt(n.slice(4,6), 16);
+  return (0.299 * r + 0.587 * g2 + 0.114 * b) > 150;
+}
+function tramSVG(col, ref){
+  const text = ljusFarg(col) ? INK : "#FFFDF7";
+  return `<svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round">
+    <path d="M50 6V2" stroke="${INK}" stroke-width="3.4" stroke-linecap="round"/>
+    <path d="M36 2h28" stroke="${INK}" stroke-width="3.4" stroke-linecap="round"/>
+    <rect x="10" y="10" width="80" height="94" rx="22" fill="${col}" stroke="${INK}" stroke-width="5"/>
+    <rect x="20" y="22" width="60" height="20" rx="7" fill="${INK}"/>
+    <text x="50" y="38" text-anchor="middle" font-family="Lilita One, system-ui" font-size="17" fill="#FFC42E">${ref}</text>
+    <path d="M18 52h64v26a10 10 0 0 1-10 10H28a10 10 0 0 1-10-10z" fill="#A6E7FF" stroke="${INK}" stroke-width="4.5"/>
+    <path d="M50 52v36" stroke="${INK}" stroke-width="4"/>
+    <circle cx="24" cy="97" r="6" fill="#FFF3B0" stroke="${INK}" stroke-width="3.4"/>
+    <circle cx="76" cy="97" r="6" fill="#FFF3B0" stroke="${INK}" stroke-width="3.4"/>
+    <rect x="16" y="104" width="68" height="9" rx="4" fill="${INK}"/>
+  </svg>`;
+}
 
 /* ═══════════════════════════════════════════
    Ljud och röst
@@ -1005,7 +1485,9 @@ const SFX = {
   wrong(){ this.tone(311.13, 0, 0.14, "sine", 0.14); this.tone(261.63, 0.13, 0.22, "sine", 0.13); },
   win(){ [523.25, 659.25, 783.99, 1046.5, 783.99, 1046.5, 1318.5].forEach((f, i) => this.tone(f, i * 0.13, 0.3, "triangle", 0.17)); },
   unlock(){ [392, 523.25, 659.25, 880].forEach((f, i) => this.tone(f, i * 0.11, 0.32, "triangle", 0.18)); },
-  badge(){ [659.25, 880, 1046.5, 1318.5, 1760].forEach((f, i) => this.tone(f, i * 0.1, 0.34, "triangle", 0.18)); }
+  badge(){ [659.25, 880, 1046.5, 1318.5, 1760].forEach((f, i) => this.tone(f, i * 0.1, 0.34, "triangle", 0.18)); },
+  tram(){ this.tone(392, 0, 0.5, "sawtooth", 0.07); this.tone(587.33, 0.06, 0.2, "square", 0.07); this.tone(493.88, 0.26, 0.3, "square", 0.06); },
+  pling(){ this.tone(1174.7, 0, 0.1, "square", 0.11); this.tone(880, 0.1, 0.26, "square", 0.1); }
 };
 
 let svVoice = null;
@@ -1088,6 +1570,8 @@ function newProfile(name, char){
     name: name, char: char,
     coins: 0, stars: {}, best: {},
     unlocked: 1, badges: [], bestStreak: 0, perfect: 0, rounds: 0,
+    world: "land", tram: {}, tramLine: null, tramLevel: null, tramMode: "choice",
+    stopsRidden: 0, linesDone: [],
     settings: { sound:true, voice:true, dots:true, rate:1 }
   };
   /* Ta med skatten från den första versionen av spelet */
@@ -1104,11 +1588,14 @@ function nextLevelId(p){
 /* ═══════════════════════════════════════════
    Skärmar och kort
    ═══════════════════════════════════════════ */
-const SCREENS = ["profiles", "create", "map", "game", "result"];
+const SCREENS = ["profiles", "create", "map", "lines", "trip", "game", "result"];
 function show(name){
   SCREENS.forEach(n => el("screen-" + n).classList.toggle("is-active", n === name));
+  const kartvy = name === "map" || name === "lines";
+  el("mapHeader").hidden = !kartvy;
   document.body.classList.toggle("on-map", name === "map");
-  if(name !== "map") window.scrollTo({ top: 0, behavior: "auto" });
+  document.body.classList.toggle("on-tram", name === "lines" || name === "trip");
+  if(name !== "map" && name !== "trip") window.scrollTo({ top: 0, behavior: "auto" });
 }
 
 const overlay = el("overlay"), sheet = el("sheet");
@@ -1146,7 +1633,7 @@ el("profileList").addEventListener("click", (e) => {
   const b = e.target.closest("[data-profile]"); if(!b) return;
   activeId = b.dataset.profile; saveProfiles();
   SFX.tap();
-  enterMap(true);
+  enterWorld(true);
 });
 
 /* ── Skapa spelare ──────────────────────── */
@@ -1176,7 +1663,7 @@ el("createBtn").addEventListener("click", () => {
   const p = newProfile(namn, draftChar);
   profiles.push(p); activeId = p.id; saveProfiles();
   SFX.ensure(); SFX.unlock();
-  enterMap(true, true);
+  enterWorld(true, true);
 });
 
 /* ── Kartan ─────────────────────────────── */
@@ -1184,26 +1671,18 @@ const GAP = 146, TOP = 84, XS = [50, 76, 50, 24];
 const nodeX = (i) => XS[i % XS.length];
 const nodeY = (i) => TOP + i * GAP;
 
-function enterMap(greetHim, isNew){
-  const p = P(); if(!p) return;
-  renderMap(); show("map");
-  const cur = el("node-" + nextLevelId(p));
-  if(cur) setTimeout(() => cur.scrollIntoView({ block:"center", behavior: reduceMotion ? "auto" : "smooth" }), 120);
-  if(greetHim){
-    const halsning = isNew
-      ? `Hej ${p.name}! Välkommen till Räknelandet!`
-      : pick([`Hej igen, ${p.name}!`, `Hej ${p.name}! Kul att du är tillbaka!`, `Hej ${p.name}! Ska vi räkna?`]);
-    setTimeout(() => speak(halsning), 400);
-  }
-}
-
-function renderMap(){
+/* Topplisten är gemensam för båda världarna */
+function renderHeader(){
   const p = P(); if(!p) return;
   el("whoArt").innerHTML = charSVG(p.char, "happy");
   el("whoName").textContent = p.name;
   el("whoCoins").innerHTML = COIN_SVG + " " + p.coins + " mynt · byt spelare";
   el("starTrack").innerHTML = STAR_ON + " " + totalStars(p) + "/" + MAX_STARS;
+}
 
+function renderMap(){
+  const p = P(); if(!p) return;
+  renderHeader();
   const map = el("map");
   const height = nodeY(LEVELS.length - 1) + 120;
   map.style.height = height + "px";
@@ -1215,6 +1694,7 @@ function renderMap(){
     if(!idx.length) return;
     const top = nodeY(idx[0]) - 66, h = nodeY(idx[idx.length - 1]) - nodeY(idx[0]) + 138;
     html += `<div class="region-band" style="top:${top}px;height:${h}px;background:${reg.tint}"></div>`;
+    html += landskapHTML(r, top, h);
     html += `<div class="region-name" style="top:${top - 15}px">${reg.name}</div>`;
   });
 
@@ -1301,6 +1781,267 @@ function openLevelSheet(L){
         <span class="mode-desc">Knappa in siffran${bestT ? "<br>Rekord " + bestT : ""}</span>
       </button>
     </div>`);
+}
+
+
+
+/* ═══════════════════════════════════════════
+   Landskap på kartan — varje område ser ut
+   som det heter
+   ═══════════════════════════════════════════ */
+const D = {
+  blomma: (f) => `<svg viewBox="0 0 40 46"><path d="M20 46V22" stroke="#3E9E51" stroke-width="4" stroke-linecap="round"/><path d="M20 34q-9-2-11-9" fill="none" stroke="#3E9E51" stroke-width="3.6" stroke-linecap="round"/><g stroke="${INK}" stroke-width="3"><circle cx="20" cy="8" r="7" fill="${f}"/><circle cx="29" cy="16" r="7" fill="${f}"/><circle cx="20" cy="24" r="7" fill="${f}"/><circle cx="11" cy="16" r="7" fill="${f}"/><circle cx="20" cy="16" r="5.5" fill="#FFC42E"/></g></svg>`,
+  gras:   `<svg viewBox="0 0 40 30"><g fill="none" stroke="#3E9E51" stroke-width="4.5" stroke-linecap="round"><path d="M8 30q2-16 10-22"/><path d="M20 30q0-18 2-24"/><path d="M32 30q-2-16-10-21"/></g></svg>`,
+  fjaril: `<svg viewBox="0 0 44 34"><g stroke="${INK}" stroke-width="3"><ellipse cx="11" cy="12" rx="10" ry="11" fill="#FF8AD0"/><ellipse cx="33" cy="12" rx="10" ry="11" fill="#FF8AD0"/><ellipse cx="13" cy="26" rx="7" ry="7" fill="#FFC42E"/><ellipse cx="31" cy="26" rx="7" ry="7" fill="#FFC42E"/></g><rect x="20" y="6" width="4" height="24" rx="2" fill="${INK}"/></svg>`,
+  gran:   `<svg viewBox="0 0 56 74"><rect x="23" y="52" width="10" height="22" rx="3" fill="#8A5A2B" stroke="${INK}" stroke-width="3"/><g stroke="${INK}" stroke-width="3.4" stroke-linejoin="round" fill="#2F8C45"><path d="M28 2l17 24H11zM28 20l21 26H7zM28 38l24 22H4z"/></g></svg>`,
+  lov:    `<svg viewBox="0 0 56 74"><rect x="23" y="46" width="10" height="28" rx="3" fill="#8A5A2B" stroke="${INK}" stroke-width="3"/><circle cx="28" cy="28" r="24" fill="#57C96B" stroke="${INK}" stroke-width="3.4"/><circle cx="18" cy="22" r="5" fill="#8FE07E"/></svg>`,
+  svamp:  `<svg viewBox="0 0 44 44"><rect x="16" y="20" width="12" height="22" rx="4" fill="#FFF1D2" stroke="${INK}" stroke-width="3"/><path d="M2 22a20 15 0 0 1 40 0q-20 5-40 0z" fill="#FF6B6B" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/><circle cx="14" cy="14" r="4" fill="#FFFDF7"/><circle cx="29" cy="11" r="5" fill="#FFFDF7"/></svg>`,
+  kristall: (f) => `<svg viewBox="0 0 44 62"><g stroke="${INK}" stroke-width="3.4" stroke-linejoin="round"><path d="M22 62L8 34l14-32 14 32z" fill="${f}"/><path d="M22 2v60" stroke-width="2.4" opacity=".45"/></g></svg>`,
+  stalaktit: `<svg viewBox="0 0 30 66"><path d="M2 0h26l-4 24-9 42-9-42z" fill="#9E85D8" stroke="${INK}" stroke-width="3.4" stroke-linejoin="round"/></svg>`,
+  sten:   `<svg viewBox="0 0 54 36"><path d="M4 36l8-22 16-10 22 14v18z" fill="#B8A990" stroke="${INK}" stroke-width="3.4" stroke-linejoin="round"/></svg>`,
+  topp:   `<svg viewBox="0 0 90 66"><path d="M2 66L34 6l22 34 10-14 22 40z" fill="#C08654" stroke="${INK}" stroke-width="3.4" stroke-linejoin="round"/><path d="M22 40l12-22 11 17-9 9z" fill="#FFFDF7" stroke="${INK}" stroke-width="2.6" stroke-linejoin="round"/></svg>`,
+  moln:   `<svg viewBox="0 0 76 42"><path d="M14 40a13 13 0 0 1 2-25 18 18 0 0 1 34-3 13 13 0 0 1 2 28z" fill="#FFFDF7" stroke="${INK}" stroke-width="3.4" stroke-linejoin="round"/></svg>`,
+  fagel:  `<svg viewBox="0 0 54 24"><path d="M2 18q12-16 24 0M28 18q12-16 24 0" fill="none" stroke="${INK}" stroke-width="4" stroke-linecap="round"/></svg>`,
+  stjarna:`<svg viewBox="0 0 34 34"><path d="M17 1l4 11 12 4-12 4-4 12-4-12-12-4 12-4z" fill="#FFF3B0" stroke="${INK}" stroke-width="2.6" stroke-linejoin="round"/></svg>`
+};
+
+/* Vad som växer var. Slumpen är låst till platsen så kartan ser likadan ut varje gång. */
+const LANDSKAP = [
+  [ {a: D.blomma("#FF8AD0"), w:34}, {a: D.gras, w:38}, {a: D.blomma("#FFC42E"), w:30},
+    {a: D.fjaril, w:36}, {a: D.gras, w:30}, {a: D.blomma("#FFFDF7"), w:32} ],
+  [ {a: D.gran, w:52}, {a: D.gran, w:64}, {a: D.lov, w:56}, {a: D.svamp, w:34},
+    {a: D.gran, w:46}, {a: D.lov, w:48}, {a: D.svamp, w:28} ],
+  [ {a: D.kristall("#62CDF2"), w:36}, {a: D.stalaktit, w:26, top:true}, {a: D.kristall("#FF8AD0"), w:30},
+    {a: D.stalaktit, w:22, top:true}, {a: D.kristall("#8FE07E"), w:34}, {a: D.sten, w:44} ],
+  [ {a: D.topp, w:80}, {a: D.sten, w:46}, {a: D.topp, w:62}, {a: D.sten, w:38},
+    {a: D.topp, w:70}, {a: D.sten, w:52} ],
+  [ {a: D.moln, w:66}, {a: D.fagel, w:44}, {a: D.moln, w:52}, {a: D.stjarna, w:28},
+    {a: D.moln, w:74}, {a: D.fagel, w:36}, {a: D.stjarna, w:24} ]
+];
+
+function slumpFast(n){ const x = Math.sin(n * 127.1 + 11.7) * 43758.5453; return x - Math.floor(x); }
+
+/* Sprid ut landskapet i kanterna så att banorna i mitten aldrig skyms */
+function landskapHTML(r, top, hojd){
+  const delar = LANDSKAP[r] || [];
+  let html = "";
+  const antal = Math.max(6, Math.round(hojd / 78));
+  for(let i = 0; i < antal; i++){
+    const d = delar[i % delar.length];
+    const frö = r * 100 + i;
+    const vanster = i % 2 === 0;
+    const x = vanster ? 4 + slumpFast(frö) * 11 : 85 + slumpFast(frö + 7) * 11;
+    const y = d.top ? top + 6 + slumpFast(frö + 3) * 14
+                    : top + 26 + (hojd - 60) * ((i + 0.5) / antal) + slumpFast(frö + 5) * 22 - 11;
+    const skala = 0.82 + slumpFast(frö + 9) * 0.42;
+    html += `<div class="deco" style="left:${x.toFixed(1)}%;top:${y.toFixed(0)}px;width:${Math.round(d.w * skala)}px${d.top ? ";transform:translate(-50%,0)" : ""}">${d.a}</div>`;
+  }
+  return html;
+}
+
+/* ═══════════════════════════════════════════
+   Spårvagnsvärlden
+   ═══════════════════════════════════════════ */
+const lineByRef = (ref) => TRAM_LINES.find(l => l.ref === ref);
+const tramAt    = (p, ref) => (p.tram && p.tram[ref]) || 0;
+const lineDone  = (p, ref) => tramAt(p, ref) >= lineByRef(ref).stops.length - 1;
+
+function roundel(l, cls){
+  const text = ljusFarg(l.col) ? INK : "#FFFDF7";
+  return `<span class="roundel ${cls || ""}" style="background:${l.col};color:${text}">${l.ref}</span>`;
+}
+
+/* ── Välj linje ─────────────────────────── */
+function renderLines(){
+  const p = P();
+  renderHeader();
+  el("lineList").innerHTML = TRAM_LINES.map(l => {
+    const at = tramAt(p, l.ref), n = l.stops.length, klar = at >= n - 1;
+    return `
+      <button class="line-row" data-line="${l.ref}" type="button" style="--linecol:${l.col}">
+        ${roundel(l)}
+        <span style="min-width:0">
+          <span class="line-ends">${l.a} – ${l.b}</span><br>
+          <span class="line-meta">${n} hållplatser${at ? " · du är vid " + l.stops[at] : ""}</span>
+        </span>
+        <span class="line-prog ${klar ? "klar" : ""}">${klar ? "Hela linjen!" : at + "/" + (n - 1)}</span>
+      </button>`;
+  }).join("");
+  el("tramCredit").innerHTML = "Hållplatser och linjefärger från OpenStreetMap (© OpenStreetMap-bidragsgivare)";
+}
+
+el("lineList").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-line]"); if(!b) return;
+  SFX.tap();
+  openTrip(b.dataset.line, false);
+});
+
+/* ── Resan längs linjen ─────────────────── */
+let tripRef = null, tripFrom = null;
+
+function openTrip(ref, animera){
+  const p = P();
+  tripRef = ref; p.tramLine = ref;
+  if(p.tramLevel == null) p.tramLevel = nextLevelId(p);
+  if(!p.tramMode) p.tramMode = "choice";
+  saveProfiles();
+  renderTrip(animera);
+  show("trip");
+}
+
+function renderTrip(animera, visaBilden){
+  const p = P(), l = lineByRef(tripRef);
+  const at = tramAt(p, tripRef), n = l.stops.length, klar = at >= n - 1;
+  const talnivå = levelById(p.tramLevel) || LEVELS[0];
+
+  el("tripHead").style.setProperty("--linecol", l.col);
+  el("tripHead").innerHTML = `
+    <button class="icon-btn" data-trip="back" type="button" aria-label="Tillbaka till linjerna">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#2E1A66" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-8 7 8 7"/></svg>
+    </button>
+    <span class="trip-mid">
+      <span class="line-ends">mot ${l.b}</span>
+      <button class="line-meta" data-trip="level" type="button" style="background:var(--paper-2);border:2px solid var(--ink);border-radius:999px;padding:2px 11px;cursor:pointer;font-family:inherit;color:inherit;white-space:nowrap">
+        ${at + 1}/${n} · ${talnivå.name} · byt
+      </button>
+      <span class="trip-bar"><span style="width:${Math.round(at / (n - 1) * 100)}%"></span></span>
+    </span>
+    ${roundel(l)}`;
+
+  el("stopCard").innerHTML = `
+    <div class="stop-card">
+      ${sceneSVG(l.stops[at])}
+      <div class="stop-info">
+        <span style="min-width:0">
+          <span class="stop-name" id="stopName">${l.stops[at]}</span><br>
+          <span class="stop-sub">${at === 0 ? "Ändstation – här börjar resan" : klar ? "Ändstation – hela linjen klar!" : "Du är här"}</span>
+        </span>
+        <button class="icon-btn" data-trip="say" type="button" aria-label="Hör hållplatsen">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#2E1A66" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13L7.5 14.5H4z" fill="#2E1A66"/><path d="M16 9.2a4 4 0 0 1 0 5.6"/><path d="M18.6 6.4a8 8 0 0 1 0 11.2"/></svg>
+        </button>
+      </div>
+    </div>`;
+
+  const visaFrån = animera && tripFrom != null ? tripFrom : at;
+  el("route").style.setProperty("--linecol", l.col);
+  el("route").innerHTML =
+    `<div class="route-line"><div class="done-part" style="height:${visaFrån * 52}px"></div></div>` +
+    l.stops.map((namn, i) => `
+      <div class="stop-row ${i < visaFrån ? "done" : ""} ${i === visaFrån ? "här" : ""}" data-stop="${i}">
+        <span class="stop-dot"></span>
+        <span class="stop-label">${namn}${i === 0 || i === n - 1 ? '<span class="stop-tag">Ändstation</span>' : ""}</span>
+      </div>`).join("") +
+    `<div class="tram-marker ${animera ? "rullar" : ""}" id="tramMarker" style="top:${visaFrån * 52 + 26}px">${tramSVG(l.col, l.ref)}</div>`;
+
+  el("goBtn").className = "btn go-btn" + (klar ? " done" : "");
+  el("goBtn").textContent = klar ? "Åk hela linjen igen!" : "Åk till " + l.stops[at + 1] + "!";
+
+  if(animera && tripFrom != null && tripFrom !== at){
+    requestAnimationFrame(() => setTimeout(() => rullaFram(at), 60));
+  }else{
+    tripFrom = null;
+    if(visaBilden){
+      /* Nyss framme: bilden på hållplatsen är belöningen, visa den */
+      window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+    }else{
+      const rad = el("route").querySelector(".stop-row.här");
+      if(rad) setTimeout(() => rad.scrollIntoView({ block: "center", behavior: reduceMotion ? "auto" : "smooth" }), 120);
+    }
+  }
+}
+
+/* Spårvagnen rullar fram till nästa hållplats */
+function rullaFram(till){
+  const l = lineByRef(tripRef), namn = l.stops[till];
+  const vagn = el("tramMarker"), rader = el("route").querySelectorAll(".stop-row");
+  const del = el("route").querySelector(".done-part");
+  if(!vagn) return;
+  SFX.tram();
+  speak("Nästa hållplats: " + namn);
+  vagn.style.top = (till * 52 + 26) + "px";
+  if(del) del.style.height = (till * 52) + "px";
+  rader.forEach((r, i) => {
+    r.classList.toggle("done", i < till);
+    r.classList.toggle("här", i === till);
+  });
+  const rad = rader[till];
+  if(rad) rad.scrollIntoView({ block: "center", behavior: reduceMotion ? "auto" : "smooth" });
+  setTimeout(() => {
+    vagn.classList.remove("rullar");
+    tripFrom = null;
+    SFX.pling();
+    confetti(innerWidth / 2, innerHeight * 0.4, till >= l.stops.length - 1 ? 70 : 22);
+    speak(till >= l.stops.length - 1 ? "Ändstation " + namn + "! Hela linjen klar!" : namn);
+    renderTrip(false, true);
+  }, reduceMotion ? 60 : 950);
+}
+
+el("tripHead").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-trip]"); if(!b) return;
+  if(b.dataset.trip === "back"){ SFX.tap(); renderLines(); show("lines"); }
+  if(b.dataset.trip === "level"){ SFX.tap(); openTramLevelSheet(); }
+});
+
+/* Vilka tal ska man räkna under resan? */
+function openTramLevelSheet(){
+  const p = P();
+  const öppna = LEVELS.filter(L => L.id <= p.unlocked);
+  openSheet(`
+    <div class="sheet-head">
+      <div><h2>Vilka tal?</h2><p class="sheet-sub">Gäller när du åker spårvagn</p></div>
+      ${CLOSE_BTN}
+    </div>
+    <div class="seg" style="flex-wrap:wrap;margin-bottom:14px">
+      ${öppna.map(L => `<button type="button" data-tramlevel="${L.id}" aria-pressed="${L.id === p.tramLevel}">${L.name}</button>`).join("")}
+    </div>
+    <p class="sheet-sub" style="margin:0 0 8px">Hur vill du svara?</p>
+    <div class="seg">
+      <button type="button" data-trammode="choice" aria-pressed="${p.tramMode === "choice"}">Välj svar</button>
+      <button type="button" data-trammode="type" aria-pressed="${p.tramMode === "type"}">Skriv svar</button>
+    </div>`);
+}
+el("stopCard").addEventListener("click", (e) => {
+  if(!e.target.closest('[data-trip="say"]')) return;
+  const l = lineByRef(tripRef), p = P();
+  speak("Hållplats " + l.stops[tramAt(p, tripRef)], true);
+});
+
+el("goBtn").addEventListener("click", () => {
+  const p = P(), l = lineByRef(tripRef);
+  SFX.ensure(); SFX.tap();
+  if(lineDone(p, tripRef)){
+    p.tram[tripRef] = 0; saveProfiles();
+    renderTrip(false);
+    return;
+  }
+  startRound(p.tramLevel, p.tramMode, tripRef);
+});
+
+/* ── Byt värld ──────────────────────────── */
+el("worldSwitch").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-world]"); if(!b) return;
+  const p = P();
+  p.world = b.dataset.world; saveProfiles();
+  SFX.tap();
+  enterWorld(false);
+});
+
+function enterWorld(halsa, isNew){
+  const p = P(); if(!p) return;
+  el("worldSwitch").querySelectorAll("[data-world]").forEach(b =>
+    b.setAttribute("aria-pressed", String(b.dataset.world === (p.world || "land"))));
+  if(p.world === "tram"){
+    renderLines(); show("lines");
+  }else{
+    renderMap(); show("map");
+    const cur = el("node-" + nextLevelId(p));
+    if(cur) setTimeout(() => cur.scrollIntoView({ block:"center", behavior: reduceMotion ? "auto" : "smooth" }), 120);
+  }
+  if(halsa){
+    const h = isNew ? `Hej ${p.name}! Välkommen till Räknelandet!`
+      : pick([`Hej igen, ${p.name}!`, `Hej ${p.name}! Kul att du är tillbaka!`, `Hej ${p.name}! Ska vi räkna?`]);
+    setTimeout(() => speak(h), 400);
+  }
 }
 
 /* ── Märken ─────────────────────────────── */
@@ -1396,6 +2137,19 @@ sheet.addEventListener("click", (e) => {
     return;
   }
 
+  const tl = e.target.closest("[data-tramlevel]");
+  if(tl){
+    p.tramLevel = Number(tl.dataset.tramlevel); saveProfiles(); SFX.tap();
+    sheet.querySelectorAll("[data-tramlevel]").forEach(b => b.setAttribute("aria-pressed", String(Number(b.dataset.tramlevel) === p.tramLevel)));
+    renderTrip(false);
+    return;
+  }
+  const tm = e.target.closest("[data-trammode]");
+  if(tm){
+    p.tramMode = tm.dataset.trammode; saveProfiles(); SFX.tap();
+    sheet.querySelectorAll("[data-trammode]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.trammode === p.tramMode)));
+    return;
+  }
   const ch = e.target.closest("[data-setchar]");
   if(ch){
     p.char = ch.dataset.setchar;
@@ -1432,7 +2186,8 @@ el("whoBtn").addEventListener("click", () => { SFX.tap(); renderProfiles(); show
 /* ═══════════════════════════════════════════
    Spelomgången
    ═══════════════════════════════════════════ */
-const ROUND_LEN = 10;
+const ROUND_LEN = 10;      /* Räknelandet: tio uppgifter per bana */
+const TRAM_LEN  = 5;       /* Spårvagnen: fem uppgifter per hållplats */
 const buddy = el("buddy"), qLabel = el("qLabel"), qVisual = el("qVisual"),
       qEquation = el("qEquation"), answerArea = el("answerArea"),
       feedback = el("feedback"), progress = el("progress"),
@@ -1442,15 +2197,16 @@ const PRAISE = ["Snyggt!", "Precis!", "Toppen!", "Så bra!", "Grymt!", "Jättebr
 const NUDGE  = ["Nästan!", "Prova igen!", "Nästan där!", "Titta en gång till!"];
 
 const g = {
-  level: null, mode: "choice", queue: [], q: null,
+  level: null, mode: "choice", queue: [], q: null, tram: null, len: ROUND_LEN,
   qIndex: 0, score: 0, streak: 0, bestStreak: 0, tries: 0, firstTry: 0,
   results: [], typed: "", locked: false, hint: false, thing: "apple", opts: []
 };
 
-function startRound(levelId, mode){
+function startRound(levelId, mode, tramRef){
   const L = levelById(levelId);
-  g.level = L; g.mode = mode;
-  g.queue = buildRound(L, ROUND_LEN);
+  g.level = L; g.mode = mode; g.tram = tramRef || null;
+  g.len = g.tram ? TRAM_LEN : ROUND_LEN;
+  g.queue = buildRound(L, g.len);
   g.qIndex = 0; g.score = 0; g.streak = 0; g.bestStreak = 0;
   g.firstTry = 0; g.results = []; g.locked = false;
   coinCount.textContent = "0";
@@ -1459,7 +2215,7 @@ function startRound(levelId, mode){
 }
 
 function nextQuestion(){
-  if(g.qIndex >= ROUND_LEN) return finishRound();
+  if(g.qIndex >= g.len) return finishRound();
   g.q = g.queue[g.qIndex];
   g.tries = 0; g.typed = ""; g.locked = false; g.hint = false;
   g.thing = pick(THING_KEYS);
@@ -1482,7 +2238,7 @@ function setBuddy(mood, anim){
 
 function renderProgress(){
   let html = "";
-  for(let i = 0; i < ROUND_LEN; i++){
+  for(let i = 0; i < g.len; i++){
     const r = g.results[i];
     const cls = r === "first" ? "done" : r === "help" ? "miss" : i === g.qIndex ? "now" : "";
     html += `<span class="pip ${cls}"></span>`;
@@ -1695,6 +2451,9 @@ addEventListener("keydown", (e) => {
 function finishRound(){
   const p = P(), L = g.level;
   const perfect = g.firstTry;
+  p.coins += g.score;
+  p.bestStreak = Math.max(p.bestStreak || 0, g.bestStreak);
+  if(g.tram) return finishTramStop(p, perfect);
   const stars = perfect >= 9 ? 3 : perfect >= 7 ? 2 : perfect >= 4 ? 1 : 0;
 
   const prevStars = (p.stars || {})[L.id] || 0;
@@ -1702,11 +2461,9 @@ function finishRound(){
   const prevBest = p.best[bestKey] || 0;
   const isBest = g.score > prevBest;
 
-  p.coins += g.score;
   p.rounds = (p.rounds || 0) + 1;
   p.stars[L.id] = Math.max(prevStars, stars);
   p.best[bestKey] = Math.max(prevBest, g.score);
-  p.bestStreak = Math.max(p.bestStreak || 0, g.bestStreak);
   if(perfect === ROUND_LEN) p.perfect = (p.perfect || 0) + 1;
 
   /* Nästa bana öppnas när den här är klarad med minst en stjärna */
@@ -1722,6 +2479,7 @@ function finishRound(){
   el("resultStars").innerHTML = [0,1,2].map(i => i < stars ? STAR_ON : STAR_OFF).join("");
   const titles = ["Bra kämpat!", "Fint jobbat!", "Superbra!", "Helt fantastiskt!"];
   el("resultTitle").textContent = titles[stars];
+  el("resultLand").hidden = false; el("resultTram").hidden = true;
   el("resultSub").textContent = `${perfect} av ${ROUND_LEN} rätt direkt · ${L.name}`;
   el("resultScore").innerHTML =
     `<span class="score-chip">Mynt <b>+${g.score}</b></span>` +
@@ -1746,6 +2504,47 @@ function finishRound(){
   speak(spoken);
 
   if(nya.length) setTimeout(() => celebrateBadges(nya), 2600);
+}
+
+
+/* Framme vid en hållplats: kort summering och en enda knapp vidare */
+function finishTramStop(p, perfect){
+  const l = lineByRef(g.tram);
+  const at = tramAt(p, g.tram);
+  const nästa = Math.min(at + 1, l.stops.length - 1);
+  p.tram = p.tram || {};
+  p.tram[g.tram] = nästa;
+  p.stopsRidden = (p.stopsRidden || 0) + 1;
+  if(nästa >= l.stops.length - 1){
+    p.linesDone = p.linesDone || [];
+    if(!p.linesDone.includes(g.tram)) p.linesDone.push(g.tram);
+  }
+  saveProfiles();
+  tripFrom = at;
+  const nya = newBadges(p);
+
+  el("resultLand").hidden = true;
+  el("resultTram").hidden = false;
+  el("resultTram").innerHTML = `
+    ${roundel(l, "lg")}
+    <h2 style="margin-top:8px">Bra åkt!</h2>
+    <p class="sheet-sub" style="margin:4px 0 0">${perfect} av ${g.len} rätt direkt</p>
+    <div class="score-row">
+      <span class="score-chip">Mynt <b>+${g.score}</b></span>
+      <span class="score-chip">Skattkista <b>${p.coins}</b></span>
+    </div>
+    <button class="btn btn-big" id="rideOnBtn" type="button">Åk vidare!</button>`;
+  el("rideOnBtn").addEventListener("click", () => {
+    SFX.tap();
+    openTrip(g.tram, true);
+  }, { once: true });
+
+  show("result");
+  SFX.win();
+  confetti(innerWidth / 2, innerHeight * 0.42, 34);
+  speak(`Bra åkt! ${g.score} mynt.`);
+  /* Fira märket här, inte när vagnen rullar in – annars skyms hållplatsen */
+  if(nya.length) setTimeout(() => celebrateBadges(nya), 900);
 }
 
 function newBadges(p){
@@ -1777,11 +2576,11 @@ function celebrateBadges(list){
 }
 
 el("againBtn").addEventListener("click", () => { SFX.tap(); startRound(g.level.id, g.mode); });
-el("backBtn").addEventListener("click", () => { SFX.tap(); enterMap(false); });
+el("backBtn").addEventListener("click", () => { SFX.tap(); enterWorld(false); });
 el("homeBtn").addEventListener("click", () => {
   SFX.tap();
   try{ speechSynthesis.cancel(); }catch(e){}
-  enterMap(false);
+  if(g.tram){ renderTrip(false); show("trip"); } else enterWorld(false);
 });
 el("speakBtn").addEventListener("click", () => {
   const p = P();
@@ -1797,9 +2596,12 @@ el("speakBtn").addEventListener("click", () => {
   profiles.forEach(p => {
     p.stars = p.stars || {}; p.best = p.best || {}; p.badges = p.badges || [];
     p.coins = p.coins || 0; p.unlocked = p.unlocked || 1;
+    p.tram = p.tram || {}; p.world = p.world || "land";
+    p.tramMode = p.tramMode || "choice"; p.stopsRidden = p.stopsRidden || 0;
+    p.linesDone = p.linesDone || [];
     p.settings = Object.assign({ sound:true, voice:true, dots:true, rate:1 }, p.settings || {});
   });
-  if(activeId && P()) enterMap(true);
+  if(activeId && P()) enterWorld(true);
   else { renderProfiles(); show("profiles"); }
 })();
 })();

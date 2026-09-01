@@ -7,12 +7,15 @@ att sidan laddats en gång.
 
 ## Så funkar det
 
-Barnet skapar en egen spelare med namn och kompisfigur. Sedan öppnas kartan över
-Räknelandet: femton banor på en slingrande stig genom fem områden. En bana i
-taget låses upp, men alla klarade banor går att spela om hur många gånger som
-helst.
+Barnet skapar en egen spelare med namn och kompisfigur, och väljer sedan mellan
+två världar högst upp på skärmen: **Räknelandet** eller **Spårvagn**.
 
-### Kartan
+### Räknelandet
+
+Femton banor på en slingrande stig genom fem områden, som var och ett ser ut som
+sitt namn – blommor på Ängen, granar i Skogen, kristaller och droppstenar i
+Grottan, snöklädda toppar på Berget och moln högst upp. En bana i taget låses
+upp genom att klaras med minst en stjärna, och klarade banor går att spela om.
 
 | Område | Banor | Innehåll |
 | --- | --- | --- |
@@ -39,8 +42,36 @@ en omgång förrän alla möjliga varianter på banan är använda.
 Rätt på första försöket ger 10 guldmynt; tre rätt i rad dubblar och sex rätt i
 rad tredubblar. Rätt efter ett feltryck ger 5 mynt – aldrig minuspoäng. Efter
 varje omgång delas upp till tre stjärnor ut (4 rätt direkt ger en, 7 ger två, 9
-ger tre), och minst en stjärna öppnar nästa bana. Totalt finns 45 stjärnor och 13
-märken att samla, från *Första stjärnan* till *Hela landet*.
+ger tre), och minst en stjärna öppnar nästa bana. Totalt finns 45 stjärnor och 17
+märken att samla, från *Första stjärnan* och *Ändstation* till *Hela landet*.
+
+## Spårvagn — Göteborgs linjenät
+
+Andra världen i spelet. Barnet väljer en av Göteborgs tolv spårvagnslinjer och
+åker från ändstation till ändstation, en hållplats i taget. Varje hållplats
+kostar fem uppgifter, och när de är klara rullar vagnen fram till nästa
+hållplats på linjekartan medan rösten ropar ut namnet.
+
+- **Riktiga linjer.** Hållplatserna och linjefärgerna kommer från
+  OpenStreetMaps rutt-relationer för Göteborgs spårväg, hämtade i september
+  2026. Linje 1 är vit, tvåan gul, trean blå, fyran grön och femman röd, precis
+  som sedan 1902. Linje 6 har 45 hållplatser, linje 10 bara 13 – bra att veta
+  när man väljer hur lång resa det ska bli.
+- **Varje hållplats syns.** Alla 132 hållplatser har en egen liten bild, ritad
+  efter vad namnet betyder: rymdraket i Bergsjön (Komettorget, Rymdtorget,
+  Teleskopgatan), ädelstenar i Tynnered (Opaltorget, Smaragdgatan,
+  Briljantgatan), sol och moln i Biskopsgården (Väderilsgatan,
+  Vårväderstorget), hav vid Saltholmen, pariserhjul vid Liseberg, vagnhall vid
+  Vagnhallen Majorna. Övriga får sin bild av namnets ändelse.
+- **Kort summering.** När hållplatsen är avklarad visas bara mynten och en enda
+  knapp: *Åk vidare!* Sedan rullar vagnen in på nästa hållplats.
+- **Talen väljs separat.** Knappen i toppen av resan byter vilka tal som gäller
+  under åkturen och om man vill välja eller skriva svaret. Det påverkar inte
+  Räknelandet.
+
+Linje 13 är utelämnad – den är i praktiken indragen sedan 2023 och dess data är
+ofullständig. Vill du lägga till eller rätta något ligger alla linjer i listan
+`TRAM_LINES` högst upp i `index.html`, en rad per linje.
 
 ## Tänkt för små barn
 
@@ -69,6 +100,14 @@ Bloppy, Zippy, Toffe, Stella, Bip och Måns är egna figurer, ritade i SVG direk
 filen. De är gjorda i samma glada stil som barn känner igen från tv, men är inte
 kopior av några befintliga figurer. Vill du byta ut dem ligger de i arrayen
 `CHARACTERS`, en post per figur.
+
+## Källor
+
+Spårvagnsdata (hållplatser i ordning, linjefärger, ändstationer) kommer från
+OpenStreetMaps rutt-relationer för Göteborgs spårväg via OSM:s API,
+© OpenStreetMap-bidragsgivare, [ODbL](https://opendatacommons.org/licenses/odbl/1-0/).
+Ingen kartbild eller bild på hållplatserna är hämtad någonstans ifrån – allt är
+ritat i SVG i den här filen.
 
 ## Teknik
 
