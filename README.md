@@ -151,7 +151,7 @@ ritat i SVG i den här filen.
 
 ## Tester
 
-`node --test test/` kör åtta tester som plockar ut spelets rena funktioner direkt
+`node --test` kör åtta tester som plockar ut spelets rena funktioner direkt
 ur `index.html`, så att de aldrig testar en kopia som glidit isär från källan. De
 täcker att uppgifterna håller sig inom banans tal och aldrig blir negativa, att
 rätt svar alltid finns bland alternativen, att samma sorts tal aldrig kommer mer
