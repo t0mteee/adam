@@ -52,11 +52,13 @@ Andra världen i spelet. Barnet väljer en av Göteborgs tolv spårvagnslinjer o
 kostar fem uppgifter, och när de är klara rullar vagnen fram till nästa
 hållplats på linjekartan medan rösten ropar ut namnet.
 
-- **Riktiga linjer.** Hållplatserna och linjefärgerna kommer från
-  OpenStreetMaps rutt-relationer för Göteborgs spårväg, hämtade i september
-  2026. Linje 1 är vit, tvåan gul, trean blå, fyran grön och femman röd, precis
-  som sedan 1902. Linje 6 har 45 hållplatser, linje 10 bara 13 – bra att veta
-  när man väljer hur lång resa det ska bli.
+- **Riktiga linjer.** Hållplatserna i ordning kommer från OpenStreetMaps
+  rutt-relationer och är sedan kontrollerade mot Västtrafiks officiella
+  spårvagnskarta (gäller från 2026-06-15) och mot Wikipedias linjeartiklar.
+  Skyltdestinationer och linjefärger är hämtade ur Västtrafiks karta: linje 1
+  är vit, tvåan gul, trean blå, fyran grön och femman röd, precis som sedan
+  1902. Linje 6 har 46 hållplatser, linje 10 bara 13 – bra att veta när man
+  väljer hur lång resa det ska bli.
 - **Varje hållplats syns.** Alla 132 hållplatser har en egen liten bild, ritad
   efter vad namnet betyder: rymdraket i Bergsjön (Komettorget, Rymdtorget,
   Teleskopgatan), ädelstenar i Tynnered (Opaltorget, Smaragdgatan,
@@ -69,9 +71,14 @@ hållplats på linjekartan medan rösten ropar ut namnet.
   under åkturen och om man vill välja eller skriva svaret. Det påverkar inte
   Räknelandet.
 
-Linje 13 är utelämnad – den är i praktiken indragen sedan 2023 och dess data är
-ofullständig. Vill du lägga till eller rätta något ligger alla linjer i listan
-`TRAM_LINES` högst upp i `index.html`, en rad per linje.
+Linje 13 är utelämnad. Västtrafiks karta visar bara linjerna 1–12, och 13 är i
+praktiken indragen sedan 2023. Vill du lägga till eller rätta något ligger alla
+linjer i listan `TRAM_LINES` högst upp i `index.html`, en rad per linje.
+
+Antalet hållplatser stämmer med Wikipedias uppgift för elva av tolv linjer.
+Undantaget är linje 1, där Wikipedias faktaruta säger 29 medan både
+OpenStreetMap och Wikipedias egen linjekarta säger 28; kartan visar ingen
+hållplats mellan Stenpiren och Järntorget, så 28 gäller här.
 
 ## Tänkt för små barn
 
@@ -103,9 +110,16 @@ kopior av några befintliga figurer. Vill du byta ut dem ligger de i arrayen
 
 ## Källor
 
-Spårvagnsdata (hållplatser i ordning, linjefärger, ändstationer) kommer från
-OpenStreetMaps rutt-relationer för Göteborgs spårväg via OSM:s API,
-© OpenStreetMap-bidragsgivare, [ODbL](https://opendatacommons.org/licenses/odbl/1-0/).
+Hållplatsernas ordning kommer från OpenStreetMaps rutt-relationer för Göteborgs
+spårväg via OSM:s API, © OpenStreetMap-bidragsgivare,
+[ODbL](https://opendatacommons.org/licenses/odbl/1-0/).
+
+Datan är sedan kontrollerad mot två oberoende källor: Västtrafiks officiella
+spårvagnskarta som gäller från 2026-06-15, och Wikipedias artiklar om varje
+linje. Kontrollen gav fyra rättelser – Korsvägen saknades i OSM på linje 4, 6
+och 8, och fyra hållplatser stavades annorlunda än hos Västtrafik
+(Axel Dahlströms Torg, Dr. Fries Torg, Dr. Sydows Gata, Jaegerdorffsplatsen).
+
 Ingen kartbild eller bild på hållplatserna är hämtad någonstans ifrån – allt är
 ritat i SVG i den här filen.
 

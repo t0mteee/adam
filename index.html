@@ -1149,34 +1149,36 @@ const BADGES = [
 
 
 /* ── Göteborgs spårvagnslinjer ────────────────────────────────────
-   Hållplatser och linjefärger hämtade från OpenStreetMaps rutt-
-   relationer (© OpenStreetMap-bidragsgivare, ODbL) i september 2026.
+   Hållplatser i ordning från OpenStreetMaps rutt-relationer, sedan
+   kontrollerade mot Västtrafiks officiella spårvagnskarta som gäller
+   från 2026-06-15 och mot Wikipedias linjeartiklar. Skyltdestinationer
+   (a och b) och linjefärger är hämtade ur Västtrafiks karta.
    Vill du rätta något är det bara att ändra i listan här nedanför.
    ──────────────────────────────────────────────────────────────── */
 const TRAM_LINES = [
-  { ref:"1", col:"#FFFFFF", a:"Östra Sjukhuset", b:"Opaltorget",
-    stops:["Östra Sjukhuset","Tingvallsvägen","Kaggeledstorget","Munkebäckstorget","Härlanda","Stockholmsgatan","Redbergsplatsen","Olskrokstorget","Svingeln","Ullevi Norra","Drottningtorget","Brunnsparken","Stenpiren","Järntorget","Prinsgatan","Olivedalsgatan","Linnéplatsen","Botaniska Trädgården","Marklandsgatan","Axel Dahlströms torg","Lantmilsgatan","Nymilsgatan","Musikvägen","Positivgatan","Frölunda Torg","Briljantgatan","Smaragdgatan","Opaltorget"] },
-  { ref:"2", col:"#FDDD04", a:"Väderilsgatan", b:"Axel Dahlströms torg",
-    stops:["Väderilsgatan","Friskväderstorget","Önskevädersgatan","Mildvädersgatan","Vårväderstorget","Sälöfjordsgatan","Eketrägatan","Gropegårdsgatan","Rambergsvallen","Wieselgrensplatsen","Vågmästareplatsen","Hjalmar Brantingsplatsen","Frihamnen","Nils Ericsonsplatsen","Brunnsparken","Domkyrkan","Grönsakstorget","Vasaplatsen","Vasa Viktoriagatan","Handelshögskolan","Brunnsgatan","Seminariegatan","Olivedalsgatan","Linnéplatsen","Botaniska Trädgården","Marklandsgatan","Axel Dahlströms torg"] },
-  { ref:"3", col:"#0079C2", a:"Kålltorp", b:"Marklandsgatan",
-    stops:["Virginsgatan","Solrosgatan","Härlanda","Stockholmsgatan","Redbergsplatsen","Olskrokstorget","Svingeln","Ullevi Norra","Drottningtorget","Brunnsparken","Kungsportsplatsen","Valand","Vasaplatsen","Vasa Viktoriagatan","Hagakyrkan","Järntorget","Masthuggstorget","Stigbergstorget","Kaptensgatan","Chapmans Torg","Jægerdorffsplatsen","Vagnhallen Majorna","Ostindiegatan","Mariaplan","Godhemsgatan","Klintens Väg","Högsbogatan","Bokekullsgatan","Marklandsgatan"] },
-  { ref:"4", col:"#00A261", a:"Mölndal", b:"Angered Centrum",
-    stops:["Mölndals Innerstad","Mölndals sjukhus","Lackarebäck","Krokslätts Fabriker","Krokslätts torg","Lana","Varbergsgatan","Elisedal","Almedal","Liseberg Södra","Berzeliigatan","Valand","Kungsportsplatsen","Brunnsparken","Drottningtorget","Gamlestads Torg","Hjällbo","Hammarkullen","Storås","Angered Centrum"] },
-  { ref:"5", col:"#EE3A41", a:"Länsmansgården", b:"Östra Sjukhuset",
+  { ref:"1", col:"#FFFFFF", a:"Östra Sjukhuset", b:"Tynnered",
+    stops:["Östra Sjukhuset","Tingvallsvägen","Kaggeledstorget","Munkebäckstorget","Härlanda","Stockholmsgatan","Redbergsplatsen","Olskrokstorget","Svingeln","Ullevi Norra","Drottningtorget","Brunnsparken","Stenpiren","Järntorget","Prinsgatan","Olivedalsgatan","Linnéplatsen","Botaniska Trädgården","Marklandsgatan","Axel Dahlströms Torg","Lantmilsgatan","Nymilsgatan","Musikvägen","Positivgatan","Frölunda Torg","Briljantgatan","Smaragdgatan","Opaltorget"] },
+  { ref:"2", col:"#FFDD00", a:"Biskopsgården", b:"Högsbotorp",
+    stops:["Väderilsgatan","Friskväderstorget","Önskevädersgatan","Mildvädersgatan","Vårväderstorget","Sälöfjordsgatan","Eketrägatan","Gropegårdsgatan","Rambergsvallen","Wieselgrensplatsen","Vågmästareplatsen","Hjalmar Brantingsplatsen","Frihamnen","Nils Ericsonsplatsen","Brunnsparken","Domkyrkan","Grönsakstorget","Vasaplatsen","Vasa Viktoriagatan","Handelshögskolan","Brunnsgatan","Seminariegatan","Olivedalsgatan","Linnéplatsen","Botaniska Trädgården","Marklandsgatan","Axel Dahlströms Torg"] },
+  { ref:"3", col:"#0079C1", a:"Kålltorp", b:"Marklandsgatan",
+    stops:["Virginsgatan","Solrosgatan","Härlanda","Stockholmsgatan","Redbergsplatsen","Olskrokstorget","Svingeln","Ullevi Norra","Drottningtorget","Brunnsparken","Kungsportsplatsen","Valand","Vasaplatsen","Vasa Viktoriagatan","Hagakyrkan","Järntorget","Masthuggstorget","Stigbergstorget","Kaptensgatan","Chapmans Torg","Jaegerdorffsplatsen","Vagnhallen Majorna","Ostindiegatan","Mariaplan","Godhemsgatan","Klintens Väg","Högsbogatan","Bokekullsgatan","Marklandsgatan"] },
+  { ref:"4", col:"#00A261", a:"Mölndal", b:"Angered",
+    stops:["Mölndals Innerstad","Mölndals sjukhus","Lackarebäck","Krokslätts Fabriker","Krokslätts torg","Lana","Varbergsgatan","Elisedal","Almedal","Liseberg Södra","Korsvägen","Berzeliigatan","Valand","Kungsportsplatsen","Brunnsparken","Drottningtorget","Gamlestads Torg","Hjällbo","Hammarkullen","Storås","Angered Centrum"] },
+  { ref:"5", col:"#EF3D42", a:"Länsmansgården", b:"Östra Sjukhuset",
     stops:["Varmfrontsgatan","Temperaturgatan","Väderilsgatan","Friskväderstorget","Önskevädersgatan","Mildvädersgatan","Vårväderstorget","Sälöfjordsgatan","Eketrägatan","Gropegårdsgatan","Rambergsvallen","Wieselgrensplatsen","Vågmästareplatsen","Hjalmar Brantingsplatsen","Frihamnen","Lilla Bommen","Brunnsparken","Kungsportsplatsen","Valand","Berzeliigatan","Korsvägen","Liseberg Station","Sankt Sigfrids Plan","Ekmanska","Bögatan","Töpelsgatan","Welandergatan","Virginsgatan","Solrosgatan","Munkebäckstorget","Kaggeledstorget","Tingvallsvägen","Östra Sjukhuset"] },
-  { ref:"6", col:"#F79727", a:"Varmfrontsgatan", b:"Aprilgatan",
-    stops:["Varmfrontsgatan","Temperaturgatan","Väderilsgatan","Friskväderstorget","Önskevädersgatan","Mildvädersgatan","Vårväderstorget","Sälöfjordsgatan","Eketrägatan","Gropegårdsgatan","Rambergsvallen","Wieselgrensplatsen","Vågmästareplatsen","Hjalmar Brantingsplatsen","Frihamnen","Nils Ericsonsplatsen","Brunnsparken","Domkyrkan","Grönsakstorget","Hagakyrkan","Järntorget","Prinsgatan","Olivedalsgatan","Linnéplatsen","Sahlgrenska Huvudentré","Medicinaregatan","Wavrinskys Plats","Chalmers","Scandinavium","Ullevi Södra","Ullevi Norra","Svingeln","Olskrokstorget","Redbergsplatsen","Ejdergatan","Gamlestads Torg","SKF","Bellevue","Kviberg","Beväringsgatan","Nymånegatan","Runstavsgatan","Kortedala Torg","Allhelgonakyrkan","Aprilgatan"] },
-  { ref:"7", col:"#7D4313", a:"Tynnered", b:"Bergsjön",
-    stops:["Opaltorget","Smaragdgatan","Briljantgatan","Frölunda Torg","Positivgatan","Musikvägen","Nymilsgatan","Lantmilsgatan","Axel Dahlströms torg","Marklandsgatan","Botaniska Trädgården","Sahlgrenska Huvudentré","Medicinaregatan","Wavrinskys Plats","Chalmers","Kapellplatsen","Vasaplatsen","Valand","Kungsportsplatsen","Brunnsparken","Drottningtorget","Gamlestads Torg","SKF","Bellevue","Kviberg","Beväringsgatan","Nymånegatan","Runstavsgatan","Kortedala Torg","Allhelgonakyrkan","Januarigatan","Galileis Gata","Teleskopgatan","Rymdtorget","Komettorget"] },
-  { ref:"8", col:"#872387", a:"Angered Centrum", b:"Frölunda Torg",
-    stops:["Angered Centrum","Storås","Hammarkullen","Hjällbo","Gamlestads Torg","Ejdergatan","Redbergsplatsen","Olskrokstorget","Svingeln","Ullevi Norra","Ullevi Södra","Scandinavium","Chalmers","Wavrinskys Plats","Medicinaregatan","Sahlgrenska Huvudentré","Botaniska Trädgården","Marklandsgatan","Axel Dahlströms torg","Lantmilsgatan","Nymilsgatan","Musikvägen","Positivgatan","Frölunda Torg"] },
-  { ref:"9", col:"#B9E2F8", a:"Angered Centrum", b:"Kungssten",
-    stops:["Angered Centrum","Storås","Hammarkullen","Hjällbo","Gamlestads Torg","Drottningtorget","Brunnsparken","Domkyrkan","Grönsakstorget","Hagakyrkan","Järntorget","Masthuggstorget","Stigbergstorget","Kaptensgatan","Chapmans Torg","Jægerdorffsplatsen","Vagnhallen Majorna","Ostindiegatan","Sannaplan","Sandarna","Kungssten"] },
-  { ref:"10", col:"#C7DF8E", a:"Lindholmen", b:"Guldheden",
-    stops:["Lindholmen","Pumpgatan","Jubileumsparken","Lilla Bommen","Brunnsparken","Kungsportsplatsen","Valand","Vasaplatsen","Kapellplatsen","Chalmers","Wavrinskys Plats","Doktor Fries Torg","Doktor Sydows Gata"] },
+  { ref:"6", col:"#F89728", a:"Länsmansgården", b:"Kortedala",
+    stops:["Varmfrontsgatan","Temperaturgatan","Väderilsgatan","Friskväderstorget","Önskevädersgatan","Mildvädersgatan","Vårväderstorget","Sälöfjordsgatan","Eketrägatan","Gropegårdsgatan","Rambergsvallen","Wieselgrensplatsen","Vågmästareplatsen","Hjalmar Brantingsplatsen","Frihamnen","Nils Ericsonsplatsen","Brunnsparken","Domkyrkan","Grönsakstorget","Hagakyrkan","Järntorget","Prinsgatan","Olivedalsgatan","Linnéplatsen","Sahlgrenska Huvudentré","Medicinaregatan","Wavrinskys Plats","Chalmers","Korsvägen","Scandinavium","Ullevi Södra","Ullevi Norra","Svingeln","Olskrokstorget","Redbergsplatsen","Ejdergatan","Gamlestads Torg","SKF","Bellevue","Kviberg","Beväringsgatan","Nymånegatan","Runstavsgatan","Kortedala Torg","Allhelgonakyrkan","Aprilgatan"] },
+  { ref:"7", col:"#9C5707", a:"Tynnered", b:"Bergsjön",
+    stops:["Opaltorget","Smaragdgatan","Briljantgatan","Frölunda Torg","Positivgatan","Musikvägen","Nymilsgatan","Lantmilsgatan","Axel Dahlströms Torg","Marklandsgatan","Botaniska Trädgården","Sahlgrenska Huvudentré","Medicinaregatan","Wavrinskys Plats","Chalmers","Kapellplatsen","Vasaplatsen","Valand","Kungsportsplatsen","Brunnsparken","Drottningtorget","Gamlestads Torg","SKF","Bellevue","Kviberg","Beväringsgatan","Nymånegatan","Runstavsgatan","Kortedala Torg","Allhelgonakyrkan","Januarigatan","Galileis Gata","Teleskopgatan","Rymdtorget","Komettorget"] },
+  { ref:"8", col:"#A54399", a:"Angered", b:"Frölunda",
+    stops:["Angered Centrum","Storås","Hammarkullen","Hjällbo","Gamlestads Torg","Ejdergatan","Redbergsplatsen","Olskrokstorget","Svingeln","Ullevi Norra","Ullevi Södra","Scandinavium","Korsvägen","Chalmers","Wavrinskys Plats","Medicinaregatan","Sahlgrenska Huvudentré","Botaniska Trädgården","Marklandsgatan","Axel Dahlströms Torg","Lantmilsgatan","Nymilsgatan","Musikvägen","Positivgatan","Frölunda Torg"] },
+  { ref:"9", col:"#B9E3F9", a:"Angered", b:"Kungssten",
+    stops:["Angered Centrum","Storås","Hammarkullen","Hjällbo","Gamlestads Torg","Drottningtorget","Brunnsparken","Domkyrkan","Grönsakstorget","Hagakyrkan","Järntorget","Masthuggstorget","Stigbergstorget","Kaptensgatan","Chapmans Torg","Jaegerdorffsplatsen","Vagnhallen Majorna","Ostindiegatan","Sannaplan","Sandarna","Kungssten"] },
+  { ref:"10", col:"#C8DF8E", a:"Lindholmen", b:"Guldheden",
+    stops:["Lindholmen","Pumpgatan","Jubileumsparken","Lilla Bommen","Brunnsparken","Kungsportsplatsen","Valand","Vasaplatsen","Kapellplatsen","Chalmers","Wavrinskys Plats","Dr. Fries Torg","Dr. Sydows Gata"] },
   { ref:"11", col:"#231F20", a:"Saltholmen", b:"Bergsjön",
     stops:["Saltholmen","Långedrag","Hinsholmen","Käringberget","Tranered","Hagen","Nya Varvsallén","Kungssten","Sandarna","Sannaplan","Mariaplan","Godhemsgatan","Ekedal","Majvallen","Fjällgatan","Stigbergstorget","Masthuggstorget","Järntorget","Stenpiren","Brunnsparken","Drottningtorget","Gamlestads Torg","SKF","Bellevue","Kviberg","Beväringsgatan","Nymånegatan","Runstavsgatan","Kortedala Torg","Allhelgonakyrkan","Januarigatan","Galileis Gata","Teleskopgatan","Rymdtorget","Komettorget"] },
-  { ref:"12", col:"#57B9A8", a:"Mölndals Innerstad", b:"Lindholmen",
+  { ref:"12", col:"#56C2B6", a:"Mölndal", b:"Lindholmen",
     stops:["Mölndals Innerstad","Mölndals sjukhus","Lackarebäck","Krokslätts Fabriker","Krokslätts torg","Lana","Varbergsgatan","Elisedal","Almedal","Liseberg Södra","Korsvägen","Scandinavium","Ullevi Södra","Drottningtorget","Nils Ericsonsplatsen","Jubileumsparken","Pumpgatan","Lindholmen"] }
 ];
 
@@ -1186,7 +1188,7 @@ const STOP_ART = {
  "Allhelgonakyrkan":"kyrka",
  "Angered Centrum":"hoghus",
  "Aprilgatan":"hoghus",
- "Axel Dahlströms torg":"affar",
+ "Axel Dahlströms Torg":"affar",
  "Bellevue":"skog",
  "Berzeliigatan":"noje",
  "Beväringsgatan":"hoghus",
@@ -1195,8 +1197,8 @@ const STOP_ART = {
  "Brunnsparken":"fontan",
  "Bögatan":"skog",
  "Chalmers":"skola",
- "Doktor Fries Torg":"skola",
- "Doktor Sydows Gata":"skola",
+ "Dr. Fries Torg":"skola",
+ "Dr. Sydows Gata":"skola",
  "Domkyrkan":"kyrka",
  "Drottningtorget":"station",
  "Ekmanska":"sjukhus",
