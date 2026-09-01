@@ -64,6 +64,10 @@ låter som ett utrop och inte som en lekkamrat.
   är vit, tvåan gul, trean blå, fyran grön och femman röd, precis som sedan
   1902. Linje 6 har 46 hållplatser, linje 10 bara 13 – bra att veta när man
   väljer hur lång resa det ska bli.
+- **Riktiga foton som tonar över i teckningen.** 83 av hållplatserna visar först
+  ett riktigt foto från platsen, som efter knappt två sekunder tonar över i
+  spelets egen tecknade bild. Trycker man på bilden kommer fotot tillbaka. Foton
+  och fotografer listas under *Bilderna och fotograferna* i inställningarna.
 - **Varje hållplats syns.** Alla 132 hållplatser har en egen liten bild, ritad
   efter vad namnet betyder: rymdraket i Bergsjön (Komettorget, Rymdtorget,
   Teleskopgatan), ädelstenar i Tynnered (Opaltorget, Smaragdgatan,
@@ -179,8 +183,16 @@ Hela nätet är dessutom korsvaliderat internt: av 319 hållplatspar bekräftas 
 av minst en annan linje som kör samma sträcka, och ingen linje motsäger en
 annan. Alla 132 hållplatsnamn återfinns ordagrant på Västtrafiks karta.
 
-Ingen kartbild eller bild på hållplatserna är hämtad någonstans ifrån – allt är
-ritat i SVG i den här filen.
+Kartbilden är inte hämtad någonstans ifrån – landskap, figurer och hållplatsernas
+tecknade scener är ritade i SVG i den här filen.
+
+Hållplatsfotona i mappen `bilder/` kommer från Wikimedia Commons och används
+enligt sina licenser, till största delen CC BY-SA 3.0 och 4.0, några under CC BY,
+CC0 eller public domain. Fotograf och licens visas under varje bild i spelet och
+i listan under *Bilderna och fotograferna*. Bilderna är nedskalade till 640×300
+och beskurna i mitten. Av 132 hållplatser hittades en användbar bild för 83; de
+övriga visar bara den tecknade scenen, liksom alla hållplatser gör om bilderna
+inte kan hämtas.
 
 ## Tester
 
