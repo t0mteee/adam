@@ -53,7 +53,9 @@ märken att samla, från *Första stjärnan* och *Ändstation* till *Hela landet
 Andra världen i spelet. Barnet väljer en av Göteborgs tolv spårvagnslinjer och
 åker från ändstation till ändstation, en hållplats i taget. Varje hållplats
 kostar fem uppgifter, och när de är klara rullar vagnen fram till nästa
-hållplats på linjekartan medan rösten ropar ut namnet.
+hållplats på linjekartan medan rösten ropar ut namnet. Utropet föregås av två
+mjuka toner, och läses lugnare och i lägre tonläge än matteuppgifterna så att det
+låter som ett utrop och inte som en lekkamrat.
 
 - **Riktiga linjer.** Hållplatserna i ordning kommer från OpenStreetMaps
   rutt-relationer och är sedan kontrollerade mot Västtrafiks officiella
@@ -70,11 +72,18 @@ hållplats på linjekartan medan rösten ropar ut namnet.
   Vagnhallen Majorna. Övriga får sin bild av namnets ändelse.
 - **Kort summering.** När hållplatsen är avklarad visas bara mynten och en enda
   knapp: *Åk vidare!* Sedan rullar vagnen in på nästa hållplats.
-- **Svårighet väljs innan resan.** När man trycker på en linje kommer en ruta
-  där man väljer vilka tal som ska räknas och om svaret ska tryckas eller
-  skrivas. **Blandat** drar uppgifter ur allt barnet har låst upp och ger mest
-  omväxling på en lång linje. Valet går att ändra mitt i resan med *byt* i
-  toppen.
+- **Svårigheten anpassar sig.** Standardläget **Stigande** håller reda på var
+  barnet ligger och flyttar sig: rätt svar höjer, ett feltryck sänker lite, och
+  tre fel på samma uppgift sänker mer. Uppgifterna dras från nivån runt det
+  läget, så det blir svårare när det går bra och backar tillfälligt när det
+  kärvar – tills nivån sitter igen. Rubriken visar var man är just nu, till
+  exempel *Stigande · Plus till 10*.
+- **Andra lägen finns kvar.** **Blandat** drar ur allt barnet låst upp, med ett
+  golv som följer med uppåt så en van spelare slipper 1 + 1. Man kan också låsa
+  en enskild bana. Valet görs innan resan och går att ändra med *byt* i toppen.
+- **Hur långt man kommit syns.** Varje linje i listan har en mätare i linjens
+  egen färg som fylls hållplats för hållplats, och blir grön när hela linjen är
+  åkt.
 - **Spårvagnen för spelaren framåt.** Fyra rätt av fem på en hållplats, på
   Blandat eller på den svåraste öppna banan, öppnar nästa bana – samma banor som
   i Räknelandet. Man kan alltså börja med spårvagnen och aldrig röra kartan; ett
@@ -175,12 +184,15 @@ ritat i SVG i den här filen.
 
 ## Tester
 
-`node --test` kör åtta tester som plockar ut spelets rena funktioner direkt
+`node --test` kör tolv tester som plockar ut spelets rena funktioner direkt
 ur `index.html`, så att de aldrig testar en kopia som glidit isär från källan. De
 täcker att uppgifterna håller sig inom banans tal och aldrig blir negativa, att
 rätt svar alltid finns bland alternativen, att samma sorts tal aldrig kommer mer
 än två gånger i rad, att undvik-listan hindrar upprepning mellan hållplatser, och
-att ingen spårvagnslinje motsäger en annan om hållplatsernas ordning.
+att ingen spårvagnslinje motsäger en annan om hållplatsernas ordning. Tre av dem
+gäller det stigande läget: att skickligheten höjs och sänks men stannar inom det
+upplåsta, att uppgifter bara dras från öppnade banor, och att ingen uppgift
+upprepas inom samma omgång ens när en lätt banas förråd tar slut.
 
 ## Teknik
 
