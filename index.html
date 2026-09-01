@@ -435,9 +435,19 @@ h1, h2, h3{ font-family: "Baloo 2", "Baloo 2 Fallback", system-ui, sans-serif; f
 }
 .q-equation .op{ color: var(--grape); padding: 0 .06em; }
 .q-equation .slot{ color: var(--melon); }
+.q-equation .facit{ color: var(--grass-deep); animation: right-pop .55s cubic-bezier(.3,1.6,.5,1); display: inline-block; }
 .q-visual{ display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; margin: 6px 0 10px; }
 .q-visual .grp{ display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; max-width: 42%; }
 .q-visual .grp.five{ display: grid; grid-template-columns: repeat(5, auto); justify-items: center; max-width: 100%; }
+/* Tiobasram: tio saker i två rader om fem, med ram runt. Så syns 47 som
+   fyra fulla ramar och sju lösa – i stället för 47 utspridda figurer. */
+.q-visual .ramar{ display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 6px; max-width: 100%; }
+.q-visual .ram{
+  display: grid; grid-template-columns: repeat(5, auto); gap: 2px;
+  padding: 4px; border: 2.5px solid var(--ink); border-radius: 10px;
+  background: rgba(255,253,247,.7);
+}
+.q-visual .ram.del{ border-style: dashed; background: rgba(255,253,247,.4); }
 /* Tre tal: grupperna får aldrig skiljas från sina plustecken */
 .q-visual.trio{ flex-wrap: nowrap; gap: 4px; }
 .q-visual.trio .grp{ max-width: 30%; gap: 3px; }
@@ -449,6 +459,9 @@ h1, h2, h3{ font-family: "Baloo 2", "Baloo 2 Fallback", system-ui, sans-serif; f
 .q-visual.stor svg{ width: clamp(40px, 10.5vw, 60px); }
 .q-visual.dense svg{ width: clamp(22px, 5.6vw, 32px); }
 .q-visual.packed svg{ width: clamp(18px, 4.4vw, 25px); }
+.q-visual.ram-m svg{ width: clamp(16px, 4.2vw, 23px); }
+.q-visual.ram-s svg{ width: clamp(12px, 3.1vw, 17px); }
+.q-visual.ram-xs svg{ width: clamp(9px, 2.4vw, 13px); }
 .q-visual .gone{ opacity: .28; }
 .q-visual .grp > span{ display: inline-flex; animation: pip-in .3s cubic-bezier(.3,1.5,.5,1) both; }
 @keyframes pip-in{ from{ transform: scale(0) rotate(-25deg); } to{ transform: none; } }
@@ -854,7 +867,7 @@ body.on-tram .world{ display: none; }
 
 <!-- ── Overlay-kort ─────────────────────── -->
 <div class="overlay" id="overlay">
-  <div class="sheet" id="sheet"></div>
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true" tabindex="-1"></div>
 </div>
 
 <script>
@@ -1042,7 +1055,8 @@ const REGIONS = [
   { name:"Skogen",  color:"#2F8C45", tint:"#A9DCB6" },
   { name:"Grottan", color:"#7B4BE0", tint:"#C4B0EC" },
   { name:"Berget",  color:"#D9691F", tint:"#F6D0A6" },
-  { name:"Molnen",  color:"#2FA9D8", tint:"#DCEFFC" }
+  { name:"Molnen",  color:"#2FA9D8", tint:"#DCEFFC" },
+  { name:"Stjärnhimlen", color:"#8E7BFF", tint:"#2F2A63" }
 ];
 
 const LEVELS = [
@@ -1060,14 +1074,18 @@ const LEVELS = [
   { id:12, r:3, name:"Plus och minus till 20", desc:"13 + 5 · 18 − 7",         kinds:["add","sub"], max:20, lo:11, opts:4 },
   { id:13, r:4, name:"Tre tal",                desc:"2 + 3 + 4",               kinds:["add3"],  max:15, opts:4 },
   { id:14, r:4, name:"Blandat till 20",        desc:"Allt om vartannat",       kinds:["add","sub","missing","double"], max:20, lo:8, opts:4 },
-  { id:15, r:4, name:"Mästarprovet",           desc:"Hela Räknelandet",        kinds:["add","sub","missing","add3","double"], max:20, lo:10, opts:4 }
+  { id:15, r:4, name:"Mästarprovet",           desc:"Hela Räknelandet",        kinds:["add","sub","missing","add3","double"], max:20, lo:10, opts:4 },
+  { id:16, r:5, name:"Räkna till 25",          desc:"11–25 saker i tioramar",  kinds:["count"], max:25,  min:11, opts:4 },
+  { id:17, r:5, name:"Räkna till 50",          desc:"26–50 saker i tioramar",  kinds:["count"], max:50,  min:26, opts:4 },
+  { id:18, r:5, name:"Räkna till 75",          desc:"51–75 saker i tioramar",  kinds:["count"], max:75,  min:51, opts:4 },
+  { id:19, r:5, name:"Räkna till 100",         desc:"76–100 saker i tioramar", kinds:["count"], max:100, min:76, opts:4 }
 ];
 const MAX_STARS = LEVELS.length * 3;
 const levelById = (id) => LEVELS.find(l => l.id === id);
 
 /* Uppgiftsmakare – en per sort */
 const MAKE = {
-  count:   L => { const n = ri(1, L.max); return { kind:"count", answer:n, count:n }; },
+  count:   L => { const n = ri(L.min || 1, L.räknaMax || L.max); return { kind:"count", answer:n, count:n }; },
   add:     L => { const sum = ri(Math.max(2, L.lo || 2), L.max); const a = ri(1, sum - 1); return { kind:"add", a, b:sum - a, answer:sum }; },
   sub:     L => { const a = ri(Math.max(2, L.lo || 2), L.max); const b = ri(1, a - 1); return { kind:"sub", a, b, answer:a - b }; },
   missing: L => { const sum = ri(Math.max(3, L.lo || 3), L.max); const a = ri(1, sum - 1); return { kind:"missing", a, sum, answer:sum - a }; },
@@ -1149,11 +1167,13 @@ const BADGES = [
   { id:"streak10",name:"Tio i rad",       desc:"Tio rätt i rad",         art:"bolt",  test:p => (p.bestStreak || 0) >= 10 },
   { id:"coin300", name:"300 mynt",        desc:"Samla 300 guldmynt",     art:"coin",  test:p => p.coins >= 300 },
   { id:"coin1000",name:"1000 mynt",       desc:"Samla 1000 guldmynt",    art:"chest", test:p => p.coins >= 1000 },
-  { id:"star45",  name:"Hela landet",     desc:"Alla 45 stjärnor",       art:"crown", test:p => totalStars(p) >= MAX_STARS },
+  { id:"star45",  name:"Hela landet",     desc:`Alla ${MAX_STARS} stjärnor`, art:"crown", test:p => totalStars(p) >= MAX_STARS },
+  { id:"hundra",  name:"Räkna till 100",  desc:"Klara sista räknebanan", art:"star", test:p => ((p.stars || {})[19] || 0) > 0 },
   { id:"tram1",   name:"Första resan",    desc:"Åk en hållplats",        art:"tram",  test:p => (p.stopsRidden || 0) >= 1 },
   { id:"tram25",  name:"25 hållplatser",  desc:"Åk 25 hållplatser",      art:"tram",  test:p => (p.stopsRidden || 0) >= 25 },
   { id:"tramline",name:"Ändstation",      desc:"Åk en hel linje",        art:"spar",  test:p => (p.linesDone || []).length >= 1 },
-  { id:"tram3",   name:"Tre linjer",      desc:"Åk tre hela linjer",     art:"spar",  test:p => (p.linesDone || []).length >= 3 }
+  { id:"tram3",   name:"Tre linjer",      desc:"Åk tre hela linjer",     art:"spar",  test:p => (p.linesDone || []).length >= 3 },
+  { id:"tramfel", name:"Felfri hållplats", desc:"Alla rätt på en hållplats", art:"medal", test:p => (p.tramPerfect || 0) >= 1 }
 ];
 
 
@@ -1599,8 +1619,21 @@ function nextLevelId(p){
 /* ═══════════════════════════════════════════
    Skärmar och kort
    ═══════════════════════════════════════════ */
+/* Alla fördröjda händelser går genom later(), så att de kan avbrytas när
+   barnet lämnar skärmen. Annars kunde nästa fråga, en uppläsning eller ett
+   märkesfirande dyka upp ovanpå en helt annan vy. */
+let timers = [];
+function later(fn, ms){
+  const id = setTimeout(() => { timers = timers.filter(t => t !== id); fn(); }, ms);
+  timers.push(id);
+  return id;
+}
+function clearTimers(){ timers.forEach(clearTimeout); timers = []; }
+
 const SCREENS = ["profiles", "create", "map", "lines", "trip", "game", "result"];
 function show(name){
+  clearTimers();
+  try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){}
   SCREENS.forEach(n => el("screen-" + n).classList.toggle("is-active", n === name));
   const kartvy = name === "map" || name === "lines";
   el("mapHeader").hidden = !kartvy;
@@ -1610,11 +1643,31 @@ function show(name){
 }
 
 const overlay = el("overlay"), sheet = el("sheet");
+let fokusFore = null;
+const FOKUSERBARA = 'button:not([disabled]), input, select, textarea, a[href], [tabindex]:not([tabindex="-1"])';
+
 function openSheet(html){
+  if(!overlay.classList.contains("open")) fokusFore = document.activeElement;
   sheet.innerHTML = html;
   overlay.classList.add("open");
+  const forsta = sheet.querySelector("h2") ? sheet : sheet.querySelector(FOKUSERBARA);
+  (forsta || sheet).focus({ preventScroll: true });
 }
-function closeSheet(){ overlay.classList.remove("open"); }
+function closeSheet(){
+  overlay.classList.remove("open");
+  if(fokusFore && fokusFore.focus) fokusFore.focus({ preventScroll: true });
+  fokusFore = null;
+}
+
+/* Håll tangentbordsfokus inne i dialogen så länge den är öppen */
+addEventListener("keydown", (e) => {
+  if(e.key !== "Tab" || !overlay.classList.contains("open")) return;
+  const kan = [...sheet.querySelectorAll(FOKUSERBARA)].filter(x => x.offsetParent !== null);
+  if(!kan.length) return;
+  const forst = kan[0], sist = kan[kan.length - 1];
+  if(e.shiftKey && (document.activeElement === forst || document.activeElement === sheet)){ sist.focus(); e.preventDefault(); }
+  else if(!e.shiftKey && document.activeElement === sist){ forst.focus(); e.preventDefault(); }
+}, true);
 overlay.addEventListener("click", (e) => { if(e.target === overlay) closeSheet(); });
 addEventListener("keydown", (e) => { if(e.key === "Escape" && overlay.classList.contains("open")) closeSheet(); });
 
@@ -1792,6 +1845,7 @@ function openLevelSheet(L){
         <span class="mode-desc">Knappa in siffran${bestT ? "<br>Rekord " + bestT : ""}</span>
       </button>
     </div>`);
+  speak(L.name);
 }
 
 
@@ -1813,7 +1867,9 @@ const D = {
   topp:   `<svg viewBox="0 0 90 66"><path d="M2 66L34 6l22 34 10-14 22 40z" fill="#C08654" stroke="${INK}" stroke-width="3.4" stroke-linejoin="round"/><path d="M22 40l12-22 11 17-9 9z" fill="#FFFDF7" stroke="${INK}" stroke-width="2.6" stroke-linejoin="round"/></svg>`,
   moln:   `<svg viewBox="0 0 76 42"><path d="M14 40a13 13 0 0 1 2-25 18 18 0 0 1 34-3 13 13 0 0 1 2 28z" fill="#FFFDF7" stroke="${INK}" stroke-width="3.4" stroke-linejoin="round"/></svg>`,
   fagel:  `<svg viewBox="0 0 54 24"><path d="M2 18q12-16 24 0M28 18q12-16 24 0" fill="none" stroke="${INK}" stroke-width="4" stroke-linecap="round"/></svg>`,
-  stjarna:`<svg viewBox="0 0 34 34"><path d="M17 1l4 11 12 4-12 4-4 12-4-12-12-4 12-4z" fill="#FFF3B0" stroke="${INK}" stroke-width="2.6" stroke-linejoin="round"/></svg>`
+  stjarna:`<svg viewBox="0 0 34 34"><path d="M17 1l4 11 12 4-12 4-4 12-4-12-12-4 12-4z" fill="#FFF3B0" stroke="${INK}" stroke-width="2.6" stroke-linejoin="round"/></svg>`,
+  mane:   `<svg viewBox="0 0 48 48"><path d="M30 2a22 22 0 1 0 16 30A18 18 0 0 1 30 2z" fill="#FFE9A8" stroke="${INK}" stroke-width="3.4" stroke-linejoin="round"/><circle cx="20" cy="20" r="3.5" fill="#F2D98A"/><circle cx="15" cy="31" r="2.6" fill="#F2D98A"/></svg>`,
+  planet: `<svg viewBox="0 0 56 44"><circle cx="28" cy="22" r="15" fill="#FF8AD0" stroke="${INK}" stroke-width="3.4"/><ellipse cx="28" cy="22" rx="26" ry="6" fill="none" stroke="#FFC42E" stroke-width="4" transform="rotate(-16 28 22)"/></svg>`
 };
 
 /* Vad som växer var. Slumpen är låst till platsen så kartan ser likadan ut varje gång. */
@@ -1827,7 +1883,9 @@ const LANDSKAP = [
   [ {a: D.topp, w:80}, {a: D.sten, w:46}, {a: D.topp, w:62}, {a: D.sten, w:38},
     {a: D.topp, w:70}, {a: D.sten, w:52} ],
   [ {a: D.moln, w:66}, {a: D.fagel, w:44}, {a: D.moln, w:52}, {a: D.stjarna, w:28},
-    {a: D.moln, w:74}, {a: D.fagel, w:36}, {a: D.stjarna, w:24} ]
+    {a: D.moln, w:74}, {a: D.fagel, w:36}, {a: D.stjarna, w:24} ],
+  [ {a: D.mane, w:52}, {a: D.stjarna, w:26}, {a: D.planet, w:56}, {a: D.stjarna, w:34},
+    {a: D.stjarna, w:22}, {a: D.planet, w:44}, {a: D.stjarna, w:30} ]
 ];
 
 function slumpFast(n){ const x = Math.sin(n * 127.1 + 11.7) * 43758.5453; return x - Math.floor(x); }
@@ -1859,12 +1917,18 @@ const lineByRef = (ref) => TRAM_LINES.find(l => l.ref === ref);
    ur allt barnet har låst upp – det ger mest omväxling på en lång resa. */
 function blandatLevel(p){
   const alla = LEVELS.filter(L => L.id <= p.unlocked);
-  const utanRakning = alla.filter(L => L.kinds[0] !== "count");
-  /* Har barnet bara räknebanor öppna blir Blandat räkning – annars tal */
-  const kallor = utanRakning.length ? utanRakning : (alla.length ? alla : [LEVELS[0]]);
+  const tal = alla.filter(L => L.kinds[0] !== "count");
+  const rakning = alla.filter(L => L.kinds[0] === "count");
+  /* Blandat ska betyda allt barnet kan. Räkning följer med som ett inslag –
+     bara den svåraste räknebanan, så det inte blir "räkna till 5" om och om. */
+  const kallor = tal.length ? tal : (alla.length ? alla : [LEVELS[0]]);
+  const kinds = [...new Set(kallor.flatMap(L => L.kinds))];
+  const bastaRakning = rakning[rakning.length - 1];
+  if(tal.length && bastaRakning) kinds.push("count");
   return { id:0, name:"Blandat", desc:"Allt du kan",
-           kinds:[...new Set(kallor.flatMap(L => L.kinds))],
-           max: Math.max(...kallor.map(L => L.max)),
+           kinds, max: Math.max(...kallor.map(L => L.max)),
+           min: bastaRakning ? (bastaRakning.min || 1) : 1,
+           räknaMax: bastaRakning ? bastaRakning.max : 10,
            lo: 2, opts: 4 };
 }
 function tramLevelDef(p){
@@ -1886,7 +1950,7 @@ function talvalHTML(p){
       <button type="button" data-trammode="type" aria-pressed="${p.tramMode === "type"}">Skriv svar</button>
     </div>
     ${p.unlocked < LEVELS.length ? `<p class="sheet-sub" style="margin:12px 0 0;text-align:center">
-      Klara en hållplats helt utan fel på ${p.tramLevel === 0 ? "Blandat" : "svåraste banan"} så öppnas <b>${levelById(p.unlocked + 1).name}</b>.</p>` : ""}`;
+      Klara fyra av fem på ${p.tramLevel === 0 ? "Blandat" : "svåraste banan"} så öppnas <b>${levelById(p.unlocked + 1).name}</b>.</p>` : ""}`;
 }
 const tramAt    = (p, ref) => (p.tram && p.tram[ref]) || 0;
 const lineDone  = (p, ref) => tramAt(p, ref) >= lineByRef(ref).stops.length - 1;
@@ -1941,6 +2005,7 @@ function openLineSheet(l){
     </div>
     ${talvalHTML(p)}
     <button class="btn btn-big" data-startline="${l.ref}" type="button" style="margin-top:16px">Åk!</button>`);
+  speak(`Linje ${l.ref}, mot ${l.b}`);
 }
 
 /* ── Resan längs linjen ─────────────────── */
@@ -2005,7 +2070,7 @@ function renderTrip(animera, visaBilden){
   el("goBtn").textContent = klar ? "Åk hela linjen igen!" : "Åk till " + l.stops[at + 1] + "!";
 
   if(animera && tripFrom != null && tripFrom !== at){
-    requestAnimationFrame(() => setTimeout(() => rullaFram(at), 60));
+    requestAnimationFrame(() => later(() => rullaFram(at), 60));
   }else{
     tripFrom = null;
     if(visaBilden){
@@ -2013,7 +2078,7 @@ function renderTrip(animera, visaBilden){
       window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
     }else{
       const rad = el("route").querySelector(".stop-row.här");
-      if(rad) setTimeout(() => rad.scrollIntoView({ block: "center", behavior: reduceMotion ? "auto" : "smooth" }), 120);
+      if(rad) later(() => rad.scrollIntoView({ block: "center", behavior: reduceMotion ? "auto" : "smooth" }), 120);
     }
   }
 }
@@ -2034,7 +2099,7 @@ function rullaFram(till){
   });
   const rad = rader[till];
   if(rad) rad.scrollIntoView({ block: "center", behavior: reduceMotion ? "auto" : "smooth" });
-  setTimeout(() => {
+  later(() => {
     vagn.classList.remove("rullar");
     tripFrom = null;
     SFX.pling();
@@ -2084,6 +2149,7 @@ el("worldSwitch").addEventListener("click", (e) => {
   p.world = b.dataset.world; saveProfiles();
   SFX.tap();
   enterWorld(false);
+  speak(p.world === "tram" ? "Spårvagn" : "Räknelandet");
 });
 
 function enterWorld(halsa, isNew){
@@ -2095,12 +2161,12 @@ function enterWorld(halsa, isNew){
   }else{
     renderMap(); show("map");
     const cur = el("node-" + nextLevelId(p));
-    if(cur) setTimeout(() => cur.scrollIntoView({ block:"center", behavior: reduceMotion ? "auto" : "smooth" }), 120);
+    if(cur) later(() => cur.scrollIntoView({ block:"center", behavior: reduceMotion ? "auto" : "smooth" }), 120);
   }
   if(halsa){
     const h = isNew ? `Hej ${p.name}! Välkommen till Räknelandet!`
       : pick([`Hej igen, ${p.name}!`, `Hej ${p.name}! Kul att du är tillbaka!`, `Hej ${p.name}! Ska vi räkna?`]);
-    setTimeout(() => speak(h), 400);
+    later(() => speak(h), 400);
   }
 }
 
@@ -2203,6 +2269,7 @@ sheet.addEventListener("click", (e) => {
   const tl = e.target.closest("[data-tramlevel]");
   if(tl){
     p.tramLevel = Number(tl.dataset.tramlevel); saveProfiles(); SFX.tap();
+    speak(p.tramLevel === 0 ? "Blandat" : levelById(p.tramLevel).name);
     g.recent = [];   /* ny svårighet – börja om med färska tal */
     sheet.querySelectorAll("[data-tramlevel]").forEach(b => b.setAttribute("aria-pressed", String(Number(b.dataset.tramlevel) === p.tramLevel)));
     if(el("screen-trip").classList.contains("is-active")) renderTrip(false);
@@ -2303,7 +2370,7 @@ function setBuddy(mood, anim){
   buddy.innerHTML = charSVG(p.char, mood);
   buddy.className = "buddy " + (anim || "bob");
   if(anim && anim !== "bob"){
-    setTimeout(() => { buddy.className = "buddy bob"; buddy.innerHTML = charSVG(p.char, "idle"); }, 1300);
+    later(() => { buddy.className = "buddy bob"; buddy.innerHTML = charSVG(p.char, "idle"); }, 1300);
   }
 }
 
@@ -2351,29 +2418,47 @@ function thingsRow(count, faded, thing){
   }
   return html;
 }
+
+/* Stora tal ritas i tiobasramar: varje ram rymmer tio saker. Fyra fulla ramar
+   och sju lösa läses som 47 utan att man behöver räkna om från början. */
+function thingsFrames(count, faded, thing){
+  let html = "";
+  for(let start = 0; start < count; start += 10){
+    const antal = Math.min(10, count - start);
+    let inner = "";
+    for(let i = 0; i < antal; i++){
+      const nr = start + i;
+      inner += `<span class="${nr >= count - faded ? "gone" : ""}" style="animation-delay:${Math.min(nr * 14, 520)}ms">${THINGS[thing]}</span>`;
+    }
+    html += `<span class="ram ${antal < 10 ? "del" : ""}">${inner}</span>`;
+  }
+  return `<span class="ramar">${html}</span>`;
+}
+
+/* En hög saker: små tal som en rad om fem, stora som tiobasramar */
+function hogHTML(count, faded, thing){
+  return count > 10 ? thingsFrames(count, faded, thing)
+                    : `<span class="grp five">${thingsRow(count, faded, thing)}</span>`;
+}
 function visualHTML(q){
   const t = g.thing;
   /* Räknebanorna går ut på att räkna – sakerna syns alltid */
-  if(q.kind === "count") return `<span class="grp five">${thingsRow(q.count, 0, t)}</span>`;
+  if(q.kind === "count") return hogHTML(q.count, 0, t);
   if(!P().settings.dots && !g.hint) return "";
+  /* Hjälpen ska räcka hela vägen upp till tjugo, annars tänds den när barnet
+     behöver den mest och visar ingenting. */
   if(q.kind === "add"){
-    if(q.a + q.b > 15) return "";
+    if(q.a + q.b > 20) return "";
     return `<span class="grp">${thingsRow(q.a, 0, t)}</span><span class="plus">+</span><span class="grp">${thingsRow(q.b, 0, t)}</span>`;
   }
   if(q.kind === "add3"){
-    if(q.a + q.b + q.c > 12) return "";
+    if(q.a + q.b + q.c > 20) return "";
     return `<span class="grp">${thingsRow(q.a, 0, t)}</span><span class="plus">+</span>` +
            `<span class="grp">${thingsRow(q.b, 0, t)}</span><span class="plus">+</span>` +
            `<span class="grp">${thingsRow(q.c, 0, t)}</span>`;
   }
-  if(q.kind === "sub"){
-    if(q.a > 15) return "";
-    return `<span class="grp five">${thingsRow(q.a, q.b, t)}</span>`;
-  }
-  if(q.kind === "missing"){
-    if(q.sum > 15) return "";
-    return `<span class="grp five">${thingsRow(q.sum, q.sum - q.a, t)}</span>`;
-  }
+  if(q.kind === "sub")     return hogHTML(q.a, q.b, t);
+  if(q.kind === "missing") return hogHTML(q.sum, q.sum - q.a, t);
   return "";
 }
 function paintQuestion(){
@@ -2381,8 +2466,11 @@ function paintQuestion(){
   qLabel.textContent = labelFor(q);
   qVisual.innerHTML = visualHTML(q);
   const n = qVisual.querySelectorAll("svg").length;
-  const storlek = n === 0 ? "" : n <= 3 ? " jatte" : n <= 6 ? " stor" : n <= 10 ? "" : n <= 14 ? " dense" : " packed";
-  qVisual.className = "q-visual" + storlek + (q.kind === "add3" ? " trio packed" : "");
+  const ramar = !!qVisual.querySelector(".ram");
+  const storlek = n === 0 ? ""
+    : ramar ? (n > 60 ? " ram-xs" : n > 30 ? " ram-s" : " ram-m")
+    : n <= 3 ? " jatte" : n <= 6 ? " stor" : n <= 10 ? "" : n <= 14 ? " dense" : " packed";
+  qVisual.className = "q-visual" + storlek + (q.kind === "add3" && !ramar ? " trio packed" : "");
   qEquation.innerHTML = equationHTML(q);
   qEquation.style.display = q.kind === "count" ? "none" : "";
 }
@@ -2393,10 +2481,12 @@ function makeOptions(q, n){
   if(q.kind === "sub")     near.push(q.a + q.b);
   if(q.kind === "add3")    near.push(q.a + q.b, q.b + q.c);
   if(q.kind === "missing") near.push(q.sum, q.a);
+  if(q.kind === "count" && q.answer > 12) near.push(q.answer + 1, q.answer - 1, q.answer + 10, q.answer - 10);
   near.push(q.answer + 1, q.answer - 1, q.answer + 2, q.answer - 2, q.answer + 3, q.answer - 3, q.answer + 4);
+  const tak = Math.max(30, q.answer + 12);
   for(const v of near){
     if(out.length >= n) break;
-    if(v >= 0 && v <= 30 && out.indexOf(v) === -1) out.push(v);
+    if(v >= 0 && v <= tak && out.indexOf(v) === -1) out.push(v);
   }
   let extra = q.answer + 5;
   while(out.length < n){ if(out.indexOf(extra) === -1 && extra >= 0) out.push(extra); extra++; }
@@ -2454,7 +2544,7 @@ function answer(value, sourceEl){
     else { const d = el("display"); if(d) d.classList.add("right"); }
 
     SFX.correct();
-    setTimeout(() => { SFX.coin(); bumpCoins(); }, 220);
+    later(() => { SFX.coin(); bumpCoins(); }, 220);
     setBuddy("happy", "cheer");
     const r = buddy.getBoundingClientRect();
     confetti(r.left + r.width / 2, r.top + r.height / 2, firstTry ? 46 : 26);
@@ -2463,7 +2553,7 @@ function answer(value, sourceEl){
       ${mult > 1 ? `<span class="combo">${g.streak} i rad — ×${mult} poäng!</span>` : ""}</span>`;
     if(g.streak === 3 || g.streak === 6) speak(g.streak + " rätt i rad!");
 
-    setTimeout(() => { g.qIndex++; nextQuestion(); }, 1250);
+    later(() => { g.qIndex++; nextQuestion(); }, 1250);
     return;
   }
 
@@ -2473,15 +2563,31 @@ function answer(value, sourceEl){
   if(sourceEl){ sourceEl.classList.add("wrong"); sourceEl.disabled = true; }
   else {
     const d = el("display");
-    if(d){ d.classList.add("wrong"); setTimeout(() => { g.typed = ""; updateDisplay(); }, 550); }
+    /* Vid tredje felet skrivs facit in i rutan strax nedan – då får den inte
+       nollställas av den här fördröjningen. */
+    if(d){ d.classList.add("wrong"); if(g.tries < 3) later(() => { g.typed = ""; updateDisplay(); }, 550); }
   }
 
   if(g.tries >= 3){
     g.locked = true;
     g.results[g.qIndex] = "help";
+    /* Skriv in facit där barnet letade efter det – i svarsrutan, på rätt ruta
+       och i själva talet – i stället för att bara säga siffran i en bubbla. */
+    if(g.mode === "type"){
+      g.typed = String(q.answer);
+      updateDisplay();
+      const d = el("display"); if(d) d.classList.add("right");
+    }else{
+      const ratt = [...answerArea.querySelectorAll(".opt")].find(x => Number(x.dataset.val) === q.answer);
+      if(ratt){ ratt.disabled = false; ratt.classList.remove("wrong"); ratt.classList.add("right"); }
+    }
+    qEquation.style.display = "";
+    qEquation.innerHTML = q.kind === "count"
+      ? `<span class="facit">${q.answer}</span>`
+      : equationHTML(q).replace('<span class="slot">?</span>', `<span class="facit">${q.answer}</span>`);
     feedback.innerHTML = `<span class="bubble soft">Svaret är ${q.answer}. Nu tar vi nästa!</span>`;
     speak("Svaret är " + q.answer);
-    setTimeout(() => { g.qIndex++; nextQuestion(); }, 2100);
+    later(() => { g.qIndex++; nextQuestion(); }, 2400);
     return;
   }
   if(!g.hint){
@@ -2501,14 +2607,14 @@ answerArea.addEventListener("click", (e) => {
   const k = key.dataset.key;
   if(k === "del"){ g.typed = g.typed.slice(0, -1); SFX.tap(); updateDisplay(); }
   else if(k === "ok"){ if(g.typed !== "") answer(g.typed, null); }
-  else if(g.typed.length < 2){ g.typed += k; SFX.tap(); updateDisplay(); }
+  else if(g.typed.length < 3){ g.typed += k; SFX.tap(); updateDisplay(); }
 });
 
 addEventListener("keydown", (e) => {
   if(!el("screen-game").classList.contains("is-active") || g.locked) return;
   if(overlay.classList.contains("open")) return;
   if(g.mode === "type"){
-    if(/^[0-9]$/.test(e.key)){ if(g.typed.length < 2){ g.typed += e.key; SFX.tap(); updateDisplay(); } }
+    if(/^[0-9]$/.test(e.key)){ if(g.typed.length < 3){ g.typed += e.key; SFX.tap(); updateDisplay(); } }
     else if(e.key === "Backspace"){ g.typed = g.typed.slice(0, -1); updateDisplay(); }
     else if(e.key === "Enter" && g.typed !== ""){ answer(g.typed, null); }
   }else if(/^[1-4]$/.test(e.key)){
@@ -2565,8 +2671,8 @@ function finishRound(){
   show("result");
   SFX.win();
   if(stars){
-    setTimeout(() => confetti(innerWidth * 0.3, innerHeight * 0.4, 60), 150);
-    setTimeout(() => confetti(innerWidth * 0.7, innerHeight * 0.4, 60), 450);
+    later(() => confetti(innerWidth * 0.3, innerHeight * 0.4, 60), 150);
+    later(() => confetti(innerWidth * 0.7, innerHeight * 0.4, 60), 450);
   }
   const namn = p.name;
   let spoken = stars === 3 ? `Helt fantastiskt, ${namn}! Tre stjärnor!`
@@ -2575,7 +2681,7 @@ function finishRound(){
   if(unlocked) spoken += " Nu är en ny bana öppen!";
   speak(spoken);
 
-  if(nya.length) setTimeout(() => celebrateBadges(nya), 2600);
+  if(nya.length) later(() => celebrateBadges(nya), 2600);
 }
 
 
@@ -2589,7 +2695,9 @@ function finishTramStop(p, perfect){
      Annars vore man tvungen att spela Räknelandet för att få svårare tal. */
   let nyBana = null;
   const påTopp = p.tramLevel === 0 || p.tramLevel === p.unlocked;
-  if(perfect === g.len && påTopp && p.unlocked < LEVELS.length){
+  if(perfect === g.len) p.tramPerfect = (p.tramPerfect || 0) + 1;
+  /* Fyra av fem räcker. Ett enda feltryck ska inte stoppa en fyraåring. */
+  if(perfect >= g.len - 1 && påTopp && p.unlocked < LEVELS.length){
     p.unlocked += 1;
     nyBana = levelById(p.unlocked);
   }
@@ -2627,7 +2735,7 @@ function finishTramStop(p, perfect){
   confetti(innerWidth / 2, innerHeight * 0.42, 34);
   speak(nyBana ? `Bra åkt! Ny bana öppen: ${nyBana.name}!` : `Bra åkt! ${g.score} mynt.`);
   /* Fira märket här, inte när vagnen rullar in – annars skyms hållplatsen */
-  if(nya.length) setTimeout(() => celebrateBadges(nya), 900);
+  if(nya.length) later(() => celebrateBadges(nya), 900);
 }
 
 function newBadges(p){
@@ -2653,7 +2761,7 @@ function celebrateBadges(list){
       <button class="btn btn-big" data-action="close" type="button" style="margin-top:14px">${list.length > 1 ? "Nästa märke" : "Toppen!"}</button>
     </div>`);
   sheet.querySelector('[data-action="close"]').addEventListener("click", () => {
-    if(list.length > 1) setTimeout(() => celebrateBadges(list.slice(1)), 220);
+    if(list.length > 1) later(() => celebrateBadges(list.slice(1)), 220);
   }, { once: true });
   speak(`Nytt märke! ${b.name}!`);
 }
