@@ -114,6 +114,30 @@ karta visar ingen hållplats däremellan. 28 gäller.
   misslyckad.
 - **Stora tryckytor** och knappar som trycks ihop när man rör dem.
 
+## Som app på hemskärmen
+
+Spelet är förberett som webbapp: egen ikon, eget fönster utan webbläsarens
+adressfält, och det fungerar utan nätverk när det väl laddats en gång.
+
+**Lägg upp spelet på en egen adress.** På GitHub: *Settings → Pages → Source:
+Deploy from a branch*, välj den här grenen och mappen `/ (root)`, spara. Efter en
+minut ligger spelet på `https://<användarnamn>.github.io/adam/`. Vilken statisk
+webbserver som helst fungerar lika bra – det är bara filer.
+
+**Lägg till på iPhone eller iPad.** Öppna adressen i **Safari** (det måste vara
+Safari, inte Chrome), tryck på dela-ikonen och välj *Lägg till på hemskärmen*.
+Ikonen dyker upp bland apparna och spelet startar i helskärm.
+
+Tre saker värda att veta:
+
+- **Lägg till på hemskärmen först, spela sedan.** iOS ger hemskärmsappen ett eget
+  minne, skilt från Safari. Stjärnor och mynt som samlats i Safari följer inte med
+  in i appen.
+- **Framstegen ligger kvar i webbläsarens minne på den enheten.** De synkas inte
+  mellan telefon och platta, och rensar man webbläsardata försvinner de.
+- **Efter en ändring i spelet**: höj `VERSION` i `sw.js`, annars fortsätter appen
+  visa den sparade versionen.
+
 ## För vuxna
 
 Kugghjulet uppe till höger: ljud, uppläsning, rösthastighet, prickar, byt

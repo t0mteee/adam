@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Räknelandet – ett färgglatt mattespel för barn. Egen profil, en karta med 15 banor som låses upp en i taget, uppläsning på svenska, guldmynt, stjärnor och märken.">
 <meta name="theme-color" content="#62CDF2">
+
+<!-- Läggs spelet till på hemskärmen ska det se ut och bete sig som en app -->
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<link rel="icon" href="./ikon-192.png" sizes="192x192">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Räknelandet">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="application-name" content="Räknelandet">
 <title>Räknelandet</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -82,7 +92,11 @@ body.on-map .world{ display: none; }
 #app{
   position: relative; z-index: 1;
   max-width: 780px; margin: 0 auto;
-  padding: clamp(12px, 3vw, 24px) clamp(12px, 3vw, 20px) 40px;
+  /* Plats för iPhonens hack och hemknappsstreck när spelet körs som app */
+  padding: max(clamp(12px, 3vw, 24px), env(safe-area-inset-top))
+           max(clamp(12px, 3vw, 20px), env(safe-area-inset-right))
+           max(40px, calc(env(safe-area-inset-bottom) + 20px))
+           max(clamp(12px, 3vw, 20px), env(safe-area-inset-left));
   min-height: 100%;
 }
 .screen{ display: none; animation: screen-in .35s cubic-bezier(.2,1.3,.5,1) both; }
@@ -679,7 +693,7 @@ body.on-tram .world{ display: none; }
 @keyframes skaka{ 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-1.5px); } }
 
 .go-btn{
-  position: sticky; bottom: 10px; z-index: 22;
+  position: sticky; bottom: max(10px, env(safe-area-inset-bottom)); z-index: 22;
   display: block; width: 100%; margin-top: 14px;
   padding: 17px; font-size: clamp(1.3rem, 5vw, 1.9rem);
   background: var(--sun); border-radius: 24px;
@@ -2782,6 +2796,13 @@ el("speakBtn").addEventListener("click", () => {
 /* ═══════════════════════════════════════════
    Igång!
    ═══════════════════════════════════════════ */
+/* Ligger spelet på en egen adress med manifest sparas det för spel utan nät.
+   I artifact-visaren finns inget manifest, och då hoppas registreringen över. */
+if("serviceWorker" in navigator && location.protocol.startsWith("http")
+   && document.querySelector('link[rel="manifest"]')){
+  addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+}
+
 (function init(){
   /* Äldre sparfiler kan sakna fält som tillkommit senare */
   profiles.forEach(p => {
