@@ -621,6 +621,9 @@ h1, h2, h3{ font-family: "Baloo 2", "Baloo 2 Fallback", system-ui, sans-serif; f
 .lek-overlay p{ font-size: var(--t-md); max-width: 28ch; text-wrap: balance; margin: 0; }
 .lek-overlay .lek-poang{ font-family: "Lilita One", system-ui, sans-serif; font-size: var(--t-2xl); color: var(--grape); line-height: 1; }
 .lek-overlay .lek-knappar{ display: grid; gap: 8px; margin-top: 8px; width: min(100%, 240px); }
+.lek-pilar{ display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 420px; margin: 12px auto 0; }
+.lek-pilar .btn{ padding: 10px; background: var(--sky-hi); line-height: 0; touch-action: manipulation; }
+.lek-pilar .btn svg{ width: 40px; height: 40px; }
 .butik-rad .sak.spel svg{ width: 44px; height: 44px; }
 
 /* ── Svarsytor ──────────────────────────── */
@@ -1175,7 +1178,15 @@ body.on-tram .world{ display: none; }
       <canvas id="lekCanvas" width="360" height="440" aria-label="Spelplan"></canvas>
       <div class="lek-overlay" id="lekOverlay" hidden></div>
     </div>
-    <p class="footnote">Tryck var som helst på spelplanen</p>
+    <div class="lek-pilar" id="lekPilar" hidden>
+      <button class="btn" data-styr="-1" type="button" aria-label="Vänster">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-8 7 8 7"/></svg>
+      </button>
+      <button class="btn" data-styr="1" type="button" aria-label="Höger">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l8 7-8 7"/></svg>
+      </button>
+    </div>
+    <p class="footnote" id="lekTips">Tryck var som helst på spelplanen</p>
   </section>
 
   <!-- ── SPEL ───────────────────────────── -->
@@ -1247,7 +1258,7 @@ const pick = (arr) => arr[rnd(arr.length)];
 const INK = "#2E1A66";
 /* Syns under Inställningar, så man kan se vilken version telefonen kör.
    Höjs tillsammans med VERSION i sw.js. */
-const SPELVERSION = "18";
+const SPELVERSION = "19";
 function shuffle(a){ for(let i = a.length - 1; i > 0; i--){ const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
 function store(key, val){
@@ -4320,76 +4331,81 @@ function openShop(){
 const LEK_W = 360, LEK_H = 440;
 const SMASPEL = [
   { id:"race", name:"Spårvagnsracet", ord:"Spårvagnsracet", pris:150, tid:40, enhet:"passagerare",
-    hur:"Tryck så byter vagnen spår. Plocka upp passagerarna, men akta stoppskyltarna!" },
+    hur:"Tryck på spåret du vill åka på, eller på pilarna. Plocka upp passagerarna, men akta stoppskyltarna!",
+    tips:"Tryck på ett spår, eller på pilarna" },
   { id:"bil",  name:"Bilracet", ord:"Bilracet", pris:250, tid:0, enhet:"poäng",
-    hur:"Vänta på grönt ljus och tryck så fort du kan! Fem starter mot den blå bilen." },
+    hur:"Vänta på grönt ljus och tryck så fort du kan! Fem starter mot den blå bilen.",
+    tips:"Tryck var som helst på planen när det blir grönt" },
   { id:"berg", name:"Bergochdalbanan", ord:"Bergochdalbanan", pris:400, tid:40, enhet:"stjärnor",
-    hur:"Tryck så hoppar vagnen. Fånga så många stjärnor du kan!" }
+    hur:"Tryck så hoppar vagnen. Fånga så många stjärnor du kan!",
+    tips:"Tryck var som helst på planen så hoppar vagnen" }
 ];
 const spelKopt = (p, id) => !!p && (p.spel || []).includes(id);
 const SPELMOTOR = {
-  /* Spårvagnsracet: två spår, en knapp. Passagerarna står på det ena eller
-     andra spåret; stoppskyltarna bromsar. Farten ökar hela tiden. */
+  /* Spårvagnsracet: tre spår sida vid sida, sett uppifrån. Ett tryck på ett
+     spår kör vagnen dit; pilarna under planen flyttar ett spår i taget.
+     Passagerarna står på spåren, stoppskyltarna bromsar, farten ökar. */
   race(W, H, ljud){
-    const sparY = [H * 0.56, H * 0.82];
+    const SPAR = [W / 6, W / 2, W * 5 / 6];
     const FARGER = ["#62CDF2", "#FF8AD0", "#9061F9", "#57C96B", "#FF6B6B"];
-    const s = { t:0, spar:1, y:sparY[1], x:96, fart:170, saker:[], nasta:0.9, poang:0, brom:0, bak:0, oj:0 };
+    const s = { t:0, spar:1, x:SPAR[1], y:H - 96, fart:170, saker:[], nasta:0.9, poang:0, brom:0, bak:0, oj:0 };
+    const byt = (mal) => { mal = Math.max(0, Math.min(2, mal)); if(mal !== s.spar){ s.spar = mal; ljud("tap"); } };
     return {
-      s, sparY,
+      s, SPAR,
       poang: () => s.poang,
-      tap(){ s.spar = 1 - s.spar; ljud("tap"); },
+      tap(px){ if(px != null) byt(Math.floor(px / (W / 3))); },
+      styr(riktning){ byt(s.spar + riktning); },
       update(dt){
         s.t += dt;
         s.fart = 170 + Math.min(190, s.t * 4.8);
         const f = s.fart * (s.brom > 0 ? 0.35 : 1);
         s.bak += f * dt;
-        s.y += (sparY[s.spar] - s.y) * Math.min(1, dt * 10);
+        s.x += (SPAR[s.spar] - s.x) * Math.min(1, dt * 10);
         if(s.brom > 0) s.brom -= dt;
         if(s.oj > 0) s.oj -= dt;
         s.nasta -= dt;
         if(s.nasta <= 0){
           s.nasta = 0.75 + Math.random() * 0.45 - Math.min(0.25, s.t * 0.006);
-          const spar = rnd(2), slump = Math.random();
+          const spar = rnd(3), slump = Math.random();
           const typ = slump < 0.2 ? "stopp" : slump < 0.32 ? "guld" : "pass";
-          s.saker.push({ x: W + 50, spar, typ, farg: pick(FARGER) });
-          /* ibland någon på andra spåret också – men aldrig två skyltar */
-          if(Math.random() < 0.35) s.saker.push({ x: W + 86, spar: 1 - spar, typ: "pass", farg: pick(FARGER) });
+          s.saker.push({ y: -50, spar, typ, farg: pick(FARGER) });
+          /* ibland någon på ett annat spår också – aldrig två skyltar, och
+             alltid minst ett spår fritt */
+          if(Math.random() < 0.4) s.saker.push({ y: -92, spar: (spar + 1 + rnd(2)) % 3, typ: "pass", farg: pick(FARGER) });
         }
         for(const o of s.saker){
-          o.x -= f * dt;
-          if(!o.tagen && Math.abs(o.x - s.x) < 30 && Math.abs(sparY[o.spar] - s.y) < 20){
+          o.y += f * dt;
+          if(!o.tagen && Math.abs(o.y - s.y) < 34 && Math.abs(SPAR[o.spar] - s.x) < 26){
             o.tagen = true;
             if(o.typ === "stopp"){ s.brom = 0.9; s.oj = 1; ljud("wrong"); }
             else { s.poang += o.typ === "guld" ? 3 : 1; ljud("coin"); }
           }
         }
-        s.saker = s.saker.filter(o => o.x > -60 && !(o.tagen && o.typ !== "stopp"));
+        s.saker = s.saker.filter(o => o.y < H + 60 && !(o.tagen && o.typ !== "stopp"));
       },
       draw(c){
         c.clearRect(0, 0, W, H);
-        c.fillStyle = "#A6E7FF"; c.fillRect(0, 0, W, H);
-        c.fillStyle = "#BDEBA8";
-        c.beginPath(); c.moveTo(0, H);
-        for(let x = 0; x <= W; x += 8) c.lineTo(x, H * 0.42 + Math.sin((x + s.bak * 0.25) / 60) * 10 + Math.sin((x + s.bak * 0.25) / 23) * 4);
-        c.lineTo(W, H); c.closePath(); c.fill();
-        c.fillStyle = "#8FE07E"; c.fillRect(0, H * 0.47, W, H);
-        for(const y of sparY){
-          c.fillStyle = "#C9BEA0";
-          for(let x = -(s.bak % 26); x < W; x += 26) c.fillRect(x, y - 4, 12, 8);
+        c.fillStyle = "#8FE07E"; c.fillRect(0, 0, W, H);
+        /* tre spår: grusbädd, slipers som rullar nedåt, två räler */
+        for(const x of SPAR){
+          c.fillStyle = "#D9D2C0"; c.fillRect(x - 34, 0, 68, H);
+          c.fillStyle = "#B9A98A";
+          for(let y = (s.bak % 26) - 26; y < H; y += 26) c.fillRect(x - 26, y, 52, 9);
           c.strokeStyle = INK; c.lineWidth = 3;
-          c.beginPath(); c.moveTo(0, y - 3); c.lineTo(W, y - 3); c.moveTo(0, y + 3); c.lineTo(W, y + 3); c.stroke();
+          c.beginPath(); c.moveTo(x - 13, 0); c.lineTo(x - 13, H); c.moveTo(x + 13, 0); c.lineTo(x + 13, H); c.stroke();
         }
+        /* den valda banan lyser lite */
+        c.fillStyle = "rgba(255,196,46,.18)"; c.fillRect(SPAR[s.spar] - 34, 0, 68, H);
         for(const o of s.saker){
-          const y = sparY[o.spar] - 4;
+          const x = SPAR[o.spar];
           if(o.typ === "stopp"){
-            c.strokeStyle = INK; c.lineWidth = 3; c.beginPath(); c.moveTo(o.x, y); c.lineTo(o.x, y - 30); c.stroke();
-            RIT.cirkel(c, o.x, y - 40, 14, o.tagen ? "#C9BEE6" : "#FF6B6B", 3);
-            c.fillStyle = "#FFFDF7"; c.fillRect(o.x - 8, y - 42, 16, 4);
-          }else RIT.figur(c, o.x, y, o.typ === "guld" ? "#FFC42E" : o.farg, o.typ === "guld");
+            RIT.cirkel(c, x, o.y, 16, o.tagen ? "#C9BEE6" : "#FF6B6B", 3);
+            c.fillStyle = "#FFFDF7"; c.fillRect(x - 9, o.y - 2, 18, 4);
+          }else RIT.figur(c, x, o.y + 18, o.typ === "guld" ? "#FFC42E" : o.farg, o.typ === "guld");
         }
         const skak = s.brom > 0 ? Math.sin(s.t * 60) * 3 : 0;
-        RIT.vagn(c, s.x - 43, s.y - 46 + skak, 86, 40, "#FFC42E");
-        if(s.oj > 0) RIT.text(c, "Oj!", s.x, s.y - 78, 26, "#DD4747");
+        RIT.vagnOvan(c, s.x + skak, s.y, "#FFC42E");
+        if(s.oj > 0) RIT.text(c, "Oj!", s.x, s.y - 66, 26, "#DD4747");
       }
     };
   },
@@ -4575,6 +4591,15 @@ const RIT = {
     RIT.cirkel(c, x + 16, y + h, 6, INK, false); RIT.cirkel(c, x + w - 16, y + h, 6, INK, false);
     RIT.cirkel(c, x + w - 4, y + h - 10, 4, "#FFF3CF", 2);
   },
+  /* Spårvagn sett uppifrån: tak med ljus rand, strömavtagare, frontruta och lyktor */
+  vagnOvan(c, x, y, farg){
+    RIT.rund(c, x - 24, y - 42, 48, 84, 12); RIT.fyll(c, farg, 3);
+    RIT.rund(c, x - 8, y - 36, 16, 72, 6); RIT.fyll(c, "#FFE28A", 2);
+    RIT.rund(c, x - 17, y - 36, 34, 12, 4); RIT.fyll(c, "#A6E7FF", 2.5);
+    c.strokeStyle = INK; c.lineWidth = 2.5; c.beginPath(); c.moveTo(x - 16, y + 4); c.lineTo(x + 16, y + 4); c.stroke();
+    RIT.rund(c, x - 5, y - 2, 10, 12, 3); RIT.fyll(c, "#5B47A0", 2);
+    RIT.cirkel(c, x - 15, y - 44, 3.5, "#FFF3CF", 2); RIT.cirkel(c, x + 15, y - 44, 3.5, "#FFF3CF", 2);
+  },
   bil(c, x, y, farg, vinkel){
     c.save(); c.translate(x, y); if(vinkel) c.rotate(vinkel);
     RIT.rund(c, -30, -12, 60, 22, 9); RIT.fyll(c, farg, 3);
@@ -4607,6 +4632,8 @@ function startLek(id, direkt){
   stoppaLek();
   lek = { spel, motor: SPELMOTOR[id](LEK_W, LEK_H, (n) => { if(SFX[n]) SFX[n](); }), igang: false, kvar: spel.tid };
   el("lekTitel").textContent = spel.name;
+  el("lekPilar").hidden = !lek.motor.styr;
+  el("lekTips").textContent = spel.tips;
   show("lek");
   lekStorlek();
   lek.motor.draw(lekCtx);
@@ -4668,12 +4695,22 @@ function stoppaLek(){
   if(lek) lek.igang = false;
   lek = null;
 }
+/* Trycket skickas med i spelplanens egna mått, så racet vet vilket spår som menades */
 lekCanvas.addEventListener("pointerdown", (e) => {
   e.preventDefault();
-  if(lek && lek.igang) lek.motor.tap();
+  if(!lek || !lek.igang) return;
+  const r = lekCanvas.getBoundingClientRect();
+  lek.motor.tap((e.clientX - r.left) / r.width * LEK_W, (e.clientY - r.top) / r.height * LEK_H);
+});
+el("lekPilar").addEventListener("pointerdown", (e) => {
+  const b = e.target.closest("[data-styr]"); if(!b) return;
+  e.preventDefault();
+  if(lek && lek.igang && lek.motor.styr) lek.motor.styr(Number(b.dataset.styr));
 });
 document.addEventListener("keydown", (e) => {
-  if(lek && lek.igang && (e.code === "Space" || e.code === "ArrowUp")){ e.preventDefault(); lek.motor.tap(); }
+  if(!lek || !lek.igang) return;
+  if(e.code === "Space" || e.code === "ArrowUp"){ e.preventDefault(); lek.motor.tap(); }
+  if((e.code === "ArrowLeft" || e.code === "ArrowRight") && lek.motor.styr){ e.preventDefault(); lek.motor.styr(e.code === "ArrowLeft" ? -1 : 1); }
 });
 el("lekOverlay").addEventListener("click", (e) => {
   const b = e.target.closest("[data-lek]"); if(!b || !lek) return;

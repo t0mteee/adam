@@ -175,14 +175,15 @@ och märken.
 ## Lekstugan – småspel för mynten
 
 Skattkistans översta hylla säljer tre småspel: köp en gång, spela hur mycket du
-vill. Alla styrs med ett enda tryck var som helst på spelplanen, alla är på
+vill. Alla styrs med tryck på spelplanen, alla är på
 tid, och poängen sparas som rekord per spelare – kistan visar rekordet bredvid
 *Spela*. Spelplanen är en canvas ritad i spelets egen stil.
 
-- **Spårvagnsracet** (150 mynt, 40 sekunder). Vagnen kör på det ena av två
-  spår och ett tryck byter. Passagerarna står på spåren och plockas upp när man
-  kör förbi – de med krona är värda tre – och stoppskyltarna bromsar en stund.
-  Farten ökar hela tiden.
+- **Spårvagnsracet** (150 mynt, 40 sekunder). Tre spår sida vid sida, sett
+  uppifrån. Ett tryck på ett spår kör vagnen dit, och pilknapparna under
+  spelplanen flyttar ett spår i taget. Passagerarna står på spåren och plockas
+  upp när man kör förbi – de med krona är värda tre – och stoppskyltarna
+  bromsar en stund; det finns alltid ett fritt spår. Farten ökar hela tiden.
 - **Bilracet** (250 mynt, fem starter). Tre röda lampor tänds en i taget,
   sedan en slumpad paus, sedan grönt: tryck så fort du kan. Snabbt tryck ger
   upp till 100 poäng, och 25 till om man slår den blå bilen, som reagerar på

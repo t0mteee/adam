@@ -582,24 +582,37 @@ test("småspelen: motorerna räknar poäng, tar slut i tid och klarar sig utan s
   const tyst = () => {};
   const DT = 1 / 60;
 
-  /* Spårvagnsracet: passageraren tas när vagnen är på samma spår, skylten bromsar */
+  /* Spårvagnsracet: tre spår, tryck på ett spår eller stega med pilarna */
   const race = SPELMOTOR.race(LEK_W, LEK_H, tyst);
-  for(let i = 0; i < 40 * 60; i++){ if(i % 37 === 0) race.tap(); race.update(DT); }
+  assert.equal(race.s.spar, 1, "börjar i mitten");
+  race.tap(10); assert.equal(race.s.spar, 0, "tryck till vänster: vänstra spåret");
+  race.tap(LEK_W - 10); assert.equal(race.s.spar, 2, "tryck till höger: högra spåret, direkt");
+  race.tap(); assert.equal(race.s.spar, 2, "ett tryck utan plats gör inget");
+  race.styr(1); assert.equal(race.s.spar, 2, "aldrig utanför spåren");
+  race.styr(-1); race.styr(-1); race.styr(-1); assert.equal(race.s.spar, 0);
+  for(let i = 0; i < 40 * 60; i++){ if(i % 37 === 0) race.styr(i % 74 ? 1 : -1); race.update(DT); }
   assert.ok(race.poang() > 5, `racet gav bara ${race.poang()} passagerare`);
   const r2 = SPELMOTOR.race(LEK_W, LEK_H, tyst);
-  r2.s.saker.push({ x: r2.s.x + 200, spar: 1, typ: "pass", farg: "#fff" });
-  r2.s.saker.push({ x: r2.s.x + 200, spar: 0, typ: "stopp", farg: "#fff" });
+  r2.s.saker.push({ y: r2.s.y - 200, spar: 1, typ: "pass", farg: "#fff" });
+  r2.s.saker.push({ y: r2.s.y - 200, spar: 0, typ: "stopp", farg: "#fff" });
   r2.s.nasta = 99;
   for(let i = 0; i < 90; i++) r2.update(DT);
   assert.equal(r2.poang(), 1, "passageraren på det egna spåret plockas upp");
-  assert.equal(r2.s.brom, 0, "skylten på andra spåret rör oss inte");
+  assert.equal(r2.s.brom, 0, "skylten på ett annat spår rör oss inte");
   const r3 = SPELMOTOR.race(LEK_W, LEK_H, tyst);
-  r3.tap();
-  r3.s.saker.push({ x: r3.s.x + 200, spar: 0, typ: "stopp", farg: "#fff" });
+  r3.styr(-1);
+  r3.s.saker.push({ y: r3.s.y - 200, spar: 0, typ: "stopp", farg: "#fff" });
   r3.s.nasta = 99;
   for(let i = 0; i < 90; i++) r3.update(DT);
   assert.ok(r3.s.brom > 0 || r3.s.oj > 0, "skylten på det egna spåret bromsar");
   assert.equal(r3.poang(), 0);
+  /* Det finns alltid ett fritt spår: aldrig skyltar på alla tre samtidigt */
+  const r4 = SPELMOTOR.race(LEK_W, LEK_H, tyst);
+  for(let i = 0; i < 40 * 60; i++){
+    r4.update(DT);
+    const skyltar = r4.s.saker.filter(o => o.typ === "stopp" && !o.tagen && Math.abs(o.y - r4.s.y) < 40).map(o => o.spar);
+    assert.ok(new Set(skyltar).size < 3, "tre skyltar i bredd");
+  }
 
   /* Bilracet: tjuvstart ger noll, tryck på grönt ger poäng, fem starter sedan slut */
   const bil = SPELMOTOR.bil(LEK_W, LEK_H, tyst);
