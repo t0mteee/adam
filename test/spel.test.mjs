@@ -3,7 +3,8 @@ import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { REGIONS, LEVELS, SHOWN, buildRound, makeOptions, qNyckel, TRAM_LINES, STOP_PHOTOS, TRAM_PHOTOS, vagnFoto,
+import { REGIONS, LEVELS, SHOWN, buildRound, makeOptions, distraktorer, varforFel, laggKluring, kluringUtfall, kluringarFor, blandaInKluring,
+         gorSaga, blandaInSaga, natAvstand, valjUppdrag, uppdragTips, ALLA_STOPP, qNyckel, TRAM_LINES, STOP_PHOTOS, TRAM_PHOTOS, vagnFoto,
          THINGS, BAS_SAKER, BUTIK, TILLBEHOR, sakerFor,
          justeraSkill, nivaForSkill, buildStigandeRound,
          HUVUD_MAX, SIDO_START, SIDO_MAX, GANGER_START, GANGER_MAX, huvudspar, arLast, oppnaEfter, sidoOppen, gangerOppen, sidosparEfter, synligaBanor, maxStars, nastaBana, blandatLevel, levelById } from "./hamta.mjs";
@@ -347,4 +348,151 @@ test("gånger och delat: rätt tabeller, jämna delningar, eget spår som går a
   assert.equal(synligaBanor(av).length, LEVELS.length - 6);
   assert.equal(maxStars(av), (LEVELS.length - 6) * 3);
   assert.equal(sidosparEfter(av, levelById(15)), null);
+});
+
+test("sex rutor från Vagnhallen, två försök från Berget och en förklaring till varje felsvar", () => {
+  for(const L of LEVELS){
+    if(L.id >= 16 && L.id <= 27) assert.equal(L.opts, 6, `${L.name} ska ha sex rutor`);
+    if(L.id <= 9) assert.equal(L.opts <= 4 && !L.utanHjalp, true, `${L.name} ska vara snäll`);
+    for(let i = 0; i < 20; i++){
+      for(const q of buildRound(L, 10)){
+        const alt = makeOptions(q, L.opts);
+        assert.equal(alt.length, L.opts);
+        assert.ok(alt.includes(q.answer));
+        assert.equal(new Set(alt).size, L.opts, `dubblett bland rutorna för ${q.kind}`);
+        for(const d of distraktorer(q))
+          assert.ok(d.v !== q.answer && d.v >= 0 && Number.isInteger(d.v) && d.varfor.length > 3, `${q.kind}: felsvar ${d.v} utan förklaring`);
+        for(const v of alt) if(v !== q.answer) assert.ok(varforFel(q, v).length > 3, `${q.kind}: ${v} saknar förklaring`);
+        /* I skrivläget kan vad som helst knappas in */
+        assert.ok(varforFel(q, q.answer + 40).length > 3 && varforFel(q, q.answer + 1).length > 3);
+        /* Provbanorna bestämmer själva antalet rutor */
+        if(L.pool) assert.equal(q.opts, L.opts);
+      }
+    }
+  }
+  /* De vanligaste feltankarna får sina egna ord */
+  assert.equal(varforFel({ kind:"add", a:7, b:5, answer:12 }, 2), "Det blev minus, inte plus!");
+  assert.equal(varforFel({ kind:"sub", a:9, b:4, answer:5 }, 13), "Det blev plus, inte minus!");
+  assert.equal(varforFel({ kind:"tiotal", tior:4, ental:7, count:47, answer:47 }, 74), "Tvärtom! Tiorna först.");
+  assert.equal(varforFel({ kind:"mul", a:2, b:6, answer:12 }, 8), "Det blev plus, inte gånger!");
+  assert.equal(varforFel({ kind:"saga", op:"sub", a:8, b:3, answer:5 }, 11), "Det blev plus, inte minus!");
+  assert.equal(varforFel({ kind:"flera", tal:[12, 5, 29], answer:46 }, 17), "Sista talet glömdes bort!");
+  assert.match(varforFel({ kind:"add", a:7, b:5, answer:12 }, 13), /för mycket/i);
+  assert.match(varforFel({ kind:"add", a:7, b:5, answer:12 }, 3), /för lite/i);
+  /* Hela tiotal får felsvar som också är hela tiotal, annars syns svaret på ändelsen */
+  const tior = makeOptions({ kind:"add", a:30, b:40, answer:70 }, 6);
+  assert.ok(tior.filter(v => v % 10 === 0).length >= 4, `hela tiotal: ${tior}`);
+});
+
+test("räknesagor räknar rätt, handlar om resan och följer banans tal", () => {
+  const plats = { stopp:"Valand", ref:"5", mot:"Länsmansgården" };
+  for(const L of LEVELS){
+    for(let i = 0; i < 40; i++){
+      const q = gorSaga(L, plats);
+      assert.equal(q.kind, "saga");
+      const facit = q.op === "add" ? q.a + q.b : q.op === "sub" ? q.a - q.b : q.op === "mul" ? q.a * q.b : q.a / q.b;
+      assert.equal(q.answer, facit, `${q.text} → ${q.answer}`);
+      assert.ok(q.answer >= 0 && Number.isInteger(q.answer));
+      assert.ok(q.text.endsWith("?") && q.text.includes(String(q.a)) && q.text.includes(String(q.b)), q.text);
+      assert.ok(/Valand|Länsmansgården|Linje 5|Vagnhallen/.test(q.text), q.text);
+      if(L.spar === "ganger") assert.ok(["mul", "div"].includes(q.op), `${L.name}: ${q.op}`);
+      else if(L.kinds.includes("count") || L.kinds.includes("tiotal")) assert.ok(Math.max(q.a, q.b, q.answer) <= 10, "räknebanorna får små sagor");
+      else assert.ok(Math.max(q.a, q.answer) <= L.max, `${L.name}: ${q.text}`);
+      assert.equal(q.niva, L.id);
+      assert.equal(q.opts, L.opts);
+      assert.equal(!!q.utanHjalp, !!L.utanHjalp);
+      const alt = makeOptions(q, L.opts);
+      assert.ok(alt.includes(q.answer));
+      assert.equal(new Set(alt).size, L.opts);
+    }
+  }
+  /* Sagan tar en plats i omgången, men aldrig kluringens */
+  const queue = buildRound(levelById(4), 10);
+  queue[3] = Object.assign({}, queue[3], { kluring:true });
+  for(let i = 0; i < 30; i++){
+    const kopia = queue.slice();
+    blandaInSaga({}, levelById(4), kopia, plats);
+    assert.equal(kopia.filter(q => q.kind === "saga").length, 1);
+    assert.ok(kopia[3].kluring);
+  }
+});
+
+test("kluringar sparas hos spelaren, kommer tillbaka på rätt spår och försvinner när de klaras", () => {
+  const p = { unlocked: 14, stars: {}, skill: 11, kluriga: [] };
+  const q = buildRound(levelById(10), 1)[0];
+  assert.equal(q.niva, 10, "uppgiften vet vilken bana den kom från");
+  laggKluring(p, q);
+  assert.equal(p.kluriga.length, 1);
+  assert.equal(p.kluriga[0].niva, 10);
+  assert.ok(!("kluring" in p.kluriga[0]));
+  laggKluring(p, q);   /* samma tal två gånger ger inte två kluringar */
+  assert.equal(p.kluriga.length, 1);
+  assert.equal(kluringarFor(p, levelById(12)).length, 1, "passar en svårare bana på samma spår");
+  assert.equal(kluringarFor(p, levelById(5)).length, 0, "aldrig på en lättare bana");
+  assert.equal(kluringarFor(p, levelById(28)).length, 0, "aldrig på ett annat spår");
+  assert.equal(kluringarFor(p, { id:-1, kinds:[] }).length, 1, "Stigande tar den när nivån räcker");
+  assert.equal(kluringarFor({ ...p, skill: 5 }, { id:-1, kinds:[] }).length, 0);
+  assert.equal(kluringarFor(p, { id:0, pool:[10, 11, 12] }).length, 1, "Blandat tar den ur sina banor");
+  assert.equal(kluringarFor(p, { id:0, pool:[4, 5, 6] }).length, 0);
+  let insatt = 0;
+  for(let i = 0; i < 60; i++){
+    const queue = buildRound(levelById(12), 10);
+    blandaInKluring(p, levelById(12), queue);
+    const k = queue.findIndex(x => x.kluring);
+    if(k >= 0){ insatt++; assert.ok(k > 0, "aldrig först i omgången"); assert.equal(queue[k].answer, q.answer); }
+  }
+  assert.ok(insatt > 10 && insatt < 60, `kluringen kom ${insatt} av 60 gånger`);
+  kluringUtfall(p, q, false);
+  assert.equal(p.kluriga.length, 1, "fel igen – ligger kvar");
+  kluringUtfall(p, q, true);
+  assert.equal(p.kluriga.length, 0, "klarad direkt – borta");
+  assert.equal(p.kluringarKlarade, 1);
+  /* Listan är kort: de senaste tjugo */
+  for(let i = 0; i < 40; i++) laggKluring(p, { kind:"add", a:i, b:1, answer:i + 1, niva:10 });
+  assert.equal(p.kluriga.length, 20);
+  assert.equal(p.kluriga[19].a, 39);
+});
+
+test("uppdrag: nätet hänger ihop, målet ligger några hållplatser bort och tipset tar en närmare", () => {
+  const dist = natAvstand("Brunnsparken");
+  assert.equal(dist.size, ALLA_STOPP.length, "alla hållplatser ska gå att nå från Brunnsparken");
+  assert.equal(dist.get("Brunnsparken"), 0);
+  assert.equal(dist.get("Drottningtorget"), 1);
+  /* Den som är ny får ett mål tre hållplatser bort, helst en med foto */
+  const p = { uppdragKlara: 0, besokta: {} };
+  const kand = [...natAvstand("Saltholmen")].filter(([, d]) => d === 3).map(([n]) => n);
+  const helst = kand.filter(n => STOP_PHOTOS[n]);
+  for(let i = 0; i < 40; i++){
+    const u = valjUppdrag(p, "Saltholmen");
+    assert.ok(u && u.hopp === 3 && u.beloning === 60 && kand.includes(u.mal), JSON.stringify(u));
+    if(helst.length) assert.ok(helst.includes(u.mal), `${u.mal} har inget foto fast ${helst} har`);
+  }
+  const van = { uppdragKlara: 12, besokta: {} };
+  const hopp = new Set();
+  for(let i = 0; i < 80; i++){ const u = valjUppdrag(van, "Brunnsparken"); hopp.add(u.hopp); assert.ok(u.hopp >= 3 && u.hopp <= 8); }
+  assert.ok(hopp.size > 2, "längre uppdrag efter hand");
+  /* Tipset: sitt kvar, vänd eller byt – och det som föreslås tar en faktiskt närmare */
+  let byten = 0, vand = 0, kvar = 0;
+  for(let i = 0; i < 200; i++){
+    const l = TRAM_LINES[i % TRAM_LINES.length];
+    const at = Math.floor(Math.random() * l.stops.length);
+    const pos = l.stops[at], rikt = Math.random() < 0.5 ? 1 : -1;
+    const mal = ALLA_STOPP[Math.floor(Math.random() * ALLA_STOPP.length)];
+    if(mal === pos) continue;
+    const t = uppdragTips({ uppdrag:{ mal }, resa:{ pos, ref:l.ref, rikt } });
+    assert.equal(t.kvar, natAvstand(mal).get(pos));
+    assert.ok(t.val.some(a => a.narmare), `ingen vagn närmare ${mal} från ${pos}`);
+    const samma = t.val.find(a => a.ref === l.ref && a.rikt === rikt);
+    const motsatt = t.val.find(a => a.ref === l.ref && a.rikt !== rikt);
+    if(t.text === "Sitt kvar!"){ kvar++; assert.ok(samma && samma.narmare); }
+    else if(t.text.startsWith("Vänd")){ vand++; assert.ok(motsatt && motsatt.narmare && !(samma && samma.narmare)); }
+    else {
+      byten++;
+      const m = t.text.match(/^Byt till linje (\S+) mot /);
+      assert.ok(m, t.text);
+      assert.ok(t.val.find(a => a.ref === m[1] && a.narmare && a.ref !== l.ref));
+    }
+  }
+  assert.ok(byten > 0 && vand > 0 && kvar > 0, `byt ${byten}, vänd ${vand}, kvar ${kvar}`);
+  assert.equal(uppdragTips({ uppdrag:{ mal:"Valand" }, resa:{ pos:"Valand", ref:"5", rikt:1 } }).kvar, 0);
 });

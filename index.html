@@ -505,6 +505,11 @@ h1, h2, h3{ font-family: "Baloo 2", "Baloo 2 Fallback", system-ui, sans-serif; f
 }
 
 .q-label{ font-family: "Baloo 2", system-ui, sans-serif; font-weight: 800; font-size: var(--t-md); color: var(--ink-2); margin-bottom: 6px; }
+.kluring-tag{
+  display: inline-block; background: var(--grape); color: #fff; border-radius: 999px;
+  padding: 1px 10px; font-size: var(--t-xs); vertical-align: middle; margin-right: 4px;
+  animation: right-pop .55s cubic-bezier(.3,1.6,.5,1);
+}
 .q-equation{
   font-family: "Lilita One", system-ui, sans-serif;
   font-size: clamp(1.7rem, 7.6vw, 3.6rem);
@@ -514,6 +519,17 @@ h1, h2, h3{ font-family: "Baloo 2", "Baloo 2 Fallback", system-ui, sans-serif; f
 .q-equation.ord{ font-size: clamp(1.05rem, 4.9vw, 2.1rem); letter-spacing: 0; }
 /* Fyra tal på rad blir en lång rad siffror – då får de ta mindre plats */
 .q-equation.mellan{ font-size: clamp(1.2rem, 5.4vw, 2.6rem); letter-spacing: 0; }
+/* Räknesagan är text, inte siffror: mindre, radbruten, lätt att läsa högt */
+.q-equation.saga{
+  font-family: "Baloo 2", system-ui, sans-serif; font-weight: 800;
+  font-size: clamp(1.05rem, 4.6vw, 1.5rem); white-space: normal; line-height: 1.3;
+  letter-spacing: 0; text-wrap: balance;
+}
+.q-equation .saga-facit{
+  display: block; margin-top: 6px;
+  font-family: "Lilita One", system-ui, sans-serif; font-weight: 400;
+  font-size: clamp(1.5rem, 6.5vw, 2.6rem); line-height: 1.05;
+}
 .q-equation .op{ color: var(--grape); padding: 0 .06em; }
 .q-equation .slot{ color: var(--melon); }
 .q-equation .facit{ color: var(--grass-deep); animation: right-pop .55s cubic-bezier(.3,1.6,.5,1); display: inline-block; }
@@ -555,6 +571,9 @@ h1, h2, h3{ font-family: "Baloo 2", "Baloo 2 Fallback", system-ui, sans-serif; f
 .answer-area{ margin-bottom: 0; }
 .options{ display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(8px, 2.2vw, 14px); }
 .options.three{ grid-template-columns: repeat(3, 1fr); }
+/* Sex rutor: tre i bredd, lite mindre siffror så tresiffriga tal får plats */
+.options.six{ grid-template-columns: repeat(3, 1fr); }
+.options.six .opt{ font-size: clamp(1.6rem, 6.6vw, 2.5rem); padding: clamp(10px, 2.8vw, 16px) 6px; border-radius: 20px; }
 .opt{
   font-family: "Lilita One", system-ui, sans-serif;
   font-size: clamp(2rem, 8vw, 3rem); padding: clamp(12px, 3.5vw, 22px) 8px;
@@ -564,6 +583,8 @@ h1, h2, h3{ font-family: "Baloo 2", "Baloo 2 Fallback", system-ui, sans-serif; f
 .opt.c1{ background: var(--sun); }
 .opt.c2{ background: var(--bubble); }
 .opt.c3{ background: #8FE07E; }
+.opt.c4{ background: #FFB27A; }
+.opt.c5{ background: #B8F0E0; }
 .opt.right{ background: var(--grass) !important; color: #fff; animation: right-pop .5s cubic-bezier(.3,1.6,.5,1); }
 .opt.wrong{ background: #C9BEE6 !important; color: rgba(46,26,102,.45); box-shadow: 0 0 0 var(--ink); transform: translateY(6px); }
 @keyframes right-pop{ 0%{ transform: scale(1); } 45%{ transform: scale(1.14); } 100%{ transform: scale(1); } }
@@ -589,7 +610,7 @@ h1, h2, h3{ font-family: "Baloo 2", "Baloo 2 Fallback", system-ui, sans-serif; f
 .feedback .bubble{
   font-family: "Baloo 2", system-ui, sans-serif; font-weight: 800; font-size: var(--t-lg);
   padding: 8px 22px; border-radius: 999px; border: var(--stroke); box-shadow: var(--lift-sm);
-  max-width: min(100%, 22ch); text-wrap: balance;
+  max-width: min(100%, 26ch); text-wrap: balance;
   animation: fb-in .4s cubic-bezier(.25,1.5,.5,1) both;
 }
 .feedback .bubble.good{ background: var(--grass); color: #fff; }
@@ -741,6 +762,26 @@ body.on-tram .world{ display: none; }
 }
 .avgang small{ display: block; font-size: var(--t-xs); color: var(--ink-2); margin-top: 2px; }
 .avgang .pil{ font-size: 1.6rem; line-height: 1; }
+/* Uppdraget: en flagga med målet, mellan hållplatskortet och kartan */
+.uppdrag{
+  display: flex; align-items: center; gap: 10px; width: 100%; text-align: left;
+  background: #FFF3CF; color: var(--ink); border: var(--stroke); border-radius: 18px;
+  box-shadow: var(--lift-sm); padding: 9px 12px; margin-bottom: 14px;
+  font-family: inherit; cursor: pointer; touch-action: manipulation;
+}
+.uppdrag.ny{ background: var(--paper); }
+.uppdrag:active{ transform: translateY(3px); box-shadow: 0 0 0 var(--ink); }
+.uppdrag > svg{ width: 30px; height: 30px; flex: none; }
+.uppdrag > span{ min-width: 0; flex: 1; }
+.uppdrag b{ display: block; font-family: "Baloo 2", system-ui, sans-serif; font-weight: 800; font-size: var(--t-md); line-height: 1.15; }
+.uppdrag small{ display: block; font-size: var(--t-xs); color: var(--ink-2); margin-top: 1px; }
+.uppdrag .uppdrag-mynt{ flex: none; font-family: "Lilita One", system-ui, sans-serif; color: var(--sun-deep); font-size: var(--t-md); }
+.uppdrag-rad{ display: flex; align-items: center; gap: 6px; margin: 8px 2px 0; }
+.uppdrag-rad svg{ width: 18px; height: 18px; flex: none; }
+.avgang.narmare{ background: #E4F7DC; }
+.avgang .mal-tips{ color: var(--grass-deep); }
+.natkarta .nat-namn.mal{ fill: #DD4747; font-family: "Baloo 2", system-ui, sans-serif; }
+.unlock-note.uppdrag-klart{ background: #FFE3E3; border-color: var(--melon-deep); }
 .trip-knappar{ display: flex; gap: 8px; margin-bottom: 14px; }
 .trip-knappar .btn{ flex: 1; padding: 11px 8px; font-size: var(--t-sm); background: var(--paper-2); display: flex; align-items: center; justify-content: center; gap: 8px; }
 .trip-knappar .btn svg{ width: 24px; height: 24px; flex: none; }
@@ -956,6 +997,7 @@ body.on-tram .world{ display: none; }
   .key svg{ width: 24px; height: 24px; }
   .opt{ padding: clamp(8px, 2.4vw, 15px) 8px; font-size: clamp(1.7rem, 7vw, 2.6rem); border-radius: 20px; }
   .options{ gap: 8px; }
+  .options.six .opt{ padding: clamp(7px, 2vw, 12px) 6px; font-size: clamp(1.4rem, 5.8vw, 2.1rem); border-radius: 16px; }
 }
 @media (max-width: 400px){
   .stage{ grid-template-columns: minmax(70px, 22%) 1fr; }
@@ -1049,6 +1091,7 @@ body.on-tram .world{ display: none; }
   <section id="screen-trip" class="screen">
     <div class="trip-head" id="tripHead"></div>
     <div id="stopCard"></div>
+    <div id="uppdrag"></div>
     <div class="natkarta" id="natkarta" aria-label="Spårvagnskarta"></div>
     <div class="trip-knappar">
       <button class="btn" data-trip="byt" type="button">
@@ -1132,7 +1175,7 @@ const pick = (arr) => arr[rnd(arr.length)];
 const INK = "#2E1A66";
 /* Syns under Inställningar, så man kan se vilken version telefonen kör.
    Höjs tillsammans med VERSION i sw.js. */
-const SPELVERSION = "15";
+const SPELVERSION = "16";
 function shuffle(a){ for(let i = a.length - 1; i > 0; i--){ const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
 function store(key, val){
@@ -1329,6 +1372,7 @@ const STAR_ON  = `<svg class="st" viewBox="0 0 40 40"><path d="${starPath}" fill
 const STAR_OFF = `<svg class="st" viewBox="0 0 40 40"><path d="${starPath}" fill="#EDE6FA" stroke="#B9A9DD" stroke-width="3" stroke-linejoin="round"/></svg>`;
 const COIN_SVG = `<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" fill="#FFC42E" stroke="${INK}" stroke-width="3"/><circle cx="20" cy="20" r="11" fill="none" stroke="#E29A00" stroke-width="2.5"/><path d="M20 12v16M16.5 15.5h5.5a2.6 2.6 0 0 1 0 5.2h-4a2.6 2.6 0 0 0 0 5.2H24" fill="none" stroke="${INK}" stroke-width="2.6" stroke-linecap="round"/></svg>`;
 const KISTA_SVG = `<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round"><rect x="6" y="20" width="36" height="21" rx="4" fill="#C97A3A" stroke="${INK}" stroke-width="3.4"/><path d="M6 24a18 10 0 0 1 36 0z" fill="#E2A05A" stroke="${INK}" stroke-width="3.4"/><rect x="20" y="24" width="8" height="11" rx="2" fill="#FFC42E" stroke="${INK}" stroke-width="3"/><circle cx="24" cy="29" r="1.6" fill="${INK}"/></svg>`;
+const FLAGGA_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="${INK}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h12l-3.5 4.5L17 13H5z" fill="#FF6B6B"/></svg>`;
 const NYCKEL_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="#3E9E51" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="9" r="4.5" fill="#8FE07E"/><path d="M11.4 11.6 20 20.2M17 17l2.6-2.6M14.4 14.4 17 11.8"/></svg>`;
 const LOCK_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="${INK}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10" width="15" height="10.5" rx="3" fill="rgba(46,26,102,.18)"/><path d="M8 10V7.5a4 4 0 0 1 8 0V10"/></svg>`;
 
@@ -1347,7 +1391,8 @@ function badgeArt(kind){
     mount: frame("#FFEBD9") + `<path d="M8 45L24 17l10 16 5-7 13 19z" fill="#E2762A" stroke="${INK}" stroke-width="3.4" stroke-linejoin="round"/><path d="M18 30l6-10 5 8-4 5z" fill="#FFFDF7" stroke="${INK}" stroke-width="2.6" stroke-linejoin="round"/>`,
     cloud: frame("#DFF2FD") + `<path d="M18 40a8 8 0 0 1 1-16 11 11 0 0 1 21-2 8 8 0 0 1 1 18z" fill="#FFFDF7" stroke="${INK}" stroke-width="3.4" stroke-linejoin="round"/>`,
     tram:  frame("#DFF2FD") + `<rect x="17" y="14" width="26" height="32" rx="7" fill="#FF6B6B" stroke="${INK}" stroke-width="3.4"/><rect x="21" y="20" width="18" height="10" rx="3" fill="#A6E7FF" stroke="${INK}" stroke-width="2.6"/><circle cx="24" cy="40" r="3" fill="${INK}"/><circle cx="36" cy="40" r="3" fill="${INK}"/><path d="M30 14V8" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>`,
-    spar:  frame("#EDE6FF") + `<path d="M20 48V16M40 48V16" stroke="${INK}" stroke-width="4" stroke-linecap="round"/><path d="M14 22h32M14 32h32M14 42h32" stroke="#9061F9" stroke-width="4" stroke-linecap="round"/>`
+    spar:  frame("#EDE6FF") + `<path d="M20 48V16M40 48V16" stroke="${INK}" stroke-width="4" stroke-linecap="round"/><path d="M14 22h32M14 32h32M14 42h32" stroke="#9061F9" stroke-width="4" stroke-linecap="round"/>`,
+    flag:  frame("#FFE3E3") + `<path d="M20 48V12" stroke="${INK}" stroke-width="4" stroke-linecap="round"/><path d="M20 12h22l-6 8 6 8H20z" fill="#FF6B6B" stroke="${INK}" stroke-width="3.4" stroke-linejoin="round"/>`
   };
   return `<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">${art[kind] || art.star}</svg>`;
 }
@@ -1401,20 +1446,20 @@ const LEVELS = [
   { id:13, r:4, name:"Tre små tal",    desc:"2 + 3 + 4",          kinds:["add3"], max:15, opts:4, utanHjalp:true },
   { id:14, r:4, name:"Blandat till 20", desc:"Allt om vartannat", kinds:["add","sub","missing","double"], max:20, lo:8, minDel:4, opts:4, utanHjalp:true },
   { id:15, r:4, name:"Mästarprovet",   desc:"Allt från Berget och Molnen", pool:[10,11,12,13,14], opts:4, utanHjalp:true },
-  /* Vagnhallen */
-  { id:16, r:5, name:"Plus över tian",  desc:"7 + 8 · 9 + 6",     kinds:["add"], max:18, lo:11, minDel:2, ensiffrigt:true, opts:4, utanHjalp:true },
-  { id:17, r:5, name:"Minus över tian", desc:"15 − 7 · 12 − 8",   kinds:["sub"], max:18, lo:11, minDel:2, ensiffrigt:true, over:"ja", opts:4, utanHjalp:true },
-  { id:18, r:5, name:"Hela tiotal",     desc:"20 + 30 · 70 − 40", kinds:["add","sub"], max:100, lo:30, tiotal:true, opts:4, utanHjalp:true },
-  { id:19, r:5, name:"Tiotal och ental", desc:"34 + 5 · 46 − 3",  kinds:["add","sub"], max:99, lo:20, minDel:2, litet:9, over:"nej", opts:4, utanHjalp:true },
-  { id:20, r:5, name:"Växla och låna",  desc:"38 + 27 · 63 − 28", kinds:["add","sub"], max:100, lo:30, minDel:11, over:"ja", opts:4, utanHjalp:true },
-  { id:21, r:5, name:"Talföljder",      desc:"2 · 4 · 6 · ?",     kinds:["serie"], max:100, opts:4, utanHjalp:true },
-  { id:22, r:5, name:"Dubbelt och hälften", desc:"14 + 14 · hälften av 30", kinds:["double","half"], max:60, minDel:6, opts:4, utanHjalp:true },
-  { id:23, r:5, name:"Vagnhallens prov", desc:"Allt i Vagnhallen", pool:[16,17,18,19,20,21,22], opts:4, utanHjalp:true },
+  /* Vagnhallen – härifrån sex rutor att välja på och två försök per tal */
+  { id:16, r:5, name:"Plus över tian",  desc:"7 + 8 · 9 + 6",     kinds:["add"], max:18, lo:11, minDel:2, ensiffrigt:true, opts:6, utanHjalp:true },
+  { id:17, r:5, name:"Minus över tian", desc:"15 − 7 · 12 − 8",   kinds:["sub"], max:18, lo:11, minDel:2, ensiffrigt:true, over:"ja", opts:6, utanHjalp:true },
+  { id:18, r:5, name:"Hela tiotal",     desc:"20 + 30 · 70 − 40", kinds:["add","sub"], max:100, lo:30, tiotal:true, opts:6, utanHjalp:true },
+  { id:19, r:5, name:"Tiotal och ental", desc:"34 + 5 · 46 − 3",  kinds:["add","sub"], max:99, lo:20, minDel:2, litet:9, over:"nej", opts:6, utanHjalp:true },
+  { id:20, r:5, name:"Växla och låna",  desc:"38 + 27 · 63 − 28", kinds:["add","sub"], max:100, lo:30, minDel:11, over:"ja", opts:6, utanHjalp:true },
+  { id:21, r:5, name:"Talföljder",      desc:"2 · 4 · 6 · ?",     kinds:["serie"], max:100, opts:6, utanHjalp:true },
+  { id:22, r:5, name:"Dubbelt och hälften", desc:"14 + 14 · hälften av 30", kinds:["double","half"], max:60, minDel:6, opts:6, utanHjalp:true },
+  { id:23, r:5, name:"Vagnhallens prov", desc:"Allt i Vagnhallen", pool:[16,17,18,19,20,21,22], opts:6, utanHjalp:true },
   /* Ändstationen – fria tal */
-  { id:24, r:6, name:"Allt till 100",   desc:"25 + 37 · 82 − 46",   kinds:["add","sub"], max:100, lo:30, minDel:12, opts:4, utanHjalp:true },
-  { id:25, r:6, name:"Allt till 200",   desc:"137 + 48 · 172 − 85", kinds:["add","sub"], max:200, lo:40, minDel:15, opts:4, utanHjalp:true },
-  { id:26, r:6, name:"Tre tal i rad",   desc:"12 + 5 + 29",         kinds:["flera"], termer:3, max:100, opts:4, utanHjalp:true },
-  { id:27, r:6, name:"Fyra tal i rad",  desc:"12 + 5 + 29 + 10",    kinds:["flera"], termer:4, max:200, opts:4, utanHjalp:true },
+  { id:24, r:6, name:"Allt till 100",   desc:"25 + 37 · 82 − 46",   kinds:["add","sub"], max:100, lo:30, minDel:12, opts:6, utanHjalp:true },
+  { id:25, r:6, name:"Allt till 200",   desc:"137 + 48 · 172 − 85", kinds:["add","sub"], max:200, lo:40, minDel:15, opts:6, utanHjalp:true },
+  { id:26, r:6, name:"Tre tal i rad",   desc:"12 + 5 + 29",         kinds:["flera"], termer:3, max:100, opts:6, utanHjalp:true },
+  { id:27, r:6, name:"Fyra tal i rad",  desc:"12 + 5 + 29 + 10",    kinds:["flera"], termer:4, max:200, opts:6, utanHjalp:true },
   /* Stjärnhimlen – sidospåret. Här är sakerna själva uppgiften. */
   { id:28, r:7, name:"Räkna till 25",  desc:"Tioramar, tior och ental", kinds:["count","tiotal"], max:25,  min:11, opts:4 },
   { id:29, r:7, name:"Räkna till 50",  desc:"Tioramar, tior och ental", kinds:["count","tiotal"], max:50,  min:26, opts:4 },
@@ -1423,11 +1468,11 @@ const LEVELS = [
   /* Gånger och delat – börjar snällt: tvåans tabell med bilder, sedan fem
      och tio, delat med som "hur många i varje hög", och till sist tre och fyra. */
   { id:32, r:8, spar:"ganger", name:"Två gånger",           desc:"2 × 3 · 2 × 7",       kinds:["mul"], tabeller:[2],     max:20,  opts:4 },
-  { id:33, r:8, spar:"ganger", name:"Fem och tio gånger",   desc:"5 × 4 · 10 × 6",      kinds:["mul"], tabeller:[5, 10], max:100, opts:4, utanHjalp:true },
+  { id:33, r:8, spar:"ganger", name:"Fem och tio gånger",   desc:"5 × 4 · 10 × 6",      kinds:["mul"], tabeller:[5, 10], max:100, opts:6, utanHjalp:true },
   { id:34, r:8, spar:"ganger", name:"Delat med två",        desc:"8 / 2 · 14 / 2",      kinds:["div"], tabeller:[2],     max:20,  opts:4 },
-  { id:35, r:8, spar:"ganger", name:"Delat med fem och tio", desc:"20 / 5 · 70 / 10",   kinds:["div"], tabeller:[5, 10], max:100, opts:4, utanHjalp:true },
-  { id:36, r:8, spar:"ganger", name:"Tre och fyra gånger",  desc:"3 × 6 · 24 / 4",      kinds:["mul","div"], tabeller:[3, 4], max:40, opts:4, utanHjalp:true },
-  { id:37, r:8, spar:"ganger", name:"Tabellprovet",         desc:"Alla tabellerna",     pool:[32,33,34,35,36], opts:4, utanHjalp:true }
+  { id:35, r:8, spar:"ganger", name:"Delat med fem och tio", desc:"20 / 5 · 70 / 10",   kinds:["div"], tabeller:[5, 10], max:100, opts:6, utanHjalp:true },
+  { id:36, r:8, spar:"ganger", name:"Tre och fyra gånger",  desc:"3 × 6 · 24 / 4",      kinds:["mul","div"], tabeller:[3, 4], max:40, opts:6, utanHjalp:true },
+  { id:37, r:8, spar:"ganger", name:"Tabellprovet",         desc:"Alla tabellerna",     pool:[32,33,34,35,36], opts:6, utanHjalp:true }
 ];
 /* Huvudspåret är 1–27, sidospåret Stjärnhimlen 28–31, sidospåret Gånger 32–37 */
 const HUVUD_MAX = 27, SIDO_START = 28, SIDO_MAX = 31, GANGER_START = 32, GANGER_MAX = 37;
@@ -1551,7 +1596,67 @@ const MAKE = {
    "tiokompisar" som ett fattas-tal, så de räknas som samma sort här. */
 const SHOWN = { count:"count", tiotal:"tiotal", add:"add", sub:"sub", missing:"missing",
                 double:"add", ten:"missing", add3:"add3", serie:"serie", mul:"mul",
-                half:"half", flera:"flera", div:"div" };
+                half:"half", flera:"flera", div:"div", saga:"saga" };
+
+/* ── Räknesagor ─────────────────────────────────────────────────────────
+   På spårvagnen är en av uppgifterna vid en hållplats en liten saga om
+   resan: barn som kliver på och av, vagnar i hallen, platser som blir
+   lediga. Talen följer banan man räknar på; namnen är den riktiga linjens,
+   så sagan handlar om just den hållplats man är på väg till. */
+const SAGOR = {
+  add: [
+    (s) => `På vagnen sitter ${s.a} barn. Vid ${s.stopp} kliver ${s.b} på. Hur många barn åker nu?`,
+    (s) => `Linje ${s.ref} har ${s.a} passagerare. Vid ${s.stopp} kommer ${s.b} till. Hur många är de nu?`,
+    (s) => `I Vagnhallen står ${s.a} spårvagnar. ${s.b} kör in. Hur många står där nu?`,
+    (s) => `${s.a} barn väntar vid ${s.stopp}. ${s.b} barn kommer springande. Hur många väntar nu?`
+  ],
+  sub: [
+    (s) => `På vagnen sitter ${s.a} barn. Vid ${s.stopp} går ${s.b} av. Hur många är kvar?`,
+    (s) => `Linje ${s.ref} har ${s.a} passagerare. Vid ${s.stopp} hoppar ${s.b} av. Hur många åker vidare?`,
+    (s) => `Vagnen har ${s.a} lediga platser. Vid ${s.stopp} sätter sig ${s.b} barn. Hur många platser är lediga nu?`,
+    (s) => `Det är ${s.a} hållplatser till ${s.mot}. Vi åker ${s.b} av dem. Hur många är kvar sedan?`
+  ],
+  mul: [
+    (s) => `${s.a} vagnar kommer till ${s.stopp}. I varje sitter ${s.b} barn. Hur många barn är det?`,
+    (s) => `Vid ${s.stopp} står ${s.a} bänkar. På varje sitter ${s.b} barn. Hur många barn är det?`
+  ],
+  div: [
+    (s) => `${s.a} barn åker från ${s.stopp} i ${s.b} vagnar, lika många i varje. Hur många i varje vagn?`,
+    (s) => `${s.a} biljetter delas lika mellan ${s.b} barn vid ${s.stopp}. Hur många får var och en?`
+  ]
+};
+/* Räknesättet följer banan: gånger och delat på sitt spår, annars plus eller
+   minus med banans egna ramar. Räknebanorna, där man annars räknar saker,
+   får små tal. plats = { stopp, ref, mot } från resan. */
+function gorSaga(L, plats){
+  const har = (k) => (L.kinds || []).includes(k);
+  let q;
+  if(har("mul") || har("div")){
+    q = MAKE[har("mul") && (!har("div") || rnd(2) === 0) ? "mul" : "div"](L);
+  }else if(har("count") || har("tiotal")){
+    const ram = { max: Math.min(10, L.max || 10), lo: 3 };
+    q = rnd(2) === 0 ? plusTal(ram) : minusTal(ram);
+  }else{
+    const minus = har("sub") && (!har("add") || rnd(2) === 0);
+    q = minus ? minusTal(L) : plusTal(L);
+  }
+  const text = pick(SAGOR[q.kind])(Object.assign({ a:q.a, b:q.b }, plats));
+  return { kind:"saga", op:q.kind, a:q.a, b:q.b, answer:q.answer, text,
+           utanHjalp: !!L.utanHjalp, opts: L.opts, niva: L.id };
+}
+/* Vilken bana sagan ska hämta sina tal från */
+function sagoNiva(p, L){
+  if(L.id === -1) return nivaForSkill(p);
+  if(L.pool) return levelById(pick(L.pool));
+  return L;
+}
+/* Byter ut en uppgift i omgången mot en saga – aldrig kluringen */
+function blandaInSaga(p, L, queue, plats){
+  const lediga = queue.map((q, i) => q.kluring ? -1 : i).filter(i => i >= 0);
+  if(!lediga.length) return queue;
+  queue[pick(lediga)] = gorSaga(sagoNiva(p, L), plats);
+  return queue;
+}
 
 /* Lägg sorterna i en ordning där samma sort aldrig kommer tre gånger i rad:
    ta alltid den sort det finns flest kvar av, men aldrig en som just
@@ -1586,8 +1691,10 @@ function buildRound(L, count, undvik){
   if(L.pool){
     const delar = L.pool.map(levelById);
     const out = buildFranNivaer(() => pick(delar), delar, count, undvik);
-    /* Ett prov utan hjälpbilder är det även när banan det drar ur har dem */
+    /* Ett prov utan hjälpbilder är det även när banan det drar ur har dem,
+       och provet bestämmer själv hur många rutor det är att välja på */
     if(L.utanHjalp) out.forEach(q => { q.utanHjalp = true; });
+    if(L.opts) out.forEach(q => { q.opts = L.opts; });
     return out;
   }
   const kinds = [];
@@ -1608,12 +1715,61 @@ function buildRound(L, count, undvik){
       q = MAKE[kind](L);
     }
     q.utanHjalp = !!L.utanHjalp;
+    q.niva = L.id;
     out.push(q);
   }
   return out;
 }
 
 const qNyckel = (q) => q.kind + ":" + [q.count, q.a, q.b, q.c, q.sum].join("_");
+
+/* ── Kluriga tal ────────────────────────────────────────────────────────
+   Tal som inte gick på första försöket sparas hos spelaren och kommer
+   tillbaka någon omgång senare, märkta "Kluring!". Klaras kluringen direkt
+   försvinner den ur listan, annars ligger den kvar. Listan är kort med flit:
+   det är de senaste tjugo som gäller, inte allt som någonsin blev fel. */
+const KLURIGA_MAX = 20;
+const KLURING_FALT = ["kind", "op", "a", "b", "c", "sum", "count", "tal", "tior", "ental", "steg", "upp", "answer", "text", "niva", "utanHjalp", "opts"];
+function laggKluring(p, q){
+  if(!p || !q || q.niva == null) return;
+  const nyckel = qNyckel(q);
+  const kopia = {};
+  for(const f of KLURING_FALT) if(q[f] !== undefined) kopia[f] = Array.isArray(q[f]) ? q[f].slice() : q[f];
+  p.kluriga = (p.kluriga || []).filter(k => qNyckel(k) !== nyckel).concat(kopia).slice(-KLURIGA_MAX);
+}
+/* En kluring som klaras direkt är avklarad; annars får den en ny chans senare */
+function kluringUtfall(p, q, direkt){
+  if(!p) return;
+  const nyckel = qNyckel(q);
+  p.kluriga = (p.kluriga || []).filter(k => qNyckel(k) !== nyckel);
+  if(direkt) p.kluringarKlarade = (p.kluringarKlarade || 0) + 1;
+  else laggKluring(p, q);
+}
+/* Kluringar som passar omgången: samma spår och inte svårare än banan.
+   Stigande (id -1) tar allt upp till nivån barnet ligger på, Blandat (id 0)
+   allt ur sina banor. */
+function kluringarFor(p, L){
+  const lista = (p && p.kluriga) || [];
+  const topp = L.id === -1 ? Math.min(p.unlocked || 1, Math.round(skillNu(p)) + 1)
+             : L.pool ? Math.max(...L.pool)
+             : L.id;
+  const spar = sparAv(L);
+  return lista.filter(k => {
+    const KL = levelById(k.niva);
+    return KL && sparAv(KL) === spar && k.niva <= topp;
+  });
+}
+/* Byter ut en uppgift i omgången mot en kluring – ungefär varannan gång det
+   finns någon att ta, och aldrig den första uppgiften. */
+function blandaInKluring(p, L, queue){
+  const val = kluringarFor(p, L);
+  if(!val.length || queue.length < 2 || Math.random() > 0.6) return queue;
+  const k = Object.assign({}, pick(val), { kluring:true });
+  if(k.tal) k.tal = k.tal.slice();
+  if(queue.some(q => qNyckel(q) === qNyckel(k))) return queue;
+  queue[ri(1, queue.length - 1)] = k;
+  return queue;
+}
 
 /* ═══════════════════════════════════════════
    Delmål
@@ -1647,7 +1803,10 @@ const BADGES = [
   { id:"tramfel", name:"Felfri hållplats", desc:"Alla rätt på en hållplats", art:"medal", test:p => (p.tramPerfect || 0) >= 1 },
   { id:"nat33",   name:"En fjärdedel",    desc:"Stå vid 33 hållplatser",  art:"tram",  test:p => besoktaAlla(p).size >= 33 },
   { id:"nat66",   name:"Halva nätet",     desc:"Stå vid 66 hållplatser",  art:"tram",  test:p => besoktaAlla(p).size >= 66 },
-  { id:"nat132",  name:"Hela nätet",      desc:"Alla 132 hållplatser",    art:"crown", test:p => besoktaAlla(p).size >= 132 }
+  { id:"nat132",  name:"Hela nätet",      desc:"Alla 132 hållplatser",    art:"crown", test:p => besoktaAlla(p).size >= 132 },
+  { id:"klur10",  name:"Klurig",          desc:"Klara tio kluringar direkt", art:"bolt", test:p => (p.kluringarKlarade || 0) >= 10 },
+  { id:"uppdrag1", name:"Första uppdraget", desc:"Ta dig till en hållplats",  art:"flag", test:p => (p.uppdragKlara || 0) >= 1 },
+  { id:"uppdrag10", name:"Tio uppdrag",    desc:"Klara tio uppdrag i nätet",  art:"flag", test:p => (p.uppdragKlara || 0) >= 10 }
 ];
 
 
@@ -2245,7 +2404,7 @@ function newProfile(name, char){
     coins: 0, stars: {}, best: {},
     unlocked: 1, badges: [], bestStreak: 0, perfect: 0, rounds: 0,
     world: "land", tram: {}, tramLine: null, tramLevel: -1, tramMode: "choice", skill: null,
-    stopsRidden: 0, linesDone: [], kopta: [],
+    stopsRidden: 0, linesDone: [], kopta: [], kluriga: [],
     settings: { sound:true, voice:true, dots:true, rate:1 }
   };
   /* Ta med skatten från den första versionen av spelet */
@@ -2522,7 +2681,7 @@ function openLevelSheet(L){
     <div class="sheet-head">
       <div>
         <h2>${L.name}</h2>
-        <p class="sheet-sub">Bana ${L.id} · ${REGIONS[L.r].name} · ${L.desc}${L.utanHjalp ? " · utan hjälpbilder" : ""}</p>
+        <p class="sheet-sub">Bana ${L.id} · ${REGIONS[L.r].name} · ${L.desc}${L.utanHjalp ? " · utan hjälpbilder · två försök" : ""}</p>
       </div>
       ${CLOSE_BTN}
     </div>
@@ -2639,7 +2798,7 @@ function blandatLevel(p){
   return { id:0, name:"Blandat", desc:"Allt du kan", pool,
            kinds:[...new Set(delar.flatMap(L => L.kinds))],
            max:Math.max(...delar.map(L => L.max)),
-           utanHjalp: delar.some(L => L.utanHjalp), opts:4 };
+           utanHjalp: delar.some(L => L.utanHjalp), opts:Math.max(...delar.map(L => L.opts)) };
 }
 /* Stigande: spelet håller reda på var barnet ligger med ett flyttal, höjer det
    vid rätt svar och sänker det vid fel. Uppgifterna dras från nivån runt det
@@ -2691,7 +2850,7 @@ function buildFranNivaer(valjNiva, reserv, count, undvik){
   const tidigare = new Set(undvik || []);
   const gor = (L) => {
     const q = MAKE[pick(L.kinds)](L);
-    q.opts = L.opts; q.utanHjalp = !!L.utanHjalp;
+    q.opts = L.opts; q.utanHjalp = !!L.utanHjalp; q.niva = L.id;
     return q;
   };
   for(let i = 0; i < count; i++){
@@ -2794,6 +2953,61 @@ function avgangar(namn){
   }
   return ut;
 }
+/* ── Uppdrag i nätet ────────────────────────────────────────────────────
+   "Ta dig till Liseberg!" Ett mål några hållplatser bort, som ofta kräver
+   att man byter vagn eller vänder. Avståndet räknas i hållplatser över hela
+   nätet, oavsett linje, och perrongen visar vilka vagnar som tar en närmare. */
+function natAvstand(fran){
+  const dist = new Map([[fran, 0]]);
+  const ko = [fran];
+  while(ko.length){
+    const x = ko.shift(), d = dist.get(x);
+    for(const l of linjerVid(x)){
+      const i = l.stops.indexOf(x);
+      for(const y of [l.stops[i - 1], l.stops[i + 1]]){
+        if(y && !dist.has(y)){ dist.set(y, d + 1); ko.push(y); }
+      }
+    }
+  }
+  return dist;
+}
+/* Målet ligger tre hållplatser bort till att börja med och längre bort ju
+   fler uppdrag som är klarade, som mest åtta. Helst en hållplats med eget
+   foto som barnet inte stått vid än. Belöningen växer med avståndet. */
+function valjUppdrag(p, fran){
+  const dist = natAvstand(fran);
+  const langst = Math.min(8, 3 + Math.floor((p.uppdragKlara || 0) / 2));
+  const varit = besoktaAlla(p);
+  const kandidater = [...dist].filter(([, d]) => d >= 3 && d <= langst).map(([namn]) => namn);
+  if(!kandidater.length) return null;
+  const lager = [
+    kandidater.filter(n => STOP_PHOTOS[n] && !varit.has(n)),
+    kandidater.filter(n => !varit.has(n)),
+    kandidater.filter(n => STOP_PHOTOS[n]),
+    kandidater
+  ].find(x => x.length);
+  const mal = pick(lager);
+  return { mal, fran, hopp: dist.get(mal), beloning: 20 * dist.get(mal) };
+}
+/* Hur man kommer vidare mot målet härifrån: sitt kvar, vänd eller byt vagn.
+   val är avgångarna, märkta med om de tar en närmare. */
+function uppdragTips(p){
+  if(!p.uppdrag || !p.resa) return null;
+  const dist = natAvstand(p.uppdrag.mal);
+  const har = dist.get(p.resa.pos);
+  if(har == null) return null;
+  const val = avgangar(p.resa.pos).map(a => Object.assign({ narmare: dist.get(a.nasta) < har }, a));
+  if(har === 0) return { kvar:0, text:"Du är framme!", val };
+  const kvarSamma = val.find(a => a.ref === p.resa.ref && a.rikt === p.resa.rikt);
+  const vand = val.find(a => a.ref === p.resa.ref && a.rikt !== p.resa.rikt);
+  const byt = val.find(a => a.narmare && a.ref !== p.resa.ref);
+  const text = kvarSamma && kvarSamma.narmare ? "Sitt kvar!"
+    : vand && vand.narmare ? "Vänd! Åk åt andra hållet."
+    : byt ? `Byt till linje ${byt.ref} mot ${byt.mot}.`
+    : "Åk vidare!";
+  return { kvar: har, text, val };
+}
+
 /* De hållplatser som är ändstation för någon linje – bra ställen att börja */
 const ANDSTATIONER = [...new Set(TRAM_LINES.flatMap(l => [l.stops[0], l.stops[l.stops.length - 1]]))];
 
@@ -2843,6 +3057,7 @@ function renderStart(){
         <span class="line-bar ${besoktaAlla(p).size >= ALLA_STOPP.length ? "klar" : ""}"><span class="${besoktaAlla(p).size ? "pabörjad" : ""}" style="width:${Math.round(besoktaAlla(p).size / ALLA_STOPP.length * 100)}%"></span></span>
       </span>
     </div>
+    ${p.uppdrag ? `<p class="sheet-sub uppdrag-rad">${FLAGGA_SVG} Uppdrag: ta dig till <b>${p.uppdrag.mal}</b></p>` : ""}
     <h2 class="start-rubrik">Mina linjer</h2>
     <div class="mina-linjer">
       ${TRAM_LINES.map(l => {
@@ -2877,17 +3092,22 @@ el("startTram").addEventListener("click", (e) => {
 /* Perrongen: vagnarna som går från hållplatsen, en per linje och håll */
 function openPerrong(namn, andstation){
   const p = P();
-  const val = avgangar(namn);
+  /* Med ett uppdrag igång står vagnarna som tar en närmare målet först */
+  const dist = p.uppdrag ? natAvstand(p.uppdrag.mal) : null;
+  const har = dist ? dist.get(namn) : null;
+  const val = avgangar(namn)
+    .map(a => Object.assign({ narmare: har != null && dist.get(a.nasta) < har }, a))
+    .sort((a, b) => (b.narmare ? 1 : 0) - (a.narmare ? 1 : 0));
   openSheet(`
     <div class="sheet-head">
-      <div><h2>${namn}</h2><p class="sheet-sub">${andstation ? "Ändstation! Vilken vagn tar du nu?" : "Vilken vagn vill du åka med?"}</p></div>
+      <div><h2>${namn}</h2><p class="sheet-sub">${andstation ? "Ändstation! Vilken vagn tar du nu?" : p.uppdrag ? `Uppdrag: ta dig till ${p.uppdrag.mal}` : "Vilken vagn vill du åka med?"}</p></div>
       ${CLOSE_BTN}
     </div>
     <div class="perrong">
       ${val.map(a => { const l = lineByRef(a.ref); return `
-        <button class="avgang" data-stig="${a.ref}|${a.rikt}|${namn}" type="button" style="--linecol:${l.col}">
+        <button class="avgang ${a.narmare ? "narmare" : ""}" data-stig="${a.ref}|${a.rikt}|${namn}" type="button" style="--linecol:${l.col}">
           <span class="vagn">${tramSVG(l.col, l.ref)}</span>
-          <span style="min-width:0"><span class="skylt">mot ${a.mot}</span><small>Nästa: ${a.nasta} · ${a.kvar} hållplats${a.kvar === 1 ? "" : "er"} kvar</small></span>
+          <span style="min-width:0"><span class="skylt">mot ${a.mot}</span><small>${a.narmare ? `<b class="mal-tips">Närmare ${p.uppdrag.mal}!</b> · ` : ""}Nästa: ${a.nasta} · ${a.kvar} hållplats${a.kvar === 1 ? "" : "er"} kvar</small></span>
           <span class="pil">${a.rikt === 1 ? "→" : "←"}</span>
         </button>`; }).join("")}
     </div>
@@ -2898,6 +3118,8 @@ function openPerrong(namn, andstation){
 function stigPa(ref, rikt, pos){
   const p = P();
   p.resa = { pos, ref, rikt };
+  /* Den som kliver på mitt på målet har inte åkt dit – uppdraget faller */
+  if(p.uppdrag && p.uppdrag.mal === pos) p.uppdrag = null;
   p.besokta = p.besokta || {};
   if(!besoktaPa(p, ref).includes(pos)) p.besokta[ref] = besoktaPa(p, ref).concat(pos);
   if(g.recentLine !== ref){ g.recent = []; g.recentLine = ref; }
@@ -3130,11 +3352,44 @@ function natkartaSVG(l, at, o){
   const krockar = (b) => b.x < f.x || b.x + b.w > f.x + f.w || b.y < f.y || b.y + b.h > f.y + f.h
     || upptaget.some(u => b.x < u.x + u.w && b.x + b.w > u.x && b.y < u.y + u.h && b.y + b.h > u.y);
   l.stops.forEach((namn, i) => { const P = STOP_XY[namn]; if(P) upptaget.push({ x:P[0] - 7 * skala, y:P[1] - 7 * skala, w:14 * skala, h:14 * skala }); });
+  /* Knappen "Hela nätet" ligger ovanpå kartans övre högra hörn – inga namn där */
+  upptaget.push({ x: f.x + f.w * 0.58, y: f.y, w: f.w * 0.42, h: f.h * 0.15 });
+  /* Uppdragets mål: flaggan står på hållplatsen när den syns i fönstret,
+     annars i fönstrets kant åt det håll målet ligger. Namnet skrivs bara
+     när flaggan står på plats – i kanten säger rutan ovanför vart. */
+  let malHtml = "";
+  if(o.mal && STOP_XY[o.mal]){
+    const M = STOP_XY[o.mal], m = 26 * skala;
+    const inne = M[0] >= f.x + m && M[0] <= f.x + f.w - m && M[1] >= f.y + m && M[1] <= f.y + f.h - m;
+    let X = M[0], Y = M[1], pil = "";
+    if(!inne){
+      const cx = f.x + f.w / 2, cy = f.y + f.h / 2;
+      const dx = M[0] - cx || 0.001, dy = M[1] - cy || 0.001;
+      const k = Math.min((f.w / 2 - m) / Math.abs(dx), (f.h / 2 - m) / Math.abs(dy));
+      X = cx + dx * k; Y = cy + dy * k;
+      /* Knappen "Hela nätet" sitter i övre högra hörnet – flaggan viker undan */
+      if(X > f.x + f.w * 0.6 && Y < f.y + f.h * 0.17) Y = f.y + f.h * 0.2;
+      const vinkel = Math.atan2(dy, dx) * 180 / Math.PI + 90;
+      pil = `<path d="M0 -19l5.5 7h-11z" fill="${INK}" transform="rotate(${vinkel.toFixed(0)})"/>`;
+    }
+    if(inne){
+      const px = 11 * skala, w = o.mal.length * px * 0.7 + 4 * skala;
+      upptaget.push({ x: X - w / 2, y: Y - 38 * skala, w, h: 13 * skala });
+    }
+    malHtml = `<g class="nat-mal" transform="translate(${X.toFixed(1)},${Y.toFixed(1)}) scale(${skala.toFixed(3)})">
+      ${inne ? `<circle r="9" fill="none" stroke="${INK}" stroke-width="2.4" stroke-dasharray="3 2.5"/>`
+             : `<circle r="12" fill="#FFFDF7" stroke="${INK}" stroke-width="2.2"/>${pil}`}
+      <path d="M0 ${inne ? -8 : -6}V${inne ? -24 : -18}" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/>
+      <path d="M0 ${inne ? -24 : -18}h13l-4 5 4 5H0z" fill="#FF6B6B" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+      ${inne ? `<text class="nat-namn mal" y="-27" font-size="11" text-anchor="middle">${o.mal}</text>` : ""}
+    </g>`;
+  }
   const ordning = (o.utzoomad ? [at, 0, l.stops.length - 1] : [at, at - 1, at + 1, 0, l.stops.length - 1, at - 2, at + 2])
     .filter((i, k, arr) => i >= 0 && i < l.stops.length && arr.indexOf(i) === k);
   ordning.forEach(i => {
     const P = STOP_XY[l.stops[i]]; if(!P) return;
     const har = i === at, namn = l.stops[i];
+    if(namn === o.mal && !har) return;   /* flaggan bär redan namnet */
     /* Bredden uppskattas grovt – fet Nunito är bred – hellre för stor än för liten */
     const px = (har ? 13 : 11) * skala, w = namn.length * px * 0.7 + 4 * skala, h = px * 1.2;
     const lagen = har
@@ -3149,6 +3404,7 @@ function natkartaSVG(l, at, o){
     upptaget.push(lage);
     html += `<text class="nat-namn ${har ? "har" : ""}" x="${lage.tx.toFixed(1)}" y="${lage.ty.toFixed(1)}" font-size="${px.toFixed(1)}" text-anchor="${lage.anchor}">${namn}</text>`;
   });
+  html += malHtml;
   /* Här är vi: pulserande ring och linjens rundel */
   const H = STOP_XY[l.stops[at]] || [530, 530];
   const text = ljusFarg(l.col) ? INK : "#FFFDF7";
@@ -3285,7 +3541,8 @@ function renderTrip(animera, visaBilden){
   /* Rullar vagnen in ritas allt som det såg ut vid förra hållplatsen först */
   const visaAt = animera && tripFrom != null ? tripFrom : at;
   const visaK = ordn.indexOf(l.stops[visaAt]);
-  el("natkarta").innerHTML = natkartaSVG(l, visaAt, { besokta, utzoomad: natUtzoomad, rikt });
+  el("uppdrag").innerHTML = uppdragHTML(p);
+  el("natkarta").innerHTML = natkartaSVG(l, visaAt, { besokta, utzoomad: natUtzoomad, rikt, mal: p.uppdrag && p.uppdrag.mal });
   el("route").style.setProperty("--linecol", l.col);
   el("route").innerHTML =
     `<div class="route-line"><div class="done-part" style="height:${visaK * 52}px"></div></div>` +
@@ -3372,6 +3629,62 @@ document.querySelector(".trip-knappar").addEventListener("click", (e) => {
   if(b.dataset.trip === "byt") openPerrong(p.resa.pos, false);
 });
 
+/* Uppdragets ruta under hållplatskortet: målet, hur långt det är kvar och
+   vad man ska göra – eller en knapp för att få ett uppdrag. */
+function uppdragHTML(p){
+  const u = p.uppdrag;
+  if(!u) return `
+    <button class="uppdrag ny" data-uppdrag="nytt" type="button">
+      ${FLAGGA_SVG}<span><b>Vill du ha ett uppdrag?</b><small>Ta dig till en hållplats i nätet</small></span>
+    </button>`;
+  const t = uppdragTips(p) || { kvar: "?", text: "" };
+  return `
+    <button class="uppdrag aktiv" data-uppdrag="visa" type="button">
+      ${FLAGGA_SVG}<span><b>Ta dig till ${u.mal}!</b><small>${t.kvar} hållplats${t.kvar === 1 ? "" : "er"} kvar · ${t.text}</small></span>
+      <span class="uppdrag-mynt">+${u.beloning}</span>
+    </button>`;
+}
+function ritaUppdrag(){
+  const p = P();
+  if(!el("screen-trip").classList.contains("is-active") || !p.resa) return;
+  const { l, at, rikt } = resLage(p);
+  el("uppdrag").innerHTML = uppdragHTML(p);
+  el("natkarta").innerHTML = natkartaSVG(l, at, { besokta: new Set(besoktaPa(p, l.ref)), utzoomad: natUtzoomad, rikt, mal: p.uppdrag && p.uppdrag.mal });
+}
+function startaUppdrag(){
+  const p = P(); if(!p.resa) return;
+  const u = valjUppdrag(p, p.resa.pos);
+  if(!u) return;
+  p.uppdrag = u; saveProfiles();
+  SFX.pling();
+  ritaUppdrag();
+  speakUtrop(`Nytt uppdrag! Ta dig till ${u.mal}!`);
+}
+function openUppdragSheet(){
+  const p = P(), u = p.uppdrag; if(!u) return;
+  const t = uppdragTips(p) || { kvar: "?", text: "" };
+  openSheet(`
+    <div class="sheet-head">
+      <div><h2>Ta dig till ${u.mal}!</h2><p class="sheet-sub">${t.kvar} hållplats${t.kvar === 1 ? "" : "er"} kvar · ${t.text}</p></div>
+      ${CLOSE_BTN}
+    </div>
+    <p class="sheet-sub" style="margin:0 0 12px">Framme vid ${u.mal} väntar <b>${u.beloning} mynt</b>. Perrongen visar vilka vagnar som tar dig närmare, och flaggan på kartan visar vart.</p>
+    <div style="display:grid;gap:8px">
+      <button class="btn" data-uppdrag="nytt" type="button" style="background:var(--paper-2)">Nytt mål</button>
+      <button class="btn" data-uppdrag="sluta" type="button" style="background:var(--paper-2)">Sluta med uppdraget</button>
+    </div>`);
+}
+function uppdragKlick(b){
+  const p = P();
+  SFX.tap();
+  if(b.dataset.uppdrag === "visa"){ openUppdragSheet(); return; }
+  if(b.dataset.uppdrag === "sluta"){ p.uppdrag = null; saveProfiles(); closeSheet(); ritaUppdrag(); return; }
+  if(b.dataset.uppdrag === "nytt"){ closeSheet(); startaUppdrag(); }
+}
+el("uppdrag").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-uppdrag]"); if(b) uppdragKlick(b);
+});
+
 /* Vilka tal ska man räkna under resan? */
 function openTramLevelSheet(){
   const p = P();
@@ -3418,7 +3731,7 @@ function vaxlaZoom(){
   natUtzoomad = !natUtzoomad;
   const f1 = natUtzoomad ? HELA_NATET : natFonster(l, at);
   const besokta = new Set(besoktaPa(p, l.ref));
-  const klar = () => { el("natkarta").innerHTML = natkartaSVG(l, at, { besokta, utzoomad: natUtzoomad, rikt }); };
+  const klar = () => { el("natkarta").innerHTML = natkartaSVG(l, at, { besokta, utzoomad: natUtzoomad, rikt, mal: p.uppdrag && p.uppdrag.mal }); };
   if(reduceMotion || !svg){ klar(); return; }
   const start = performance.now(), ms = 520;
   const mjuk = (t) => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
@@ -3572,6 +3885,9 @@ sheet.addEventListener("click", (e) => {
     speak(`Hej ${p.name}! Så här fort pratar jag nu.`, true);
     return;
   }
+
+  const upp = e.target.closest("[data-uppdrag]");
+  if(upp){ uppdragKlick(upp); return; }
 
   const stig = e.target.closest("[data-stig]");
   if(stig){
@@ -3732,7 +4048,6 @@ const buddy = el("buddy"), qLabel = el("qLabel"), qVisual = el("qVisual"),
       coinCount = el("coinCount"), coinBox = el("coinBox");
 
 const PRAISE = ["Snyggt!", "Precis!", "Toppen!", "Så bra!", "Grymt!", "Jättebra!", "Klockrent!", "Wow!"];
-const NUDGE  = ["Nästan!", "Prova igen!", "Nästan där!", "Titta en gång till!"];
 
 const g = {
   level: null, mode: "choice", queue: [], q: null, tram: null, len: ROUND_LEN,
@@ -3750,6 +4065,12 @@ function startRound(niva, mode, tramRef){
   g.queue = (L.id === -1 && g.tram)
     ? buildStigandeRound(P(), g.len, new Set(g.recent))
     : buildRound(L, g.len, g.tram ? new Set(g.recent) : null);
+  g.queue = blandaInKluring(P(), L, g.queue);
+  /* På spårvagnen handlar en av uppgifterna oftast om resan */
+  if(g.tram && P().resa && Math.random() < 0.7){
+    const { l, mot, nasta } = resLage(P());
+    blandaInSaga(P(), L, g.queue, { stopp: nasta || P().resa.pos, ref: l.ref, mot });
+  }
   if(g.tram){
     g.queue.forEach(q => g.recent.push(qNyckel(q)));
     g.recent = g.recent.slice(-24);
@@ -3771,7 +4092,7 @@ function nextQuestion(){
   renderProgress();
   paintQuestion();
   renderAnswerArea();
-  speak(speechFor(g.q));
+  speak((g.q.kluring ? "Kluring! " : "") + speechFor(g.q));
 }
 
 function setBuddy(mood, anim){
@@ -3800,6 +4121,7 @@ function bumpCoins(){
 
 /* ── Så visas frågan ────────────────────── */
 function speechFor(q){
+  if(q.kind === "saga")    return q.text;
   if(q.kind === "count")   return "Hur många ser du?";
   if(q.kind === "add")     return "Vad blir " + q.a + " plus " + q.b + "?";
   if(q.kind === "sub")     return "Vad blir " + q.a + " minus " + q.b + "?";
@@ -3816,6 +4138,7 @@ function speechFor(q){
   return "";
 }
 function labelFor(q){
+  if(q.kind === "saga")    return "Räknesaga";
   if(q.kind === "count")   return "Hur många?";
   if(q.kind === "tiotal")  return "Hur många blir det?";
   if(q.kind === "serie")   return "Vilket tal kommer sen?";
@@ -3825,6 +4148,7 @@ function labelFor(q){
 }
 function equationHTML(q){
   const op = (s) => `<span class="op">${s}</span>`;
+  if(q.kind === "saga")    return `<span class="saga">${q.text}</span>`;
   if(q.kind === "count")   return `<span class="slot">?</span>`;
   if(q.kind === "add")     return `${q.a} ${op("+")} ${q.b} ${op("=")} <span class="slot">?</span>`;
   if(q.kind === "sub")     return `${q.a} ${op("−")} ${q.b} ${op("=")} <span class="slot">?</span>`;
@@ -3873,6 +4197,9 @@ function visualHTML(q){
   const t = g.thing;
   /* Räknebanorna går ut på att räkna – sakerna syns alltid */
   if(q.kind === "count" || q.kind === "tiotal") return hogHTML(q.count, 0, t);
+  /* Sagan ska lyssnas på. Blir det fel på en bana med hjälpbilder ritas
+     talet ändå upp som saker, som vilket plustal som helst. */
+  if(q.kind === "saga") return q.utanHjalp || !g.hint ? "" : visualHTML(Object.assign({}, q, { kind:q.op }));
   /* Från Berget och uppåt ska talet räknas, inte prickarna – då hjälper inga
      figurer, varken av inställningen eller efter ett feltryck. */
   if(q.utanHjalp) return "";
@@ -3901,7 +4228,7 @@ function visualHTML(q){
 }
 function paintQuestion(){
   const q = g.q;
-  qLabel.textContent = labelFor(q);
+  qLabel.innerHTML = (q.kluring ? '<span class="kluring-tag">Kluring!</span> ' : "") + labelFor(q);
   qVisual.innerHTML = visualHTML(q);
   const n = qVisual.querySelectorAll("svg").length;
   const ramar = !!qVisual.querySelector(".ram");
@@ -3912,36 +4239,113 @@ function paintQuestion(){
   qEquation.innerHTML = equationHTML(q);
   /* "8 tior + 7 ental = ?" är ord, inte siffror, och behöver mindre stil */
   qEquation.className = "q-equation"
+    + (q.kind === "saga" ? " saga" : "")
     + (q.kind === "tiotal" || q.kind === "half" ? " ord" : "")
     + (q.kind === "flera" ? " mellan" : "");
   qEquation.style.display = q.kind === "count" ? "none" : "";
 }
 
-function makeOptions(q, n){
-  const out = [q.answer], near = [];
-  if(q.kind === "add")     near.push(Math.abs(q.a - q.b));
-  if(q.kind === "sub")     near.push(q.a + q.b);
-  if(q.kind === "add3")    near.push(q.a + q.b, q.b + q.c);
-  if(q.kind === "missing") near.push(q.sum, q.a);
-  if(q.kind === "count" && q.answer > 12) near.push(q.answer + 1, q.answer - 1, q.answer + 10, q.answer - 10);
-  /* Vanligaste feltanken är att kasta om siffrorna eller lägga ihop dem */
-  if(q.kind === "tiotal")  near.push(q.ental * 10 + q.tior, q.tior + q.ental,
-                                     q.answer + 10, q.answer - 10);
-  if(q.kind === "mul")     near.push(q.a + q.b, q.answer + q.a, q.answer - q.a, q.a * (q.b + 1));
-  if(q.kind === "div")     near.push(q.a - q.b, q.answer + 1, q.answer - 1, q.b, q.answer * 2);
-  if(q.kind === "half")    near.push(q.a, q.answer + 1, q.answer - 1, q.a + 2);
-  if(q.kind === "serie")   near.push(q.answer + q.steg, q.answer - q.steg,
-                                     q.tal[2], q.answer + 1, q.answer - 1);
-  if(q.kind === "flera"){
+/* Felsvaren är inte slumpade siffror utan de fel som faktiskt görs: minus i
+   stället för plus, ett för mycket, en tia för lite, siffrorna omkastade.
+   Varje sådant svar har en förklaring, så att spelet kan säga vad som blev
+   fel – inte bara att det blev fel. De viktigaste står först; med tre eller
+   fyra rutor är det de som får plats. Räknesagorna döms efter räknesättet
+   de bygger på. */
+function distraktorer(q){
+  const s = q.answer, d = [];
+  const kind = q.kind === "saga" ? q.op : q.kind;
+  const lagg = (v, varfor) => { if(Number.isInteger(v) && v !== s && v >= 0 && !d.some(x => x.v === v)) d.push({ v, varfor }); };
+  const ett = (v) => lagg(v, v > s ? "Ett för mycket!" : "Ett för lite!");
+  const tia = (v) => lagg(v, v > s ? "En tia för mycket!" : "En tia för lite!");
+  const runda = q.a % 10 === 0 && q.b % 10 === 0 && q.a >= 10;   /* hela tiotal */
+  if(kind === "add"){
+    lagg(Math.abs(q.a - q.b), "Det blev minus, inte plus!");
+    if(runda){ tia(s + 10); tia(s - 10); lagg(s + 20, "Två tior för mycket!"); lagg(s - 20, "Två tior för lite!"); }
+    ett(s + 1); ett(s - 1);
+    lagg(q.a, "Lägg ihop båda talen!"); lagg(q.b, "Lägg ihop båda talen!");
+    if(s > 12){ tia(s + 10); tia(s - 10); }
+  }
+  if(kind === "sub"){
+    lagg(q.a + q.b, "Det blev plus, inte minus!");
+    ett(s + 1); ett(s - 1);
+    lagg(q.b, "Det är talet vi tog bort!");
+    if(runda){ tia(s + 10); tia(s - 10); lagg(s + 20, "Två tior för mycket!"); lagg(s - 20, "Två tior för lite!"); }
+    if(s > 12 || q.a > 12){ tia(s + 10); tia(s - 10); }
+  }
+  if(kind === "missing"){
+    lagg(q.sum, "Det är hela talet!");
+    lagg(q.a, "Det talet har vi redan!");
+    ett(s + 1); ett(s - 1);
+    lagg(q.a + q.sum, "Det blev plus. Vad fattas?");
+    if(s > 12){ tia(s + 10); tia(s - 10); }
+  }
+  if(kind === "add3"){
+    for(const v of [q.a + q.b, q.b + q.c, q.a + q.c]) lagg(v, "Ett tal glömdes bort!");
+    ett(s + 1); ett(s - 1);
+  }
+  if(kind === "flera"){
     /* Att glömma sista talet eller lägga ihop bara de två första är de fel
        som faktiskt görs när talen står på rad. */
-    near.push(q.answer - q.tal[q.tal.length - 1], q.tal[0] + q.tal[1],
-              q.answer + q.tal[0], q.answer + 10, q.answer - 10);
+    lagg(s - q.tal[q.tal.length - 1], "Sista talet glömdes bort!");
+    lagg(q.tal[0] + q.tal[1], "Räkna alla talen!");
+    lagg(s + q.tal[0], "Ett tal räknades två gånger!");
+    tia(s + 10); tia(s - 10);
+    ett(s + 1); ett(s - 1);
   }
-  if(q.answer > 20)        near.push(q.answer + 10, q.answer - 10);
-  near.push(q.answer + 1, q.answer - 1, q.answer + 2, q.answer - 2, q.answer + 3, q.answer - 3, q.answer + 4);
+  if(kind === "count"){
+    lagg(s + 1, "Nästan! Räkna en gång till."); lagg(s - 1, "Nästan! Räkna en gång till.");
+    if(s > 12){ lagg(s + 10, "En hel ram för mycket!"); lagg(s - 10, "En hel ram för lite!"); }
+  }
+  if(kind === "tiotal"){
+    /* Vanligaste feltanken är att kasta om siffrorna eller lägga ihop dem */
+    lagg(q.ental * 10 + q.tior, "Tvärtom! Tiorna först.");
+    lagg(q.tior + q.ental, "Tior är tio var!");
+    tia(s + 10); tia(s - 10);
+    lagg(s + 1, "Ett ental för mycket!"); lagg(s - 1, "Ett ental för lite!");
+  }
+  if(kind === "mul"){
+    lagg(q.a + q.b, "Det blev plus, inte gånger!");
+    lagg(s + q.a, "En hög för mycket!"); lagg(s - q.a, "En hög för lite!");
+    lagg(s + q.b, "En för mycket i varje hög!"); lagg(s - q.b, "En för lite i varje hög!");
+    ett(s + 1); ett(s - 1);
+  }
+  if(kind === "div"){
+    lagg(q.a - q.b, "Det blev minus, inte delat!");
+    lagg(s + 1, "En för mycket i varje hög!"); lagg(s - 1, "En för lite i varje hög!");
+    lagg(q.b, "Det är antalet högar!");
+    lagg(s * 2, "Dubbelt för många!");
+    lagg(q.a, "Det är alla sakerna!");
+  }
+  if(kind === "half"){
+    lagg(q.a, "Det är hela talet!");
+    ett(s + 1); ett(s - 1);
+    lagg(q.a + 2, "Mer än hela talet!");
+    if(s >= 10){ lagg(s + 5, "För mycket!"); lagg(s - 5, "För lite!"); }
+  }
+  if(kind === "serie"){
+    lagg(s + q.steg, "Ett hopp för långt!"); lagg(s - q.steg, "Ett hopp för kort!");
+    lagg(s + 1, `Hoppen är ${q.steg} i taget!`); lagg(s - 1, `Hoppen är ${q.steg} i taget!`);
+    lagg(s + 2 * q.steg, "Två hopp för långt!"); lagg(s - 2 * q.steg, "Två hopp för kort!");
+  }
+  /* Fyll på med tal strax intill, så det alltid finns nog att välja på */
+  for(const v of [s + 1, s - 1, s + 2, s - 2, s + 3, s - 3, s + 4, s - 4])
+    lagg(v, Math.abs(v - s) <= 1 ? (v > s ? "Ett för mycket!" : "Ett för lite!") : v > s ? "Lite för mycket!" : "Lite för lite!");
+  return d;
+}
+/* Vad var det som blev fel? Ett svar som inte finns bland felsvaren – i
+   skrivläget kan man skriva vad som helst – döms efter hur långt ifrån det var. */
+function varforFel(q, v){
+  v = Number(v);
+  const traff = distraktorer(q).find(x => x.v === v);
+  if(traff) return traff.varfor;
+  const diff = v - q.answer;
+  if(Math.abs(diff) <= 3) return diff > 0 ? "Lite för mycket!" : "Lite för lite!";
+  return diff > 0 ? "För mycket!" : "För lite!";
+}
+function makeOptions(q, n){
+  const out = [q.answer];
   const tak = Math.max(30, q.answer + 12);
-  for(const v of near){
+  for(const { v } of distraktorer(q)){
     if(out.length >= n) break;
     if(v >= 0 && v <= tak && out.indexOf(v) === -1) out.push(v);
   }
@@ -3954,7 +4358,7 @@ function renderAnswerArea(){
   if(g.mode === "choice"){
     const n = g.q.opts || g.level.opts;
     g.opts = makeOptions(g.q, n);
-    answerArea.innerHTML = `<div class="options ${n === 3 ? "three" : ""}">` +
+    answerArea.innerHTML = `<div class="options ${n === 3 ? "three" : n === 6 ? "six" : ""}">` +
       g.opts.map((v, i) => `<button type="button" class="btn opt c${i}" data-val="${v}">${v}</button>`).join("") + `</div>`;
   }else{
     answerArea.innerHTML = `
@@ -3984,6 +4388,9 @@ function answer(value, sourceEl){
   if(g.locked) return;
   const q = g.q;
   const right = Number(value) === q.answer;
+  /* Med hjälpbilder får man tre försök. Från Berget, där talet ska räknas i
+     huvudet, två – annars går det att gissa sig fram bland rutorna. */
+  const forsok = q.utanHjalp ? 2 : 3;
   g.tries++;
 
   if(right){
@@ -3994,9 +4401,14 @@ function answer(value, sourceEl){
 
     if(g.tram && g.level.id === -1) justeraSkill(P(), firstTry ? "ratt" : "hjalp");
     const mult = g.streak >= 6 ? 3 : g.streak >= 3 ? 2 : 1;
-    const gain = firstTry ? 10 * mult : 5;
+    /* En klarad kluring är värd lite extra */
+    const bonus = q.kluring && firstTry ? 5 : 0;
+    const gain = (firstTry ? 10 * mult : 5) + bonus;
     g.score += gain;
     g.results[g.qIndex] = firstTry ? "first" : "help";
+    if(q.kluring) kluringUtfall(P(), q, firstTry);
+    else if(!firstTry) laggKluring(P(), q);
+    if(q.kluring || !firstTry) saveProfiles();   /* även om omgången lämnas mitt i */
 
     if(sourceEl) sourceEl.classList.add("right");
     else { const d = el("display"); if(d) d.classList.add("right"); }
@@ -4008,7 +4420,8 @@ function answer(value, sourceEl){
     confetti(r.left + r.width / 2, r.top + r.height / 2, firstTry ? 46 : 26);
 
     feedback.innerHTML = `<span class="bubble good">${pick(PRAISE)} +${gain}
-      ${mult > 1 ? `<span class="combo">${g.streak} i rad — ×${mult} poäng!</span>` : ""}</span>`;
+      ${mult > 1 ? `<span class="combo">${g.streak} i rad — ×${mult} poäng!</span>` : ""}
+      ${bonus ? `<span class="combo">Kluringen klarad!</span>` : ""}</span>`;
     const svit = g.streak === 3 || g.streak === 6;
     if(svit) speak(g.streak + " rätt i rad!");
 
@@ -4018,21 +4431,24 @@ function answer(value, sourceEl){
     return;
   }
 
-  /* Fel svar — mjukt, aldrig minuspoäng */
+  /* Fel svar — mjukt, aldrig minuspoäng, men spelet säger vad som blev fel */
   SFX.wrong();
   setBuddy("sad", "oops");
+  const varfor = varforFel(q, value);
   if(sourceEl){ sourceEl.classList.add("wrong"); sourceEl.disabled = true; }
   else {
     const d = el("display");
-    /* Vid tredje felet skrivs facit in i rutan strax nedan – då får den inte
+    /* Vid sista felet skrivs facit in i rutan strax nedan – då får den inte
        nollställas av den här fördröjningen. */
-    if(d){ d.classList.add("wrong"); if(g.tries < 3) later(() => { g.typed = ""; updateDisplay(); }, 550); }
+    if(d){ d.classList.add("wrong"); if(g.tries < forsok) later(() => { g.typed = ""; updateDisplay(); }, 550); }
   }
 
-  if(g.tries >= 3){
+  if(g.tries >= forsok){
     g.locked = true;
     g.results[g.qIndex] = "help";
     if(g.tram && g.level.id === -1) justeraSkill(P(), "ned");
+    if(q.kluring) kluringUtfall(P(), q, false); else laggKluring(P(), q);
+    saveProfiles();
     /* Skriv in facit där barnet letade efter det – i svarsrutan, på rätt ruta
        och i själva talet – i stället för att bara säga siffran i en bubbla. */
     if(g.mode === "type"){
@@ -4045,29 +4461,30 @@ function answer(value, sourceEl){
     }
     /* Utan hjälpbilder visas ändå svaret som saker när det är över – det är
        ingen räknehjälp längre, bara en bild av hur det hänger ihop. */
-    if(q.utanHjalp && q.answer <= 30 && ["add", "sub", "missing"].includes(q.kind)){
-      const kopia = Object.assign({}, q, { utanHjalp:false });
+    const op = q.kind === "saga" ? q.op : q.kind;
+    if((q.utanHjalp || q.kind === "saga") && q.answer <= 30 && ["add", "sub", "missing"].includes(op)){
       const t = g.thing;
-      qVisual.innerHTML = q.kind === "add" ? `<span class="grp">${thingsRow(q.a, 0, t)}</span><span class="plus">+</span><span class="grp">${thingsRow(q.b, 0, t)}</span>`
-                        : q.kind === "sub" ? hogHTML(q.a, q.b, t) : hogHTML(q.sum, q.sum - q.a, t);
+      qVisual.innerHTML = op === "add" ? `<span class="grp">${thingsRow(q.a, 0, t)}</span><span class="plus">+</span><span class="grp">${thingsRow(q.b, 0, t)}</span>`
+                        : op === "sub" ? hogHTML(q.a, q.b, t) : hogHTML(q.sum, q.sum - q.a, t);
       qVisual.className = "q-visual" + (q.answer > 12 ? " packed" : q.answer > 6 ? "" : " stor");
     }
     qEquation.style.display = "";
-    qEquation.innerHTML = q.kind === "count"
-      ? `<span class="facit">${q.answer}</span>`
-      : equationHTML(q).replace('<span class="slot">?</span>', `<span class="facit">${q.answer}</span>`);
-    feedback.innerHTML = `<span class="bubble soft">Svaret är ${q.answer}. Nu tar vi nästa!</span>`;
-    speak("Svaret är " + q.answer);
-    later(() => { g.qIndex++; nextQuestion(); }, 2400);
+    const facit = `<span class="facit">${q.answer}</span>`;
+    const slot = '<span class="slot">?</span>';
+    /* Sagan får sitt tal utskrivet under texten: 7 + 5 = 12 */
+    qEquation.innerHTML = q.kind === "count" ? facit
+      : q.kind === "saga" ? equationHTML(q) + `<span class="saga-facit">${equationHTML(Object.assign({}, q, { kind:op })).replace(slot, facit)}</span>`
+      : equationHTML(q).replace(slot, facit);
+    feedback.innerHTML = `<span class="bubble soft">${varfor} Svaret är ${q.answer}.</span>`;
+    speak(varfor + " Svaret är " + q.answer);
+    later(() => { g.qIndex++; nextQuestion(); }, 2600);
     return;
   }
-  if(!g.hint){
-    g.hint = true;
-    paintQuestion();
-    feedback.innerHTML = `<span class="bubble soft">Räkna sakerna!</span>`;
-  }else{
-    feedback.innerHTML = `<span class="bubble soft">${pick(NUDGE)}</span>`;
-  }
+  /* Första felet tänder hjälpbilderna på banorna som har dem */
+  if(!g.hint){ g.hint = true; paintQuestion(); }
+  const saker = !q.utanHjalp && qVisual.querySelector("svg") && !["count", "tiotal"].includes(q.kind);
+  feedback.innerHTML = `<span class="bubble soft">${varfor}${saker ? " Räkna sakerna!" : ""}</span>`;
+  speak(varfor);
 }
 
 answerArea.addEventListener("click", (e) => {
@@ -4175,6 +4592,13 @@ function finishTramStop(p, perfect){
   }
   const nästa = slut ? at : at + rikt;
   p.resa.pos = l.stops[nästa];
+  /* Framme vid uppdragets mål? Då väntar belöningen här */
+  let klart = null;
+  if(p.uppdrag && p.resa.pos === p.uppdrag.mal){
+    klart = p.uppdrag; p.uppdrag = null;
+    p.coins += klart.beloning;
+    p.uppdragKlara = (p.uppdragKlara || 0) + 1;
+  }
   p.besokta = p.besokta || {};
   for(const x of [l.stops[at], l.stops[nästa]])
     if(!besoktaPa(p, l.ref).includes(x)) p.besokta[l.ref] = besoktaPa(p, l.ref).concat(x);
@@ -4195,6 +4619,7 @@ function finishTramStop(p, perfect){
       <span class="reward ny">${COIN_SVG}<span><span class="r-num">+${g.score}</span><span class="r-txt">nya mynt</span></span></span>
       <span class="reward">${KISTA_SVG}<span><span class="r-num">${p.coins}</span><span class="r-txt">i skattkistan</span></span></span>
     </div>
+    ${klart ? `<span class="unlock-note uppdrag-klart">${FLAGGA_SVG} Uppdrag klart! Du kom till ${klart.mal}! +${klart.beloning} mynt</span>` : ""}
     ${nyBana ? `<span class="unlock-note">${NYCKEL_SVG} Ny bana öppen: ${nyBana.name}!</span>` : ""}
     <button class="btn btn-big" id="rideOnBtn" type="button">Åk vidare!</button>`;
   el("rideOnBtn").addEventListener("click", () => {
@@ -4204,8 +4629,9 @@ function finishTramStop(p, perfect){
 
   show("result");
   SFX.win();
-  confetti(innerWidth / 2, innerHeight * 0.42, 34);
-  speak(nyBana ? `Bra åkt! Ny bana öppen: ${nyBana.name}!` : `Bra åkt! ${g.score} mynt.`);
+  confetti(innerWidth / 2, innerHeight * 0.42, klart ? 80 : 34);
+  speak(klart ? `Uppdrag klart! Du kom till ${klart.mal}! ${klart.beloning} mynt extra!`
+      : nyBana ? `Bra åkt! Ny bana öppen: ${nyBana.name}!` : `Bra åkt! ${g.score} mynt.`);
   /* Fira märket här, inte när vagnen rullar in – annars skyms hållplatsen */
   if(nya.length) later(() => celebrateBadges(nya), 900);
 }
@@ -4318,6 +4744,8 @@ function flyttaTillTvaSpar(p){
        en enda gång, så ett medvetet val av Blandat får stå kvar sedan. */
     if(!p.stigandeFlytt){ if(p.tramLevel == null || p.tramLevel === 0) p.tramLevel = -1; p.stigandeFlytt = true; }
     p.linesDone = p.linesDone || [];
+    p.kluriga = p.kluriga || [];
+    p.uppdragKlara = p.uppdragKlara || 0;
     p.settings = Object.assign({ sound:true, voice:true, dots:true, rate:1, ganger:true }, p.settings || {});
     flyttaTillTvaSpar(p);
     /* Förr åkte man en linje från ände till ände och läget var ett index per

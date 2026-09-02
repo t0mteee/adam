@@ -67,10 +67,33 @@ Fram till Grottan ritas talen ut som saker man kan räkna: sex äpplen plus tre
 äpplen. Från Berget och uppåt försvinner de. Ett barn som kan räkna prickarna
 snabbt behöver aldrig lära sig talen, och då blir 8 + 9 en fråga om uthållighet
 i stället för huvudräkning. Räknebanorna i Stjärnhimlen är undantaget – där *är*
-sakerna uppgiften. Efter tre fel visas svaret ändå, ritat som saker när det är
-30 eller mindre – det är ingen räknehjälp längre, bara en bild av hur det
-hänger ihop – och nivåbladet skriver ut *utan hjälpbilder* så man vet vad man
-valt.
+sakerna uppgiften. Efter två fel visas svaret ändå (tre på banorna med
+hjälpbilder), ritat som saker när det är 30 eller mindre – det är ingen
+räknehjälp längre, bara en bild av hur det hänger ihop – och nivåbladet skriver
+ut *utan hjälpbilder · två försök* så man vet vad man valt.
+
+### Två försök, sex rutor och vad som blev fel
+
+Fram till Grottan får barnet tre försök på varje tal och tre eller fyra rutor
+att välja bland. Från Berget, där talet ska räknas i huvudet, är det två
+försök, och från Vagnhallen sex rutor i stället för fyra – annars går det att
+gissa sig fram. Rutorna är inte slumpade siffror utan de fel som faktiskt görs:
+minus i stället för plus, ett för mycket, en tia för lite, siffrorna omkastade,
+ett glömt tal i en lång rad. Därför kan spelet säga *vad* som blev fel, inte
+bara att det blev fel: trycker man 2 på `7 + 5` säger rösten *Det blev minus,
+inte plus!*, på 13 *Ett för mycket!* och på 74 när talet är sju tior och fyra
+ental *Tvärtom! Tiorna först.* I skrivläget döms det man knappat in efter hur
+långt ifrån det var. Vid sista felet står förklaringen tillsammans med svaret.
+
+### Kluriga tal
+
+Tal som inte gick på första försöket sparas hos spelaren, de senaste tjugo, och
+kommer tillbaka någon omgång senare märkta **Kluring!** – på samma spår och
+aldrig på en lättare bana än där de kom ifrån. Klaras kluringen direkt ger den
+fem mynt extra och försvinner ur listan; annars ligger den kvar och får en ny
+chans. Ungefär varannan omgång tar med en kluring, aldrig som första uppgift,
+och kluringarna följer med in i spårvagnen. Märket *Klurig* delas ut efter tio
+klarade.
 
 ### Vagnhallen
 
@@ -114,8 +137,9 @@ bland svarsalternativen ligger de vanligaste feltankarna – siffrorna omkastade
 Rätt på första försöket ger 10 guldmynt; tre rätt i rad dubblar och sex rätt i
 rad tredubblar. Rätt efter ett feltryck ger 5 mynt – aldrig minuspoäng. Efter
 varje omgång delas upp till tre stjärnor ut (4 rätt direkt ger en, 7 ger två, 9
-ger tre), och minst en stjärna öppnar nästa bana. Totalt finns 111 stjärnor (93 med gånger och delat avstängt) och 26
-märken att samla, från *Första stjärnan* och *Ändstation* till *Hela landet*.
+ger tre), och minst en stjärna öppnar nästa bana. Totalt finns 111 stjärnor (93 med gånger och delat avstängt) och 29
+märken att samla, från *Första stjärnan* och *Ändstation* till *Hela landet*,
+*Klurig* och *Tio uppdrag*.
 
 Mynten går att göra av med. Myntraden i topplisten öppnar **skattkistan** med
 två hyllor. *Till kompisen*: keps (60 mynt), rosett (100), förarmössa (150),
@@ -126,7 +150,7 @@ och på resultatskärmen, i båda världarna – och går att ta av och på i ki
 och måne (300). De står på marken bredvid kompisen på spelskärmen och
 resultatskärmen, senast köpta närmast, och blandas dessutom in bland de sex
 sakerna som finns från start där saker räknas: på räknebanorna, som räknehjälp
-till och med Grottan, och när svaret visas efter tre fel på vilken bana som
+till och med Grottan, och när svaret visas efter sista felet på vilken bana som
 helst. De är billiga med flit, så
 de hinner köpas medan de gör nytta. Köpen hör till spelaren, precis som stjärnor
 och märken.
@@ -186,7 +210,7 @@ låter som ett utrop och inte som en lekkamrat.
   knapp: *Åk vidare!* Sedan rullar vagnen in på nästa hållplats.
 - **Svårigheten anpassar sig.** Standardläget **Stigande** håller reda på var
   barnet ligger och flyttar sig: rätt svar höjer, ett feltryck sänker lite, och
-  tre fel på samma uppgift sänker mer. Uppgifterna dras från nivån runt det
+  ett tal som måste visas sänker mer. Uppgifterna dras från nivån runt det
   läget, så det blir svårare när det går bra och backar tillfälligt när det
   kärvar – tills nivån sitter igen. Rubriken visar var man är just nu, till
   exempel *Stigande · Plus till 10*.
@@ -205,6 +229,25 @@ låter som ett utrop och inte som en lekkamrat.
 - **Inga upprepningar mellan hållplatserna.** Eftersom en hållplats bara är fem
   uppgifter minns spelet de senaste tjugofyra talen och undviker dem, så två
   hållplatser i rad aldrig känns likadana.
+- **Räknesagor.** På de flesta hållplatser är en av de fem uppgifterna en liten
+  saga om resan, läst högt: *På vagnen sitter 4 barn. Vid Domkyrkan kliver 7 på.
+  Hur många barn åker nu?* Namnen är den riktiga linjens och nästa hållplats,
+  talen följer banan man räknar på – plus och minus med banans egna ramar,
+  gånger och delat på sitt spår, små tal på räknebanorna. Blir det fel på en
+  bana med hjälpbilder ritas sagan upp som saker, och när svaret visas står
+  talet utskrivet under sagan: `4 + 7 = 11`.
+- **Uppdrag i nätet.** Under hållplatskortet finns *Vill du ha ett uppdrag?*
+  Spelet väljer då ett mål några hållplatser bort – tre till att börja med,
+  längre bort ju fler uppdrag som är klarade, som mest åtta – helst en
+  hållplats med foto som barnet inte stått vid, och rösten säger *Ta dig till
+  Liseberg!* Målet får en flagga på nätkartan (i kanten, med pil, när det
+  ligger utanför fönstret) och rutan säger hur många hållplatser det är kvar
+  och vad man ska göra: *Sitt kvar!*, *Vänd!* eller *Byt till linje 6 mot
+  Kortedala*. På perrongen står de vagnar som tar en närmare först, gröna.
+  Avståndet räknas i hållplatser över hela nätet, så uppdragen lär barnet att
+  byta linje. Framme väntar 20 mynt per hållplats, konfetti och märkena
+  *Första uppdraget* och *Tio uppdrag*. Ett tryck på rutan ger nytt mål eller
+  avslutar uppdraget.
 
 Linje 13 är utelämnad. Västtrafiks karta visar bara linjerna 1–12, och 13 är i
 praktiken indragen sedan 2023. Vill du lägga till eller rätta något ligger alla
@@ -230,10 +273,11 @@ karta visar ingen hållplats däremellan. 28 gäller.
   76 syns som sju fulla ramar och sex lösa, inte som 76 utspridda figurer. Hjälpen
   räcker hela vägen till tjugo, så den finns kvar även på de svåraste talen.
 - **Fel svar gör inte ont.** Figuren blir lite ledsen, hjälpprickarna tänds
-  automatiskt och barnet får försöka igen. Efter tre försök skrivs svaret in där
-  barnet letade efter det – i svarsrutan, på rätt ruta och i själva talet – innan
-  spelet går vidare. Uppgiften markeras som klarad med hjälp, inte som
-  misslyckad.
+  automatiskt, rösten säger vad som blev fel (*Ett för mycket!*) och barnet får
+  försöka igen. Efter sista försöket – det tredje på de lätta banorna, det andra
+  från Berget – skrivs svaret in där barnet letade efter det – i svarsrutan, på
+  rätt ruta och i själva talet – innan spelet går vidare. Uppgiften markeras som
+  klarad med hjälp, inte som misslyckad, och kommer tillbaka som kluring.
 - **Stora tryckytor** och knappar som trycks ihop när man rör dem.
 
 ## Som app på hemskärmen
@@ -325,12 +369,15 @@ hack i nätet släcker inte resten av resan.
 
 ## Tester
 
-`node --test` kör nitton tester som plockar ut spelets rena funktioner direkt
+`node --test` kör tjugofyra tester som plockar ut spelets rena funktioner direkt
 ur `index.html`, så att de aldrig testar en kopia som glidit isär från källan. De
 täcker att uppgifterna håller sig inom banans tal och aldrig blir negativa, att
-rätt svar alltid finns bland alternativen, att samma sorts tal aldrig kommer mer
-än två gånger i rad, att undvik-listan hindrar upprepning mellan hållplatser, och
-att ingen spårvagnslinje motsäger en annan om hållplatsernas ordning. Tre av dem
+rätt svar alltid finns bland alternativen och att varje felsvar har en
+förklaring, att samma sorts tal aldrig kommer mer än två gånger i rad, att
+undvik-listan hindrar upprepning mellan hållplatser, att räknesagorna räknar
+rätt och nämner resan, att kluringar sparas och kommer tillbaka på rätt spår,
+att hela nätet hänger ihop och uppdragens tips faktiskt tar en närmare målet,
+och att ingen spårvagnslinje motsäger en annan om hållplatsernas ordning. Tre av dem
 gäller det stigande läget: att skickligheten höjs och sänks men stannar inom det
 upplåsta, att uppgifter bara dras från öppnade banor, och att ingen uppgift
 upprepas inom samma omgång ens när en lätt banas förråd tar slut.
