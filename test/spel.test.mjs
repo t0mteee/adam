@@ -7,7 +7,7 @@ import { REGIONS, LEVELS, SHOWN, buildRound, makeOptions, distraktorer, varforFe
          gorSaga, blandaInSaga, natAvstand, valjUppdrag, uppdragTips, ALLA_STOPP, qNyckel, TRAM_LINES, STOP_PHOTOS, TRAM_PHOTOS, vagnFoto,
          THINGS, BAS_SAKER, BUTIK, TILLBEHOR, sakerFor,
          justeraSkill, nivaForSkill, buildStigandeRound,
-         HUVUD_MAX, SIDO_START, SIDO_MAX, GANGER_START, GANGER_MAX, TALRAD_START, TALRAD_MAX, huvudspar, arLast, oppnaEfter, sidoOppen, gangerOppen, talradOppen, sidosparEfter, datumNyckel, statSvar, statTid, MAKE, synligaBanor, maxStars, nastaBana, blandatLevel, levelById } from "./hamta.mjs";
+         HUVUD_MAX, SIDO_START, SIDO_MAX, GANGER_START, GANGER_MAX, TALRAD_START, TALRAD_MAX, huvudspar, arLast, oppnaEfter, sidoOppen, gangerOppen, talradOppen, sidosparEfter, datumNyckel, statSvar, statTid, MAKE, SMASPEL, SPELMOTOR, spelKopt, LEK_W, LEK_H, synligaBanor, maxStars, nastaBana, blandatLevel, levelById } from "./hamta.mjs";
 
 const rot = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -573,4 +573,71 @@ test("så går det: bokför per sort och per dag, trettio dagar bakåt, aldrig e
   assert.ok(p.stat.dagar["2026-09-02"] && p.stat.dagar["2026-09-01"], "de senaste dagarna finns kvar");
   assert.ok(!p.stat.dagar["2026-07-01"], "de äldsta rensas");
   assert.equal(datumNyckel(new Date(2026, 8, 2)), "2026-09-02");
+});
+
+test("småspelen: motorerna räknar poäng, tar slut i tid och klarar sig utan skärm", () => {
+  assert.deepEqual(SMASPEL.map(v => v.id), ["race", "bil", "berg"]);
+  assert.ok(SMASPEL.every(v => v.pris > 0 && v.hur.length > 20 && v.enhet));
+  assert.ok(spelKopt({ spel:["race"] }, "race") && !spelKopt({ spel:[] }, "race") && !spelKopt(null, "race"));
+  const tyst = () => {};
+  const DT = 1 / 60;
+
+  /* Spårvagnsracet: passageraren tas när vagnen är på samma spår, skylten bromsar */
+  const race = SPELMOTOR.race(LEK_W, LEK_H, tyst);
+  for(let i = 0; i < 40 * 60; i++){ if(i % 37 === 0) race.tap(); race.update(DT); }
+  assert.ok(race.poang() > 5, `racet gav bara ${race.poang()} passagerare`);
+  const r2 = SPELMOTOR.race(LEK_W, LEK_H, tyst);
+  r2.s.saker.push({ x: r2.s.x + 200, spar: 1, typ: "pass", farg: "#fff" });
+  r2.s.saker.push({ x: r2.s.x + 200, spar: 0, typ: "stopp", farg: "#fff" });
+  r2.s.nasta = 99;
+  for(let i = 0; i < 90; i++) r2.update(DT);
+  assert.equal(r2.poang(), 1, "passageraren på det egna spåret plockas upp");
+  assert.equal(r2.s.brom, 0, "skylten på andra spåret rör oss inte");
+  const r3 = SPELMOTOR.race(LEK_W, LEK_H, tyst);
+  r3.tap();
+  r3.s.saker.push({ x: r3.s.x + 200, spar: 0, typ: "stopp", farg: "#fff" });
+  r3.s.nasta = 99;
+  for(let i = 0; i < 90; i++) r3.update(DT);
+  assert.ok(r3.s.brom > 0 || r3.s.oj > 0, "skylten på det egna spåret bromsar");
+  assert.equal(r3.poang(), 0);
+
+  /* Bilracet: tjuvstart ger noll, tryck på grönt ger poäng, fem starter sedan slut */
+  const bil = SPELMOTOR.bil(LEK_W, LEK_H, tyst);
+  bil.start();
+  assert.equal(bil.s.heat, 1);
+  bil.tap();
+  assert.ok(bil.s.tjuv && bil.poang() === 0 && /Tjuvstart/.test(bil.s.text));
+  for(let i = 0; i < 2 * 60; i++) bil.update(DT);
+  assert.equal(bil.s.heat, 2, "efter tjuvstarten kommer nästa start av sig själv");
+  /* vänta ut lamporna och grönt, tryck efter 0,3 s */
+  let varv = 0;
+  while(bil.s.fas !== "gront" && varv++ < 60 * 10) bil.update(DT);
+  assert.equal(bil.s.fas, "gront");
+  for(let i = 0; i < 18; i++) bil.update(DT);
+  bil.tap();
+  assert.ok(bil.poang() >= 80, `snabb reaktion ska ge mycket, gav ${bil.poang()}`);
+  assert.match(bil.s.text, /snabb/i);
+  /* resten av starterna: låt dem gå ut i tid */
+  for(let i = 0; i < 60 * 40 && !bil.slut(); i++) bil.update(DT);
+  assert.ok(bil.slut(), "fem starter och sedan slut");
+  assert.equal(bil.s.heat, 5);
+  assert.match(bil.status(), /5\/5/);
+
+  /* Bergochdalbanan: vagnen följer rälsen, hoppar vid tryck och landar igen */
+  const berg = SPELMOTOR.berg(LEK_W, LEK_H, tyst);
+  berg.update(DT);
+  assert.ok(Math.abs(berg.s.y - berg.bana(berg.s.x + 110)) < 0.01, "på rälsen");
+  berg.tap();
+  assert.ok(berg.s.luft && berg.s.vy < 0);
+  berg.tap();   /* ett tryck i luften gör inget */
+  let hoppTid = 0;
+  while(berg.s.luft && hoppTid < 5){ berg.update(DT); hoppTid += DT; }
+  assert.ok(!berg.s.luft && hoppTid > 0.3 && hoppTid < 2, `hoppet tog ${hoppTid.toFixed(2)} s`);
+  let bast = 0;
+  for(let k = 0; k < 5; k++){
+    const b = SPELMOTOR.berg(LEK_W, LEK_H, tyst);
+    for(let i = 0; i < 40 * 60; i++){ if(i % 45 === 0) b.tap(); b.update(DT); }
+    bast = Math.max(bast, b.poang());
+  }
+  assert.ok(bast > 5, `bergochdalbanan gav bara ${bast} stjärnor`);
 });

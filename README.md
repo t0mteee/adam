@@ -154,12 +154,12 @@ spärrar ingenting.
 Rätt på första försöket ger 10 guldmynt; tre rätt i rad dubblar och sex rätt i
 rad tredubblar. Rätt efter ett feltryck ger 5 mynt – aldrig minuspoäng. Efter
 varje omgång delas upp till tre stjärnor ut (4 rätt direkt ger en, 7 ger två, 9
-ger tre), och minst en stjärna öppnar nästa bana. Totalt finns 126 stjärnor (108 med gånger och delat avstängt) och 30
+ger tre), och minst en stjärna öppnar nästa bana. Totalt finns 126 stjärnor (108 med gånger och delat avstängt) och 32
 märken att samla, från *Första stjärnan* och *Ändstation* till *Hela landet*,
 *Klurig* och *Tio uppdrag*.
 
 Mynten går att göra av med. Myntraden i topplisten öppnar **skattkistan** med
-två hyllor. *Till kompisen*: keps (60 mynt), rosett (100), förarmössa (150),
+tre hyllor. *Småspel* överst, se nästa avsnitt. *Till kompisen*: keps (60 mynt), rosett (100), förarmössa (150),
 partyhatt (200), krona (300) och stjärnpannband (450). Den man köper tas på
 direkt och syns på kompisen överallt – i topplisten, på kartan, på spelskärmen
 och på resultatskärmen, i båda världarna – och går att ta av och på i kistan.
@@ -171,6 +171,29 @@ till och med Grottan, och när svaret visas efter sista felet på vilken bana so
 helst. De är billiga med flit, så
 de hinner köpas medan de gör nytta. Köpen hör till spelaren, precis som stjärnor
 och märken.
+
+## Lekstugan – småspel för mynten
+
+Skattkistans översta hylla säljer tre småspel: köp en gång, spela hur mycket du
+vill. Alla styrs med ett enda tryck var som helst på spelplanen, alla är på
+tid, och poängen sparas som rekord per spelare – kistan visar rekordet bredvid
+*Spela*. Spelplanen är en canvas ritad i spelets egen stil.
+
+- **Spårvagnsracet** (150 mynt, 40 sekunder). Vagnen kör på det ena av två
+  spår och ett tryck byter. Passagerarna står på spåren och plockas upp när man
+  kör förbi – de med krona är värda tre – och stoppskyltarna bromsar en stund.
+  Farten ökar hela tiden.
+- **Bilracet** (250 mynt, fem starter). Tre röda lampor tänds en i taget,
+  sedan en slumpad paus, sedan grönt: tryck så fort du kan. Snabbt tryck ger
+  upp till 100 poäng, och 25 till om man slår den blå bilen, som reagerar på
+  en knapp sekund. Tryck före grönt är tjuvstart: bilen snurrar, noll poäng,
+  och den blå kör ifrån. Det tränar precis det femåringar övar på – att vänta.
+- **Bergochdalbanan** (400 mynt, 40 sekunder). Vagnen rullar längs en vågig
+  räls och ett tryck får den att hoppa. Stjärnorna hänger på fyra höjder: de
+  lägsta sitter på rälsen, de högsta nås bara med ett hopp från ett krön.
+
+Två märken hör till: *Lekstugan* för alla tre spelen och *Rekordjägare* efter
+tio spelade omgångar. Spelen ger inga mynt – de är vad mynten är till för.
 
 ## Så går det – sidan för föräldern
 
@@ -400,7 +423,7 @@ hack i nätet släcker inte resten av resan.
 
 ## Tester
 
-`node --test` kör tjugosex tester som plockar ut spelets rena funktioner direkt
+`node --test` kör tjugosju tester som plockar ut spelets rena funktioner direkt
 ur `index.html`, så att de aldrig testar en kopia som glidit isär från källan. De
 täcker att uppgifterna håller sig inom banans tal och aldrig blir negativa, att
 rätt svar alltid finns bland alternativen och att varje felsvar har en

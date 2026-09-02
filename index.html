@@ -602,6 +602,27 @@ h1, h2, h3{ font-family: "Baloo 2", "Baloo 2 Fallback", system-ui, sans-serif; f
 .speak-btn{ margin-top: 8px; display: inline-flex; align-items: center; gap: 7px; font-size: var(--t-sm); padding: 7px 15px; border-radius: 999px; background: var(--sky-hi); }
 .speak-btn svg{ width: 18px; height: 18px; }
 
+/* ── Lekstugan ──────────────────────────── */
+.lek-hud .lek-mitt{ display: flex; flex-direction: column; align-items: center; line-height: 1.1; min-width: 0; }
+.lek-hud .lek-mitt b{ font-family: "Baloo 2", system-ui, sans-serif; font-weight: 800; font-size: var(--t-md); white-space: nowrap; }
+.lek-hud .lek-mitt span{ font-size: var(--t-sm); color: var(--ink-2); white-space: nowrap; }
+.lek-hud .lek-tid{ font-family: "Lilita One", system-ui, sans-serif; font-size: var(--t-lg); min-width: 52px; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.lek-ram{
+  position: relative; width: 100%; max-width: 420px; margin: 0 auto; aspect-ratio: 360 / 440;
+  border: var(--stroke); border-radius: 24px; box-shadow: var(--lift); overflow: hidden; background: #A6E7FF;
+}
+.lek-ram canvas{ width: 100%; height: 100%; display: block; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; cursor: pointer; }
+.lek-overlay{
+  position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; text-align: center;
+  gap: 8px; padding: 24px; background: rgba(255,253,247,.88);
+}
+.lek-overlay[hidden]{ display: none; }
+.lek-overlay b{ font-family: "Baloo 2", system-ui, sans-serif; font-weight: 800; font-size: var(--t-xl); line-height: 1.1; }
+.lek-overlay p{ font-size: var(--t-md); max-width: 28ch; text-wrap: balance; margin: 0; }
+.lek-overlay .lek-poang{ font-family: "Lilita One", system-ui, sans-serif; font-size: var(--t-2xl); color: var(--grape); line-height: 1; }
+.lek-overlay .lek-knappar{ display: grid; gap: 8px; margin-top: 8px; width: min(100%, 240px); }
+.butik-rad .sak.spel svg{ width: 44px; height: 44px; }
+
 /* ── Svarsytor ──────────────────────────── */
 .answer-area{ margin-bottom: 0; }
 .options{ display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(8px, 2.2vw, 14px); }
@@ -1141,6 +1162,22 @@ body.on-tram .world{ display: none; }
     <button class="btn go-btn" id="goBtn" type="button">Åk till nästa hållplats!</button>
   </section>
 
+  <!-- ── LEKSTUGAN: SMÅSPEL ─────────────── -->
+  <section id="screen-lek" class="screen">
+    <div class="hud lek-hud">
+      <button class="icon-btn" id="lekBack" type="button" aria-label="Tillbaka">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#2E1A66" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-8 7 8 7"/></svg>
+      </button>
+      <span class="lek-mitt"><b id="lekTitel"></b><span id="lekPoang"></span></span>
+      <span class="lek-tid" id="lekTid"></span>
+    </div>
+    <div class="lek-ram">
+      <canvas id="lekCanvas" width="360" height="440" aria-label="Spelplan"></canvas>
+      <div class="lek-overlay" id="lekOverlay" hidden></div>
+    </div>
+    <p class="footnote">Tryck var som helst på spelplanen</p>
+  </section>
+
   <!-- ── SPEL ───────────────────────────── -->
   <section id="screen-game" class="screen">
     <div class="hud">
@@ -1210,7 +1247,7 @@ const pick = (arr) => arr[rnd(arr.length)];
 const INK = "#2E1A66";
 /* Syns under Inställningar, så man kan se vilken version telefonen kör.
    Höjs tillsammans med VERSION i sw.js. */
-const SPELVERSION = "17";
+const SPELVERSION = "18";
 function shuffle(a){ for(let i = a.length - 1; i > 0; i--){ const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
 function store(key, val){
@@ -1913,7 +1950,9 @@ const BADGES = [
   { id:"nat132",  name:"Hela nätet",      desc:"Alla 132 hållplatser",    art:"crown", test:p => besoktaAlla(p).size >= 132 },
   { id:"klur10",  name:"Klurig",          desc:"Klara tio kluringar direkt", art:"bolt", test:p => (p.kluringarKlarade || 0) >= 10 },
   { id:"uppdrag1", name:"Första uppdraget", desc:"Ta dig till en hållplats",  art:"flag", test:p => (p.uppdragKlara || 0) >= 1 },
-  { id:"uppdrag10", name:"Tio uppdrag",    desc:"Klara tio uppdrag i nätet",  art:"flag", test:p => (p.uppdragKlara || 0) >= 10 }
+  { id:"uppdrag10", name:"Tio uppdrag",    desc:"Klara tio uppdrag i nätet",  art:"flag", test:p => (p.uppdragKlara || 0) >= 10 },
+  { id:"lek3",    name:"Lekstugan",       desc:"Köp alla tre småspelen",     art:"chest", test:p => SMASPEL.every(v => spelKopt(p, v.id)) },
+  { id:"lek10",   name:"Rekordjägare",    desc:"Spela småspelen tio gånger", art:"bolt", test:p => (p.lekta || 0) >= 10 }
 ];
 
 
@@ -2511,7 +2550,7 @@ function newProfile(name, char){
     coins: 0, stars: {}, best: {},
     unlocked: 1, badges: [], bestStreak: 0, perfect: 0, rounds: 0,
     world: "land", tram: {}, tramLine: null, tramLevel: -1, tramMode: "choice", skill: null,
-    stopsRidden: 0, linesDone: [], kopta: [], kluriga: [],
+    stopsRidden: 0, linesDone: [], kopta: [], kluriga: [], spel: [], rekord: {},
     settings: { sound:true, voice:true, dots:true, rate:1 }
   };
   /* Ta med skatten från den första versionen av spelet */
@@ -2592,7 +2631,7 @@ function later(fn, ms){
 }
 function clearTimers(){ timers.forEach(clearTimeout); timers = []; }
 
-const SCREENS = ["profiles", "create", "map", "lines", "trip", "game", "result"];
+const SCREENS = ["profiles", "create", "map", "lines", "trip", "game", "result", "lek"];
 let aktivSkarm = null, spelStart = null;
 function show(name){
   clearTimers();
@@ -2602,6 +2641,8 @@ function show(name){
     spelStart = null;
     saveProfiles();
   }
+  /* Ett småspel som lämnas ska sluta rita och räkna */
+  if(aktivSkarm === "lek" && name !== "lek") stoppaLek();
   aktivSkarm = name;
   try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){}
   SCREENS.forEach(n => el("screen-" + n).classList.toggle("is-active", n === name));
@@ -4141,6 +4182,30 @@ sheet.addEventListener("click", (e) => {
     saveProfiles(); SFX.tap(); renderHeader(); visaHatten(); openShop();
     return;
   }
+  const spela = e.target.closest("[data-spela]");
+  if(spela){
+    if(!spelKopt(p, spela.dataset.spela)) return;
+    SFX.ensure(); SFX.tap(); closeSheet();
+    startLek(spela.dataset.spela);
+    return;
+  }
+  const kopSpel = e.target.closest("[data-kop-spel]");
+  if(kopSpel){
+    const v = SMASPEL.find(x => x.id === kopSpel.dataset.kopSpel);
+    if(!v || p.coins < v.pris || spelKopt(p, v.id)) return;
+    p.coins -= v.pris;
+    p.spel = (p.spel || []).concat(v.id);
+    saveProfiles();
+    SFX.coin();
+    renderHeader();
+    openShop();
+    const r = sheet.getBoundingClientRect();
+    confetti(r.left + r.width / 2, r.top + 90, 26);
+    speak(`Du köpte ${v.name}! Tryck på Spela.`);
+    const nya = newBadges(p);
+    if(nya.length) later(() => celebrateBadges(nya), 1400);
+    return;
+  }
   const kop = e.target.closest("[data-kop]");
   if(kop){
     const v = BUTIK.find(x => x.id === kop.dataset.kop) || tillbehorAv(kop.dataset.kop);
@@ -4205,6 +4270,17 @@ function butikRadHTML(v, p){
     <span class="txt"><b>${v.name}</b><span>${COIN_SVG} ${v.pris} mynt</span></span>
     ${knapp}</div>`;
 }
+function spelRadHTML(v, p){
+  const agd = spelKopt(p, v.id);
+  const rek = (p.rekord || {})[v.id];
+  const knapp = agd
+    ? `<button class="kop pa" data-spela="${v.id}" type="button">Spela</button>`
+    : `<button class="kop" data-kop-spel="${v.id}" type="button" ${p.coins < v.pris ? "disabled" : ""}>Köp</button>`;
+  return `<div class="butik-rad ${agd ? "min" : ""}">
+    <span class="sak spel">${SPELIKON[v.id]}</span>
+    <span class="txt"><b>${v.name}</b><span>${agd ? (rek != null ? `Rekord ${rek} ${v.enhet}` : "Inget rekord än") : `${COIN_SVG} ${v.pris} mynt`}</span></span>
+    ${knapp}</div>`;
+}
 /* Figuren på kartan ritas när kartan ritas – efter ett köp ska hatten synas
    där också, utan att man behöver lämna skärmen */
 function visaHatten(){
@@ -4212,7 +4288,8 @@ function visaHatten(){
 }
 function openShop(){
   const p = P();
-  const kvar = BUTIK.concat(TILLBEHOR).filter(v => (p.kopta || []).indexOf(v.id) === -1).sort((a, b) => a.pris - b.pris);
+  const kvar = BUTIK.concat(TILLBEHOR).filter(v => (p.kopta || []).indexOf(v.id) === -1)
+    .concat(SMASPEL.filter(v => !spelKopt(p, v.id))).sort((a, b) => a.pris - b.pris);
   const rad = kvar.length === 0
     ? "Du har allt i kistan! Snyggt jobbat."
     : p.coins < kvar[0].pris
@@ -4224,12 +4301,388 @@ function openShop(){
       ${CLOSE_BTN}
     </div>
     <div class="butik" id="butikLista">
-      <p class="sheet-sub" style="margin:0 0 4px"><b>Till kompisen</b> – syns på varje skärm, i båda världarna.</p>
+      <p class="sheet-sub" style="margin:0 0 4px"><b>Småspel</b> – köp en gång, spela hur mycket du vill. Poängen sparas som rekord.</p>
+      ${SMASPEL.map(v => spelRadHTML(v, p)).join("")}
+      <p class="sheet-sub" style="margin:10px 0 4px"><b>Till kompisen</b> – syns på varje skärm, i båda världarna.</p>
       ${TILLBEHOR.map(v => butikRadHTML(v, p)).join("")}
       <p class="sheet-sub" style="margin:10px 0 4px"><b>Leksaker</b> – står bredvid kompisen när du räknar, och blir saker att räkna på räknebanorna, som räknehjälp till och med Grottan och när svaret visas efter tre fel.</p>
       ${BUTIK.map(v => butikRadHTML(v, p)).join("")}
     </div>`);
 }
+
+/* ═══════════════════════════════════════════
+   Lekstugan – småspel att köpa för mynten
+   Tre små spel på tid, alla med en enda knapp: tryck. Poängen sparas som
+   rekord per spelare. Spelplanen är en canvas, ritad i spelets egen stil.
+   Motorerna är rena: update och tap ändrar bara sitt eget tillstånd, draw
+   ritar det – så de går att köra utan webbläsare i testerna.
+   ═══════════════════════════════════════════ */
+const LEK_W = 360, LEK_H = 440;
+const SMASPEL = [
+  { id:"race", name:"Spårvagnsracet", ord:"Spårvagnsracet", pris:150, tid:40, enhet:"passagerare",
+    hur:"Tryck så byter vagnen spår. Plocka upp passagerarna, men akta stoppskyltarna!" },
+  { id:"bil",  name:"Bilracet", ord:"Bilracet", pris:250, tid:0, enhet:"poäng",
+    hur:"Vänta på grönt ljus och tryck så fort du kan! Fem starter mot den blå bilen." },
+  { id:"berg", name:"Bergochdalbanan", ord:"Bergochdalbanan", pris:400, tid:40, enhet:"stjärnor",
+    hur:"Tryck så hoppar vagnen. Fånga så många stjärnor du kan!" }
+];
+const spelKopt = (p, id) => !!p && (p.spel || []).includes(id);
+const SPELMOTOR = {
+  /* Spårvagnsracet: två spår, en knapp. Passagerarna står på det ena eller
+     andra spåret; stoppskyltarna bromsar. Farten ökar hela tiden. */
+  race(W, H, ljud){
+    const sparY = [H * 0.56, H * 0.82];
+    const FARGER = ["#62CDF2", "#FF8AD0", "#9061F9", "#57C96B", "#FF6B6B"];
+    const s = { t:0, spar:1, y:sparY[1], x:96, fart:170, saker:[], nasta:0.9, poang:0, brom:0, bak:0, oj:0 };
+    return {
+      s, sparY,
+      poang: () => s.poang,
+      tap(){ s.spar = 1 - s.spar; ljud("tap"); },
+      update(dt){
+        s.t += dt;
+        s.fart = 170 + Math.min(190, s.t * 4.8);
+        const f = s.fart * (s.brom > 0 ? 0.35 : 1);
+        s.bak += f * dt;
+        s.y += (sparY[s.spar] - s.y) * Math.min(1, dt * 10);
+        if(s.brom > 0) s.brom -= dt;
+        if(s.oj > 0) s.oj -= dt;
+        s.nasta -= dt;
+        if(s.nasta <= 0){
+          s.nasta = 0.75 + Math.random() * 0.45 - Math.min(0.25, s.t * 0.006);
+          const spar = rnd(2), slump = Math.random();
+          const typ = slump < 0.2 ? "stopp" : slump < 0.32 ? "guld" : "pass";
+          s.saker.push({ x: W + 50, spar, typ, farg: pick(FARGER) });
+          /* ibland någon på andra spåret också – men aldrig två skyltar */
+          if(Math.random() < 0.35) s.saker.push({ x: W + 86, spar: 1 - spar, typ: "pass", farg: pick(FARGER) });
+        }
+        for(const o of s.saker){
+          o.x -= f * dt;
+          if(!o.tagen && Math.abs(o.x - s.x) < 30 && Math.abs(sparY[o.spar] - s.y) < 20){
+            o.tagen = true;
+            if(o.typ === "stopp"){ s.brom = 0.9; s.oj = 1; ljud("wrong"); }
+            else { s.poang += o.typ === "guld" ? 3 : 1; ljud("coin"); }
+          }
+        }
+        s.saker = s.saker.filter(o => o.x > -60 && !(o.tagen && o.typ !== "stopp"));
+      },
+      draw(c){
+        c.clearRect(0, 0, W, H);
+        c.fillStyle = "#A6E7FF"; c.fillRect(0, 0, W, H);
+        c.fillStyle = "#BDEBA8";
+        c.beginPath(); c.moveTo(0, H);
+        for(let x = 0; x <= W; x += 8) c.lineTo(x, H * 0.42 + Math.sin((x + s.bak * 0.25) / 60) * 10 + Math.sin((x + s.bak * 0.25) / 23) * 4);
+        c.lineTo(W, H); c.closePath(); c.fill();
+        c.fillStyle = "#8FE07E"; c.fillRect(0, H * 0.47, W, H);
+        for(const y of sparY){
+          c.fillStyle = "#C9BEA0";
+          for(let x = -(s.bak % 26); x < W; x += 26) c.fillRect(x, y - 4, 12, 8);
+          c.strokeStyle = INK; c.lineWidth = 3;
+          c.beginPath(); c.moveTo(0, y - 3); c.lineTo(W, y - 3); c.moveTo(0, y + 3); c.lineTo(W, y + 3); c.stroke();
+        }
+        for(const o of s.saker){
+          const y = sparY[o.spar] - 4;
+          if(o.typ === "stopp"){
+            c.strokeStyle = INK; c.lineWidth = 3; c.beginPath(); c.moveTo(o.x, y); c.lineTo(o.x, y - 30); c.stroke();
+            RIT.cirkel(c, o.x, y - 40, 14, o.tagen ? "#C9BEE6" : "#FF6B6B", 3);
+            c.fillStyle = "#FFFDF7"; c.fillRect(o.x - 8, y - 42, 16, 4);
+          }else RIT.figur(c, o.x, y, o.typ === "guld" ? "#FFC42E" : o.farg, o.typ === "guld");
+        }
+        const skak = s.brom > 0 ? Math.sin(s.t * 60) * 3 : 0;
+        RIT.vagn(c, s.x - 43, s.y - 46 + skak, 86, 40, "#FFC42E");
+        if(s.oj > 0) RIT.text(c, "Oj!", s.x, s.y - 78, 26, "#DD4747");
+      }
+    };
+  },
+  /* Bilracet: vänta på grönt, tryck så fort du kan. Fem starter mot en blå
+     bil som reagerar på en knapp sekund. Tjuvstart ger noll och en snurr. */
+  bil(W, H, ljud){
+    const HEAT = 5, FART = 420;
+    const s = { heat:0, fas:"lampor", tid:0, lampor:0, gront:0, poang:0, vunna:0, text:"", bilX:44, rivalX:44,
+                tjuv:false, rivalRt:0.6, rt:null, nasta:0.8, vantetid:1, slut:false };
+    const nyHeat = () => {
+      s.heat++; s.fas = "lampor"; s.tid = 0; s.lampor = 0; s.gront = 0; s.text = ""; s.bilX = 44; s.rivalX = 44;
+      s.tjuv = false; s.rt = null; s.nasta = 0.8; s.rivalRt = 0.42 + Math.random() * 0.5; s.vantetid = 0.5 + Math.random() * 1.4;
+    };
+    const klar = () => { s.fas = "kor"; s.nasta = 0; };
+    return {
+      s,
+      start(){ nyHeat(); },
+      poang: () => s.poang,
+      slut: () => s.slut,
+      status: () => `Start ${Math.max(1, Math.min(s.heat, HEAT))}/${HEAT}`,
+      tap(){
+        if(s.slut) return;
+        if(s.fas === "lampor" || s.fas === "vantar"){ s.tjuv = true; s.text = "Tjuvstart! Vänta på grönt."; klar(); ljud("wrong"); }
+        else if(s.fas === "gront"){
+          const rt = s.tid - s.gront;
+          const p = Math.round(Math.max(5, Math.min(100, 100 - (rt - 0.25) * 150)));
+          const vann = rt < s.rivalRt, bonus = vann ? 25 : 0;
+          s.rt = rt; s.poang += p + bonus; if(vann) s.vunna++;
+          s.text = (rt < 0.35 ? "Blixtsnabb!" : rt < 0.6 ? "Snabb!" : "Bra!") + " +" + (p + bonus);
+          klar(); ljud(vann ? "correct" : "coin");
+        }
+      },
+      update(dt){
+        if(s.slut) return;
+        s.tid += dt;
+        if(s.fas === "lampor"){
+          s.nasta -= dt;
+          if(s.nasta <= 0){ s.lampor++; s.nasta = 0.65; ljud("tap"); if(s.lampor >= 3){ s.fas = "vantar"; s.nasta = s.vantetid; } }
+        }else if(s.fas === "vantar"){
+          s.nasta -= dt;
+          if(s.nasta <= 0){ s.fas = "gront"; s.gront = s.tid; ljud("pling"); }
+        }else if(s.fas === "gront" && s.tid - s.gront > 2.5){
+          s.text = "För sent! Tryck när det blir grönt."; klar();
+        }
+        /* Rivalen kör när dess reaktionstid gått; du när du tryckt. Vid
+           tjuvstart står du och snurrar medan rivalen kör. */
+        if(s.tjuv) s.rivalX += FART * dt;
+        else if(s.gront && s.tid - s.gront >= s.rivalRt) s.rivalX += FART * dt;
+        if(s.fas === "kor" && s.rt != null) s.bilX += FART * dt;
+        if(s.fas === "kor"){
+          s.nasta += dt;
+          if(s.nasta >= 1.5){ if(s.heat >= HEAT) s.slut = true; else nyHeat(); }
+        }
+      },
+      draw(c){
+        c.clearRect(0, 0, W, H);
+        c.fillStyle = "#A6E7FF"; c.fillRect(0, 0, W, H);
+        c.fillStyle = "#8FE07E"; c.fillRect(0, H * 0.4, W, H);
+        c.fillStyle = "#6E6C86"; c.fillRect(0, H * 0.5, W, H * 0.38);
+        c.setLineDash([14, 12]); c.strokeStyle = "#FFFDF7"; c.lineWidth = 3;
+        c.beginPath(); c.moveTo(0, H * 0.69); c.lineTo(W, H * 0.69); c.stroke(); c.setLineDash([]);
+        for(let i = 0; i < 8; i++){ c.fillStyle = i % 2 ? INK : "#FFFDF7"; c.fillRect(W - 34, H * 0.5 + i * (H * 0.38 / 8), 12, H * 0.38 / 8); }
+        /* trafikljuset */
+        RIT.rund(c, W / 2 - 62, 22, 124, 58, 14); RIT.fyll(c, "#2E1A66", 3);
+        const gron = s.fas === "gront" || (s.fas === "kor" && !s.tjuv);
+        for(let i = 0; i < 3; i++) RIT.cirkel(c, W / 2 - 36 + i * 36, 51, 14, gron ? "#57C96B" : i < s.lampor ? "#FF6B6B" : "#5B47A0", 2.5);
+        RIT.bil(c, s.rivalX, H * 0.6, "#62CDF2", 0);
+        RIT.bil(c, s.bilX, H * 0.79, "#FF6B6B", s.tjuv ? s.nasta * 9 : 0);
+        const rubrik = s.fas === "lampor" || s.fas === "vantar" ? "Vänta…" : s.fas === "gront" ? "KÖR!" : s.text;
+        RIT.text(c, rubrik, W / 2, 116, s.fas === "gront" ? 42 : 22, s.fas === "gront" ? "#3E9E51" : INK);
+        RIT.text(c, `Start ${Math.min(s.heat, HEAT)} av ${HEAT} · ${s.vunna} vunna`, W / 2, H - 20, 16, "#5B47A0");
+      }
+    };
+  },
+  /* Bergochdalbanan: vagnen rullar längs en vågig räls, ett tryck får den
+     att hoppa. Stjärnorna hänger på olika höjd – de högsta nås bara med
+     ett hopp från en krön. */
+  berg(W, H, ljud){
+    const bana = (wx) => H * 0.6 + Math.sin(wx / 95) * 46 + Math.sin(wx / 41 + 1) * 16;
+    const VX = 110;
+    const s = { t:0, x:0, fart:210, y:bana(VX), vy:0, luft:false, stjarnor:[], poang:0, nasta:0.4, wiii:0, gnist:[] };
+    return {
+      s, bana,
+      poang: () => s.poang,
+      tap(){ if(!s.luft){ s.luft = true; s.vy = -430; s.wiii = 0.7; ljud("tap"); } },
+      update(dt){
+        s.t += dt; s.fart = 210 + s.t * 3.5;
+        s.x += s.fart * dt;
+        const wx = s.x + VX, mark = bana(wx);
+        if(s.luft){
+          s.vy += 1150 * dt; s.y += s.vy * dt;
+          if(s.vy > 0 && s.y >= mark){ s.y = mark; s.luft = false; }
+        }else s.y = mark;
+        if(s.wiii > 0) s.wiii -= dt;
+        s.nasta -= dt;
+        if(s.nasta <= 0){
+          s.nasta = 0.5 + Math.random() * 0.3;
+          const hojd = pick([14, 45, 75, 105]), antal = Math.random() < 0.3 ? 3 : 1;
+          for(let i = 0; i < antal; i++){ const sx = s.x + W + 40 + i * 34; s.stjarnor.push({ wx: sx, y: bana(sx) - hojd }); }
+        }
+        for(const st of s.stjarnor){
+          if(!st.tagen && Math.hypot(st.wx - wx, st.y - (s.y - 16)) < 28){
+            st.tagen = true; s.poang++; ljud("coin"); s.gnist.push({ x: st.wx, y: st.y, t: 0.35 });
+          }
+        }
+        s.stjarnor = s.stjarnor.filter(st => !st.tagen && st.wx > s.x - 40);
+        s.gnist.forEach(g => { g.t -= dt; }); s.gnist = s.gnist.filter(g => g.t > 0);
+      },
+      draw(c){
+        c.clearRect(0, 0, W, H);
+        c.fillStyle = "#A6E7FF"; c.fillRect(0, 0, W, H);
+        for(let i = 0; i < 4; i++){ const mx = (((i * 137 - s.x * 0.15) % (W + 120)) + W + 120) % (W + 120) - 60; RIT.moln(c, mx, 44 + i * 26, 0.8 + i * 0.12); }
+        c.fillStyle = "#8FE07E"; c.fillRect(0, H - 34, W, 34);
+        c.strokeStyle = INK; c.lineWidth = 3;
+        for(let wx2 = Math.ceil((s.x - 20) / 56) * 56; wx2 < s.x + W + 20; wx2 += 56){
+          const sx = wx2 - s.x; c.beginPath(); c.moveTo(sx, bana(wx2) + 6); c.lineTo(sx, H - 34); c.stroke();
+        }
+        c.beginPath(); for(let sx = -10; sx <= W + 10; sx += 6) c.lineTo(sx, bana(s.x + sx));
+        c.lineJoin = "round"; c.strokeStyle = INK; c.lineWidth = 9; c.stroke();
+        c.strokeStyle = "#FFC42E"; c.lineWidth = 4; c.stroke();
+        for(const st of s.stjarnor) RIT.stjarna(c, st.wx - s.x, st.y, 13);
+        for(const g of s.gnist){ c.globalAlpha = g.t / 0.35; RIT.stjarna(c, g.x - s.x, g.y - (0.35 - g.t) * 60, 13 + (0.35 - g.t) * 40, "#FFFDF7"); c.globalAlpha = 1; }
+        const wx = s.x + VX;
+        const lut = s.luft ? -0.15 : Math.atan2(bana(wx + 8) - bana(wx - 8), 16);
+        c.save(); c.translate(VX, s.y - 6); c.rotate(lut);
+        RIT.rund(c, -24, -22, 48, 24, 8); RIT.fyll(c, "#FF6B6B", 3);
+        RIT.cirkel(c, -14, 4, 6, INK, false); RIT.cirkel(c, 14, 4, 6, INK, false);
+        RIT.cirkel(c, 0, -30, 10, "#FFD9B8", 2.5);
+        c.fillStyle = INK; c.fillRect(-4, -32, 2, 2); c.fillRect(2, -32, 2, 2);
+        c.strokeStyle = INK; c.lineWidth = 2.5; c.beginPath();
+        if(s.luft){ c.moveTo(-10, -22); c.lineTo(-20, -40); c.moveTo(10, -22); c.lineTo(20, -40); }
+        else { c.moveTo(-10, -22); c.lineTo(-18, -14); c.moveTo(10, -22); c.lineTo(18, -14); }
+        c.stroke(); c.restore();
+        if(s.wiii > 0) RIT.text(c, "Wiii!", VX + 46, s.y - 62, 24, "#9061F9");
+      }
+    };
+  }
+};
+
+/* Ritverktyg för spelplanen: samma bläck, samma rundade former som i resten */
+const RIT = {
+  rund(c, x, y, w, h, r){
+    r = Math.min(r, w / 2, h / 2);
+    c.beginPath();
+    c.moveTo(x + r, y); c.lineTo(x + w - r, y); c.quadraticCurveTo(x + w, y, x + w, y + r);
+    c.lineTo(x + w, y + h - r); c.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    c.lineTo(x + r, y + h); c.quadraticCurveTo(x, y + h, x, y + h - r);
+    c.lineTo(x, y + r); c.quadraticCurveTo(x, y, x + r, y); c.closePath();
+  },
+  fyll(c, farg, kant){ c.fillStyle = farg; c.fill(); if(kant !== false){ c.lineWidth = kant || 3; c.strokeStyle = INK; c.stroke(); } },
+  cirkel(c, x, y, r, farg, kant){ c.beginPath(); c.arc(x, y, r, 0, Math.PI * 2); RIT.fyll(c, farg, kant); },
+  stjarna(c, x, y, r, farg){
+    c.beginPath();
+    for(let i = 0; i < 10; i++){
+      const v = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * 0.45 : r;
+      c[i ? "lineTo" : "moveTo"](x + Math.cos(v) * rr, y + Math.sin(v) * rr);
+    }
+    c.closePath(); RIT.fyll(c, farg || "#FFC42E", 2.5);
+  },
+  text(c, s, x, y, storlek, farg){
+    c.font = `800 ${storlek}px "Baloo 2", "Nunito", system-ui, sans-serif`;
+    c.textAlign = "center"; c.textBaseline = "middle"; c.lineJoin = "round";
+    c.lineWidth = Math.max(3, storlek / 5); c.strokeStyle = "#FFFDF7"; c.strokeText(s, x, y);
+    c.fillStyle = farg || INK; c.fillText(s, x, y);
+  },
+  /* En liten passagerare: kropp, huvud och krona på de fina */
+  figur(c, x, y, farg, guld){
+    RIT.rund(c, x - 9, y - 22, 18, 22, 7); RIT.fyll(c, farg, 2.5);
+    RIT.cirkel(c, x, y - 30, 9, "#FFD9B8", 2.5);
+    c.fillStyle = INK; c.fillRect(x - 4, y - 32, 2, 2); c.fillRect(x + 2, y - 32, 2, 2);
+    if(guld){
+      c.beginPath(); c.moveTo(x - 8, y - 38); c.lineTo(x - 5, y - 47); c.lineTo(x, y - 41); c.lineTo(x + 5, y - 47); c.lineTo(x + 8, y - 38); c.closePath();
+      RIT.fyll(c, "#FFC42E", 2);
+    }
+  },
+  /* Spårvagn i sidovy: strömavtagare, tre fönster, hjul och strålkastare */
+  vagn(c, x, y, w, h, farg){
+    c.strokeStyle = INK; c.lineWidth = 3; c.beginPath();
+    c.moveTo(x + w * 0.55, y); c.lineTo(x + w * 0.5, y - 12); c.lineTo(x + w * 0.64, y - 12); c.stroke();
+    RIT.rund(c, x, y, w, h, 10); RIT.fyll(c, farg, 3);
+    const fw = (w - 26) / 3;
+    for(let i = 0; i < 3; i++){ RIT.rund(c, x + 8 + i * (fw + 5), y + 7, fw, h * 0.42, 4); RIT.fyll(c, "#A6E7FF", 2.5); }
+    RIT.cirkel(c, x + 16, y + h, 6, INK, false); RIT.cirkel(c, x + w - 16, y + h, 6, INK, false);
+    RIT.cirkel(c, x + w - 4, y + h - 10, 4, "#FFF3CF", 2);
+  },
+  bil(c, x, y, farg, vinkel){
+    c.save(); c.translate(x, y); if(vinkel) c.rotate(vinkel);
+    RIT.rund(c, -30, -12, 60, 22, 9); RIT.fyll(c, farg, 3);
+    RIT.rund(c, -16, -26, 30, 18, 8); RIT.fyll(c, farg, 3);
+    RIT.rund(c, -11, -22, 10, 10, 3); RIT.fyll(c, "#A6E7FF", 2);
+    RIT.cirkel(c, -17, 11, 7, INK, false); RIT.cirkel(c, 17, 11, 7, INK, false);
+    RIT.cirkel(c, -17, 11, 3, "#FFFDF7", false); RIT.cirkel(c, 17, 11, 3, "#FFFDF7", false);
+    c.restore();
+  },
+  moln(c, x, y, k){
+    c.beginPath(); c.arc(x, y, 14 * k, 0, 7); c.arc(x + 16 * k, y - 6 * k, 17 * k, 0, 7); c.arc(x + 34 * k, y, 13 * k, 0, 7);
+    c.fillStyle = "rgba(255,253,247,.9)"; c.fill();
+  }
+};
+const SPELIKON = {
+  race: `<svg viewBox="0 0 48 48"><path d="M26 10l-3-6h8" fill="none" stroke="${INK}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="5" y="10" width="38" height="26" rx="8" fill="#FFC42E" stroke="${INK}" stroke-width="3"/><rect x="10" y="15" width="8" height="9" rx="2.5" fill="#A6E7FF" stroke="${INK}" stroke-width="2"/><rect x="20" y="15" width="8" height="9" rx="2.5" fill="#A6E7FF" stroke="${INK}" stroke-width="2"/><rect x="30" y="15" width="8" height="9" rx="2.5" fill="#A6E7FF" stroke="${INK}" stroke-width="2"/><circle cx="14" cy="37" r="4" fill="${INK}"/><circle cx="34" cy="37" r="4" fill="${INK}"/></svg>`,
+  bil: `<svg viewBox="0 0 48 48"><rect x="12" y="10" width="22" height="16" rx="7" fill="#FF6B6B" stroke="${INK}" stroke-width="3"/><rect x="4" y="20" width="40" height="17" rx="8" fill="#FF6B6B" stroke="${INK}" stroke-width="3"/><rect x="16" y="14" width="8" height="8" rx="2.5" fill="#A6E7FF" stroke="${INK}" stroke-width="2"/><circle cx="13" cy="38" r="5.5" fill="${INK}"/><circle cx="35" cy="38" r="5.5" fill="${INK}"/><circle cx="13" cy="38" r="2" fill="#FFFDF7"/><circle cx="35" cy="38" r="2" fill="#FFFDF7"/></svg>`,
+  berg: `<svg viewBox="0 0 48 48"><path d="M2 42C10 8 20 8 26 26s10 16 20 8" fill="none" stroke="${INK}" stroke-width="4" stroke-linecap="round"/><path d="M2 42C10 8 20 8 26 26s10 16 20 8" fill="none" stroke="#FFC42E" stroke-width="1.8" stroke-linecap="round"/><rect x="8" y="13" width="14" height="9" rx="3" transform="rotate(-62 15 17)" fill="#FF6B6B" stroke="${INK}" stroke-width="2.4"/><path d="M36 6l2.2 4.6 5 .7-3.6 3.5.9 5-4.5-2.4-4.5 2.4.9-5L29 11.3l5-.7z" fill="#FFC42E" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/></svg>`
+};
+
+let lek = null, lekRaf = 0, lekSenast = 0;
+const lekCanvas = el("lekCanvas"), lekCtx = lekCanvas.getContext("2d");
+function lekStorlek(){
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  lekCanvas.width = LEK_W * dpr; lekCanvas.height = LEK_H * dpr;
+  lekCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+function startLek(id, direkt){
+  const spel = SMASPEL.find(x => x.id === id); if(!spel) return;
+  stoppaLek();
+  lek = { spel, motor: SPELMOTOR[id](LEK_W, LEK_H, (n) => { if(SFX[n]) SFX[n](); }), igang: false, kvar: spel.tid };
+  el("lekTitel").textContent = spel.name;
+  show("lek");
+  lekStorlek();
+  lek.motor.draw(lekCtx);
+  lekHud();
+  if(direkt){ lekBorja(); return; }
+  lekOverlay(`<b>${spel.name}</b><p>${spel.hur}</p><button class="btn btn-big" data-lek="borja" type="button">Börja!</button>`);
+  speak(spel.hur);
+}
+function lekOverlay(html){ const o = el("lekOverlay"); o.hidden = !html; o.innerHTML = html || ""; }
+function lekHud(){
+  if(!lek) return;
+  el("lekPoang").textContent = lek.motor.poang() + " " + lek.spel.enhet;
+  el("lekTid").textContent = lek.spel.tid ? Math.ceil(lek.kvar) + " s" : (lek.motor.status ? lek.motor.status() : "");
+}
+function lekBorja(){
+  if(!lek) return;
+  lek.igang = true; lek.kvar = lek.spel.tid;
+  lekOverlay("");
+  if(lek.motor.start) lek.motor.start();
+  lekSenast = performance.now();
+  lekRaf = requestAnimationFrame(lekLoop);
+}
+function lekLoop(nu){
+  if(!lek || !lek.igang) return;
+  const dt = Math.min(0.05, (nu - lekSenast) / 1000); lekSenast = nu;
+  lek.motor.update(dt);
+  let slut = false;
+  if(lek.spel.tid){ lek.kvar -= dt; if(lek.kvar <= 0){ lek.kvar = 0; slut = true; } }
+  else if(lek.motor.slut()) slut = true;
+  lek.motor.draw(lekCtx);
+  lekHud();
+  if(slut) return lekSlut();
+  lekRaf = requestAnimationFrame(lekLoop);
+}
+function lekSlut(){
+  lek.igang = false;
+  const p = P(), id = lek.spel.id, poang = lek.motor.poang();
+  p.rekord = p.rekord || {};
+  const rek = p.rekord[id] || 0, nytt = poang > rek;
+  if(nytt) p.rekord[id] = poang;
+  p.lekta = (p.lekta || 0) + 1;
+  saveProfiles();
+  SFX.win();
+  confetti(innerWidth / 2, innerHeight * 0.4, nytt ? 70 : 30);
+  lekOverlay(`<b>${nytt ? "Nytt rekord!" : "Slut!"}</b>
+    <p class="lek-poang">${poang}</p>
+    <p>${poang} ${lek.spel.enhet}${nytt ? (rek ? ` – förra rekordet var ${rek}.` : " – ditt första rekord!") : `. Rekordet är ${rek}.`}</p>
+    <div class="lek-knappar">
+      <button class="btn btn-big" data-lek="igen" type="button">Igen!</button>
+      <button class="btn" data-lek="klar" type="button" style="background:var(--paper-2)">Klar</button>
+    </div>`);
+  speak(nytt ? `Nytt rekord! ${poang} ${lek.spel.enhet}!` : `${poang} ${lek.spel.enhet}!`);
+  const nya = newBadges(p);
+  if(nya.length) later(() => celebrateBadges(nya), 1800);
+}
+function stoppaLek(){
+  if(lekRaf) cancelAnimationFrame(lekRaf);
+  lekRaf = 0;
+  if(lek) lek.igang = false;
+  lek = null;
+}
+lekCanvas.addEventListener("pointerdown", (e) => {
+  e.preventDefault();
+  if(lek && lek.igang) lek.motor.tap();
+});
+document.addEventListener("keydown", (e) => {
+  if(lek && lek.igang && (e.code === "Space" || e.code === "ArrowUp")){ e.preventDefault(); lek.motor.tap(); }
+});
+el("lekOverlay").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-lek]"); if(!b || !lek) return;
+  SFX.ensure(); SFX.tap();
+  if(b.dataset.lek === "borja") lekBorja();
+  else if(b.dataset.lek === "igen") startLek(lek.spel.id, true);
+  else if(b.dataset.lek === "klar") enterWorld(false);
+});
+el("lekBack").addEventListener("click", () => { SFX.tap(); enterWorld(false); });
 
 /* ═══════════════════════════════════════════
    Spelomgången
@@ -4967,6 +5420,7 @@ function flyttaTillTvaSpar(p){
     p.linesDone = p.linesDone || [];
     p.kluriga = p.kluriga || [];
     p.uppdragKlara = p.uppdragKlara || 0;
+    p.spel = p.spel || []; p.rekord = p.rekord || {};
     p.settings = Object.assign({ sound:true, voice:true, dots:true, rate:1, ganger:true }, p.settings || {});
     flyttaTillTvaSpar(p);
     /* Förr åkte man en linje från ände till ände och läget var ett index per
