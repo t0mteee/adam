@@ -7,7 +7,7 @@ import { REGIONS, LEVELS, SHOWN, buildRound, makeOptions, distraktorer, varforFe
          gorSaga, blandaInSaga, natAvstand, valjUppdrag, uppdragTips, ALLA_STOPP, qNyckel, TRAM_LINES, STOP_PHOTOS, TRAM_PHOTOS, vagnFoto,
          THINGS, BAS_SAKER, BUTIK, TILLBEHOR, sakerFor,
          justeraSkill, nivaForSkill, buildStigandeRound,
-         HUVUD_MAX, SIDO_START, SIDO_MAX, GANGER_START, GANGER_MAX, huvudspar, arLast, oppnaEfter, sidoOppen, gangerOppen, sidosparEfter, synligaBanor, maxStars, nastaBana, blandatLevel, levelById } from "./hamta.mjs";
+         HUVUD_MAX, SIDO_START, SIDO_MAX, GANGER_START, GANGER_MAX, TALRAD_START, TALRAD_MAX, huvudspar, arLast, oppnaEfter, sidoOppen, gangerOppen, talradOppen, sidosparEfter, datumNyckel, statSvar, statTid, MAKE, synligaBanor, maxStars, nastaBana, blandatLevel, levelById } from "./hamta.mjs";
 
 const rot = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -37,6 +37,8 @@ test("uppgifterna håller sig inom banans tal och blir aldrig negativa", () => {
         if(q.kind === "add3")    assert.equal(q.answer, q.a + q.b + q.c);
         if(q.kind === "missing") assert.equal(q.answer, q.sum - q.a);
         if(q.kind === "count")   assert.equal(q.answer, q.count);
+        if(q.kind === "jamfor")  assert.equal(q.answer, q.storst ? Math.max(...q.tal) : Math.min(...q.tal));
+        if(q.kind === "lucka")   assert.equal(q.answer, q.tal[q.lucka]);
       }
     }
   }
@@ -495,4 +497,80 @@ test("uppdrag: nätet hänger ihop, målet ligger några hållplatser bort och t
   }
   assert.ok(byten > 0 && vand > 0 && kvar > 0, `byt ${byten}, vänd ${vand}, kvar ${kvar}`);
   assert.equal(uppdragTips({ uppdrag:{ mal:"Valand" }, resa:{ pos:"Valand", ref:"5", rikt:1 } }).kvar, 0);
+});
+
+test("Talraden: störst och minst, luckor och baklänges på ett eget spår som öppnas efter Skogen", () => {
+  const banor = LEVELS.filter(L => L.spar === "talrad");
+  assert.deepEqual(banor.map(L => L.id), [38, 39, 40, 41, 42]);
+  assert.equal(TALRAD_START, 38); assert.equal(TALRAD_MAX, 42);
+  assert.equal(REGIONS[9].spar, "talrad");
+  const p = { unlocked: 5, stars: {}, best: {} };
+  assert.ok(arLast(p, levelById(38)), "stängt innan Skogen är klar");
+  assert.equal(sidosparEfter(p, levelById(6)), null, "utan stjärna på bana 6 öppnas inget");
+  p.stars[6] = 1;
+  assert.equal(sidosparEfter(p, levelById(6)).id, 38, "Skogen klar öppnar Talraden");
+  assert.ok(!arLast(p, levelById(38)) && arLast(p, levelById(39)));
+  assert.equal(oppnaEfter(p, levelById(38)).id, 39);
+  assert.equal(oppnaEfter(p, levelById(38)), null, "bara den senast öppnade banan öppnar nästa");
+  for(const id of [39, 40, 41]) assert.equal(oppnaEfter(p, levelById(id)).id, id + 1);
+  assert.equal(oppnaEfter(p, levelById(42)), null);
+  assert.equal(nastaBana(levelById(42)), null);
+  assert.equal(nastaBana(levelById(41)).id, 42);
+  assert.equal(p.unlocked, 5, "huvudspåret rörs inte");
+  assert.equal(synligaBanor(p).length, LEVELS.length);
+  /* Störst eller minst: lika många olika tal som rutor, och rutorna är talen */
+  let omkastade = 0;
+  for(let i = 0; i < 300; i++){
+    const L = i % 2 ? levelById(38) : levelById(41);
+    const q = MAKE.jamfor(L);
+    assert.equal(q.tal.length, L.opts);
+    assert.equal(new Set(q.tal).size, q.tal.length, "talen ska vara olika");
+    assert.ok(Math.max(...q.tal) <= L.max && Math.min(...q.tal) >= 1);
+    assert.equal(q.answer, q.storst ? Math.max(...q.tal) : Math.min(...q.tal));
+    assert.deepEqual(makeOptions(q, L.opts).slice().sort((a, b) => a - b), q.tal.slice().sort((a, b) => a - b));
+    if(L.id === 41 && q.tal.some(v => v >= 10 && v % 10 && q.tal.includes((v % 10) * 10 + Math.floor(v / 10)))) omkastade++;
+    for(const v of q.tal) if(v !== q.answer) assert.match(varforFel(q, v), /större|mindre/);
+  }
+  assert.ok(omkastade > 30, `omkastade siffror ska dyka upp, kom ${omkastade} gånger av 150`);
+  /* Luckan sitter mitt i raden, och Baklänges går nedåt */
+  for(let i = 0; i < 200; i++){
+    const q = MAKE.lucka(levelById(39));
+    assert.ok(q.lucka === 1 || q.lucka === 2);
+    assert.equal(q.answer, q.tal[q.lucka]);
+    for(let k = 1; k < 4; k++) assert.equal(q.tal[k] - q.tal[k - 1], 1);
+    assert.ok(q.tal[0] >= 1 && q.tal[3] <= 30);
+    const b = MAKE.serie(levelById(40));
+    assert.equal(b.steg, 1); assert.ok(!b.upp);
+    assert.equal(b.answer, b.tal[2] - 1);
+    assert.ok(b.answer >= 0 && b.tal[0] <= 30);
+  }
+  const ner = Array.from({ length: 60 }, () => MAKE.lucka(levelById(40)));
+  assert.ok(ner.some(q => q.ner) && ner.some(q => !q.ner));
+  assert.ok(ner.every(q => q.ner ? q.tal[0] > q.tal[1] : q.tal[0] < q.tal[1]));
+  /* Sagorna på Talraden är vanliga plus- och minussagor */
+  const s = gorSaga(levelById(41), { stopp:"Valand", ref:"5", mot:"Länsmansgården" });
+  assert.ok(["add", "sub"].includes(s.op));
+});
+
+test("så går det: bokför per sort och per dag, trettio dagar bakåt, aldrig en timme i taget", () => {
+  const p = { name:"Adam" };
+  statSvar(p, { kind:"add", a:3, b:4, answer:7 }, "forsta", "2026-09-01");
+  statSvar(p, { kind:"add", a:8, b:9, answer:17 }, "visat", "2026-09-01");
+  statSvar(p, { kind:"saga", op:"sub", a:8, b:3, answer:5 }, "hjalp", "2026-09-02");
+  statSvar(p, { kind:"double", a:4, b:4, answer:8 }, "forsta", "2026-09-02");
+  assert.deepEqual(p.stat.sorter.add, { tal:2, forsta:1, visat:1 });
+  assert.deepEqual(p.stat.sorter.saga, { tal:1, forsta:0, visat:0 });
+  assert.deepEqual(p.stat.sorter.double, { tal:1, forsta:1, visat:0 });
+  assert.deepEqual(p.stat.dagar["2026-09-01"], { tal:2, forsta:1, sek:0 });
+  assert.deepEqual(p.stat.dagar["2026-09-02"], { tal:2, forsta:1, sek:0 });
+  statTid(p, 90, "2026-09-02");
+  statTid(p, 99999, "2026-09-02");
+  assert.equal(p.stat.dagar["2026-09-02"].sek, 90 + 15 * 60, "en bortglömd flik räknas som högst en kvart");
+  statTid(p, -5, "2026-09-02"); statTid(p, NaN, "2026-09-02");
+  assert.equal(p.stat.dagar["2026-09-02"].sek, 90 + 15 * 60);
+  for(let i = 1; i <= 40; i++) statTid(p, 10, "2026-07-" + String(i).padStart(2, "0"));
+  assert.equal(Object.keys(p.stat.dagar).length, 30);
+  assert.ok(p.stat.dagar["2026-09-02"] && p.stat.dagar["2026-09-01"], "de senaste dagarna finns kvar");
+  assert.ok(!p.stat.dagar["2026-07-01"], "de äldsta rensas");
+  assert.equal(datumNyckel(new Date(2026, 8, 2)), "2026-09-02");
 });

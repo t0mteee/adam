@@ -15,7 +15,7 @@ stjärnor i Räknelandet och besökta hållplatser i spårvagnen.
 
 ### Räknelandet
 
-Trettiosju banor genom nio områden, som var och ett ser ut som sitt namn –
+Fyrtiotvå banor genom tio områden, som var och ett ser ut som sitt namn –
 blommor på Ängen, granar i Skogen, kristaller och droppstenar i Grottan,
 snöklädda toppar på Berget, moln högre upp, spårvagnar och
 kontaktledningsstolpar i Vagnhallen, stoppbockar och stationsklockor vid
@@ -23,13 +23,16 @@ kontaktledningsstolpar i Vagnhallen, stoppbockar och stationsklockor vid
 eller genom fyra rätt av fem på en hållplats i spårvagnsvärlden – och klarade
 banor går att spela om.
 
-Stigen har tre spår. **Huvudspåret** går från Ängen till Ändstationen, 27 banor,
+Stigen har fyra spår. **Huvudspåret** går från Ängen till Ändstationen, 27 banor,
 och det är där svårigheten stiger. **Sidospåret** Stjärnhimlen – räkna till 25,
 50, 75 och 100 i tioramar – öppnas när Berget är klart och spärrar ingenting.
 Så slipper den som kan räkna till hundra i huvudet räkna hundra prickar innan
 Vagnhallen öppnas, och den som älskar att räkna prickar kan göra det när som
 helst. **Sidospåret** Gånger och delat öppnas när Mästarprovet är klarat och
 går att stänga av i inställningarna, för den som vill vänta med tabellerna.
+**Sidospåret** Talraden – störst och minst, luckor i raden, baklänges – öppnas
+redan när Skogen är klar, för det är grundläggande och passar den som gillar
+siffror långt före tabellerna.
 
 | Område | Banor | Innehåll |
 | --- | --- | --- |
@@ -42,6 +45,7 @@ går att stänga av i inställningarna, för den som vill vänta med tabellerna.
 | Ändstationen | 24–27 | Allt till 100, allt till 200, tre tal i rad, fyra tal i rad |
 | Stjärnhimlen (sidospår) | 28–31 | Räkna till 25, 50, 75 och 100 – i tioramar, tior och ental |
 | Gånger och delat (sidospår) | 32–37 | Två gånger, fem och tio gånger, delat med två, delat med fem och tio, tre och fyra gånger, tabellprovet |
+| Talraden (sidospår) | 38–42 | Störst eller minst, vad fattas i raden, baklänges, störst och minst till 100, Talradens prov |
 
 Från Berget och uppåt har varje bana ett minsta värde på det mindre talet, så
 att 15 + 1 och 16 − 15 inte dyker upp där talen annars slutat vara små: 3 på
@@ -132,12 +136,25 @@ ställer frågan tvärtom: *7 tior + 7 ental = ?* Ramarna står kvar som stöd, 
 bland svarsalternativen ligger de vanligaste feltankarna – siffrorna omkastade
 (77 → 67) och siffrorna hopräknade (7 + 7 = 14).
 
+### Talraden
+
+Det tredje sidospåret handlar om talens ordning, det som saknades helt: *Vilket
+tal är störst: 11, 17, 8 eller 12?*, *Vad fattas: 13, 14, ?, 16* och att räkna
+baklänges: *20, 19, 18, ?* Störst eller minst har lika många rutor som tal –
+det är talen själva man väljer mellan – och ritas som staplar där det största
+talet är den högsta, till och med 20. Till 100 försvinner staplarna och det
+smyger ofta in ett par med omkastade siffror, 47 och 74, för det är där man
+måste titta på tiorna först. Felsvaren förklaras som på de andra banorna: *74
+är större än 47!*, *Tvärtom! Tiorna först.*, *Det talet står redan där!* Raden
+ritas som rutor med luckan markerad. Spåret öppnas när Skogen är klar och
+spärrar ingenting.
+
 ### Poäng, stjärnor och märken
 
 Rätt på första försöket ger 10 guldmynt; tre rätt i rad dubblar och sex rätt i
 rad tredubblar. Rätt efter ett feltryck ger 5 mynt – aldrig minuspoäng. Efter
 varje omgång delas upp till tre stjärnor ut (4 rätt direkt ger en, 7 ger två, 9
-ger tre), och minst en stjärna öppnar nästa bana. Totalt finns 111 stjärnor (93 med gånger och delat avstängt) och 29
+ger tre), och minst en stjärna öppnar nästa bana. Totalt finns 126 stjärnor (108 med gånger och delat avstängt) och 30
 märken att samla, från *Första stjärnan* och *Ändstation* till *Hela landet*,
 *Klurig* och *Tio uppdrag*.
 
@@ -154,6 +171,20 @@ till och med Grottan, och när svaret visas efter sista felet på vilken bana so
 helst. De är billiga med flit, så
 de hinner köpas medan de gör nytta. Köpen hör till spelaren, precis som stjärnor
 och märken.
+
+## Så går det – sidan för föräldern
+
+Under kugghjulet finns *Så går det för Adam*. Spelet för bok per sort och per
+dag: hur många tal, hur många rätt direkt, hur många som fick visas, och hur
+länge det spelades – tiden räknas bara på spelskärmen och en bortglömd flik
+räknas som högst en kvart. Sidan visar dagens minuter och tal, de senaste sju
+dagarna som staplar, varje sort med andel rätt på första försöket (svagast
+överst, i rött, gult och grönt), rekorden – längsta svit, banor, hållplatser,
+kluringar, uppdrag, stjärnor – och kluringarna som väntar, i klartext: *14 +
+6*, *störst av 47 · 74 · 38 · 91*. Överst står vad som är värt att sitta
+bredvid med just nu: sorter med minst fem tal och under sjuttio procent rätt
+direkt. Dagarna sparas trettio dagar bakåt, sorterna för alltid; allt ligger
+kvar i webbläsaren precis som resten av sparfilen.
 
 ## Spårvagn — Göteborgs linjenät
 
@@ -369,7 +400,7 @@ hack i nätet släcker inte resten av resan.
 
 ## Tester
 
-`node --test` kör tjugofyra tester som plockar ut spelets rena funktioner direkt
+`node --test` kör tjugosex tester som plockar ut spelets rena funktioner direkt
 ur `index.html`, så att de aldrig testar en kopia som glidit isär från källan. De
 täcker att uppgifterna håller sig inom banans tal och aldrig blir negativa, att
 rätt svar alltid finns bland alternativen och att varje felsvar har en

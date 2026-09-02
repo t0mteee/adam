@@ -39,6 +39,7 @@ const kalla = [
   block(/function sidoOppen\(p\)\{[\s\S]*?\nfunction nextLevelId\(p\)\{[\s\S]*?\n\}/, "upplåsningen"),
   block(/function blandatLevel\(p\)\{[\s\S]*?\n\}/, "blandatLevel"),
   block(/const SAGOR = \{[\s\S]*?\n\};\n[\s\S]*?function gorSaga\(L, plats\)\{[\s\S]*?\nfunction blandaInSaga\(p, L, queue, plats\)\{[\s\S]*?\n\}/, "räknesagorna"),
+  block(/const datumNyckel = [^\n]*\nconst idag = [^\n]*\nfunction statAv\(p\)\{[\s\S]*?\nfunction ansaDagar\(s\)\{[\s\S]*?\n\}/, "så går det"),
   block(/const TRAM_LINES = \[[\s\S]*?\n\];/, "TRAM_LINES"),
   block(/const lineByRef = [^\n]*/, "lineByRef"),
   block(/const linjerVid = [^\n]*\n[\s\S]*?\nfunction uppdragTips\(p\)\{[\s\S]*?\n\}/, "nätet och uppdragen"),
@@ -51,9 +52,9 @@ const kalla = [
 
 const modul = await import(
   "data:text/javascript;base64," +
-  Buffer.from(kalla + "\nexport { REGIONS, LEVELS, MAKE, SHOWN, buildRound, makeOptions, distraktorer, varforFel, laggKluring, kluringUtfall, kluringarFor, blandaInKluring, SAGOR, gorSaga, sagoNiva, blandaInSaga, natAvstand, valjUppdrag, uppdragTips, avgangar, ALLA_STOPP, linjerVid, besoktaAlla, lineByRef, qNyckel, TRAM_LINES, STOP_PHOTOS, TRAM_PHOTOS, vagnFoto, THINGS, BAS_SAKER, BUTIK, TILLBEHOR, sakerFor, skillNu, justeraSkill, nivaForSkill, buildStigandeRound, HUVUD_MAX, SIDO_START, SIDO_MAX, GANGER_START, GANGER_MAX, huvudspar, arLast, oppnaEfter, sidoOppen, gangerOppen, sidosparEfter, synligaBanor, maxStars, nastaBana, blandatLevel, levelById };").toString("base64")
+  Buffer.from(kalla + "\nexport { REGIONS, LEVELS, MAKE, SHOWN, buildRound, makeOptions, distraktorer, varforFel, laggKluring, kluringUtfall, kluringarFor, blandaInKluring, SAGOR, gorSaga, sagoNiva, blandaInSaga, natAvstand, valjUppdrag, uppdragTips, avgangar, ALLA_STOPP, linjerVid, besoktaAlla, lineByRef, qNyckel, TRAM_LINES, STOP_PHOTOS, TRAM_PHOTOS, vagnFoto, THINGS, BAS_SAKER, BUTIK, TILLBEHOR, sakerFor, skillNu, justeraSkill, nivaForSkill, buildStigandeRound, HUVUD_MAX, SIDO_START, SIDO_MAX, GANGER_START, GANGER_MAX, TALRAD_START, TALRAD_MAX, huvudspar, arLast, oppnaEfter, sidoOppen, gangerOppen, talradOppen, sidosparEfter, datumNyckel, statAv, statSvar, statTid, synligaBanor, maxStars, nastaBana, blandatLevel, levelById };").toString("base64")
 );
 export const { REGIONS, LEVELS, MAKE, SHOWN, buildRound, makeOptions, distraktorer, varforFel, laggKluring, kluringUtfall, kluringarFor, blandaInKluring, SAGOR, gorSaga, sagoNiva, blandaInSaga, natAvstand, valjUppdrag, uppdragTips, avgangar, ALLA_STOPP, linjerVid, besoktaAlla, lineByRef, qNyckel, TRAM_LINES, STOP_PHOTOS, TRAM_PHOTOS, vagnFoto,
   THINGS, BAS_SAKER, BUTIK, TILLBEHOR, sakerFor,
   skillNu, justeraSkill, nivaForSkill, buildStigandeRound,
-  HUVUD_MAX, SIDO_START, SIDO_MAX, GANGER_START, GANGER_MAX, huvudspar, arLast, oppnaEfter, sidoOppen, gangerOppen, sidosparEfter, synligaBanor, maxStars, nastaBana, blandatLevel, levelById } = modul;
+  HUVUD_MAX, SIDO_START, SIDO_MAX, GANGER_START, GANGER_MAX, TALRAD_START, TALRAD_MAX, huvudspar, arLast, oppnaEfter, sidoOppen, gangerOppen, talradOppen, sidosparEfter, datumNyckel, statAv, statSvar, statTid, synligaBanor, maxStars, nastaBana, blandatLevel, levelById } = modul;

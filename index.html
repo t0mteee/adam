@@ -304,6 +304,7 @@ h1, h2, h3{ font-family: "Baloo 2", "Baloo 2 Fallback", system-ui, sans-serif; f
   font-size: .72rem; font-weight: 800; color: var(--paper);
   background: rgba(46,26,102,.55); border-radius: 999px; padding: 3px 12px; z-index: 2;
 }
+.sidospar-text.vanster{ right: auto; left: 12px; }
 .region-name{
   position: absolute; left: 50%; transform: translateX(-50%);
   font-family: "Baloo 2", system-ui, sans-serif; font-weight: 800; font-size: var(--t-sm);
@@ -438,6 +439,29 @@ h1, h2, h3{ font-family: "Baloo 2", "Baloo 2 Fallback", system-ui, sans-serif; f
 .danger{ background: var(--melon); color: #fff; }
 
 /* ── Märken ─────────────────────────────── */
+/* Så går det: en stapel per dag, en rad per sort */
+.stat-tips{ margin: 0 0 12px; padding: 8px 12px; background: #FFF3CF; border: 2px dashed var(--sun-deep); border-radius: 14px; font-size: var(--t-sm); }
+.stat-rubrik{ font-family: "Baloo 2", system-ui, sans-serif; font-weight: 800; font-size: var(--t-md); margin: 10px 0 6px; }
+.stat-vecka{ display: flex; align-items: flex-end; gap: 6px; height: 92px; }
+.stat-dag{ flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; min-width: 0; }
+.stat-dag i{ display: block; width: 100%; min-height: 5px; background: var(--sky); border: 2.5px solid var(--ink); border-radius: 8px 8px 3px 3px; box-sizing: border-box; }
+.stat-dag.idag i{ background: var(--sun); }
+.stat-dag b{ font-family: "Lilita One", system-ui, sans-serif; font-weight: 400; font-size: var(--t-sm); margin-top: 2px; line-height: 1; }
+.stat-dag small{ font-size: var(--t-xs); color: var(--ink-2); }
+.stat-sort{ display: grid; grid-template-columns: 1fr 88px 44px; align-items: center; column-gap: 10px; padding: 5px 0; border-bottom: 1px dashed rgba(46,26,102,.14); }
+.stat-sort .stat-namn{ display: flex; flex-direction: column; font-size: var(--t-sm); min-width: 0; }
+.stat-sort .stat-namn small{ font-size: var(--t-xs); color: var(--ink-2); }
+.stat-sort .line-bar{ margin-top: 0; }
+.stat-sort .line-bar .svag{ background: var(--melon); }
+.stat-sort .line-bar .mellan{ background: var(--sun); }
+.stat-sort .line-bar .stark{ background: var(--grass); }
+.stat-sort > b{ font-family: "Lilita One", system-ui, sans-serif; font-weight: 400; text-align: right; font-variant-numeric: tabular-nums; }
+.stat-rekord{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.stat-rekord span{ display: flex; flex-direction: column; align-items: center; background: var(--paper-2); border: 2.5px solid var(--ink); border-radius: 14px; padding: 7px 4px 5px; }
+.stat-rekord b{ font-family: "Lilita One", system-ui, sans-serif; font-weight: 400; font-size: var(--t-lg); line-height: 1; }
+.stat-rekord small{ font-size: var(--t-xs); color: var(--ink-2); text-align: center; line-height: 1.2; margin-top: 3px; }
+.stat-kluringar{ display: flex; flex-wrap: wrap; gap: 6px; margin: 0; }
+.stat-kluringar span{ background: var(--paper-2); border: 2px solid var(--ink); border-radius: 999px; padding: 2px 10px; font-size: var(--t-sm); font-variant-numeric: tabular-nums; }
 .badge-grid{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .badge{
   background: var(--paper-2); border: var(--stroke); border-radius: 18px;
@@ -533,6 +557,17 @@ h1, h2, h3{ font-family: "Baloo 2", "Baloo 2 Fallback", system-ui, sans-serif; f
 .q-equation .op{ color: var(--grape); padding: 0 .06em; }
 .q-equation .slot{ color: var(--melon); }
 .q-equation .facit{ color: var(--grass-deep); animation: right-pop .55s cubic-bezier(.3,1.6,.5,1); display: inline-block; }
+/* Talraden: raden som rutor med luckan markerad, och staplar att jämföra */
+.q-equation .rad{ display: inline-flex; gap: 6px; }
+.q-equation .ruta{
+  display: inline-grid; place-items: center; min-width: 1.9em; padding: 0 .25em;
+  border: 3px solid var(--ink); border-radius: 12px; background: var(--paper-2); line-height: 1.4;
+}
+.q-equation .tal{ padding: 0 .04em; }
+.q-visual .staplar{ display: flex; align-items: flex-end; gap: 14px; height: 96px; }
+.q-visual .stapel{ display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; width: 40px; }
+.q-visual .stapel i{ display: block; width: 100%; min-height: 8px; background: var(--sky); border: 3px solid var(--ink); border-radius: 8px 8px 4px 4px; box-sizing: border-box; }
+.q-visual .stapel b{ font-family: "Lilita One", system-ui, sans-serif; font-weight: 400; font-size: 1.05rem; margin-top: 3px; }
 .q-visual{ display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; margin: 6px 0 10px; }
 .q-visual .grp{ display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; max-width: 42%; }
 .q-visual .grp.hog{ max-width: 100%; padding: 4px 6px; border: 2px dashed rgba(46,26,102,.35); border-radius: 12px; }
@@ -1175,7 +1210,7 @@ const pick = (arr) => arr[rnd(arr.length)];
 const INK = "#2E1A66";
 /* Syns under Inställningar, så man kan se vilken version telefonen kör.
    Höjs tillsammans med VERSION i sw.js. */
-const SPELVERSION = "16";
+const SPELVERSION = "17";
 function shuffle(a){ for(let i = a.length - 1; i > 0; i--){ const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
 function store(key, val){
@@ -1412,7 +1447,11 @@ const REGIONS = [
   { name:"Stjärnhimlen", color:"#8E7BFF", tint:"#2F2A63", sidospar:true },
   /* Sidospår två: gånger och delat med. Öppnas efter Mästarprovet, går att
      stänga av i inställningarna för den som vill vänta med tabellerna. */
-  { name:"Gånger och delat", color:"#0E9AA7", tint:"#D4F1F4", sidospar:true, spar:"ganger" }
+  { name:"Gånger och delat", color:"#0E9AA7", tint:"#D4F1F4", sidospar:true, spar:"ganger" },
+  /* Sidospår tre: Talraden. Störst och minst, luckor i raden, baklänges.
+     Öppnas när Skogen är klar – det är grundläggande och passar den som
+     gillar siffror, långt före tabellerna. */
+  { name:"Talraden", color:"#D6409B", tint:"#FBDDEE", sidospar:true, spar:"talrad" }
 ];
 
 /* Varje bana är en rad. Plus- och minustalen läser sina ramar härifrån:
@@ -1472,10 +1511,18 @@ const LEVELS = [
   { id:34, r:8, spar:"ganger", name:"Delat med två",        desc:"8 / 2 · 14 / 2",      kinds:["div"], tabeller:[2],     max:20,  opts:4 },
   { id:35, r:8, spar:"ganger", name:"Delat med fem och tio", desc:"20 / 5 · 70 / 10",   kinds:["div"], tabeller:[5, 10], max:100, opts:6, utanHjalp:true },
   { id:36, r:8, spar:"ganger", name:"Tre och fyra gånger",  desc:"3 × 6 · 24 / 4",      kinds:["mul","div"], tabeller:[3, 4], max:40, opts:6, utanHjalp:true },
-  { id:37, r:8, spar:"ganger", name:"Tabellprovet",         desc:"Alla tabellerna",     pool:[32,33,34,35,36], opts:6, utanHjalp:true }
+  { id:37, r:8, spar:"ganger", name:"Tabellprovet",         desc:"Alla tabellerna",     pool:[32,33,34,35,36], opts:6, utanHjalp:true },
+  /* Talraden – störst och minst, vad som fattas i raden, baklänges. Störst
+     eller minst har lika många rutor som tal: det är talen själva man
+     väljer mellan, så rutorna är alltid fyra. */
+  { id:38, r:9, spar:"talrad", name:"Störst eller minst",   desc:"7 · 12 · 9 · 3 – vilket är störst?", kinds:["jamfor"], max:20, opts:4 },
+  { id:39, r:9, spar:"talrad", name:"Vad fattas i raden",   desc:"12 · 13 · ? · 15",  kinds:["lucka"], max:30, opts:4 },
+  { id:40, r:9, spar:"talrad", name:"Baklänges",            desc:"20 · 19 · 18 · ?",  kinds:["serie","lucka"], steg:[1], ner:true, max:30, opts:4 },
+  { id:41, r:9, spar:"talrad", name:"Störst och minst till 100", desc:"47 · 74 · 38 · 91", kinds:["jamfor"], max:100, opts:4, utanHjalp:true },
+  { id:42, r:9, spar:"talrad", name:"Talradens prov",       desc:"Allt på Talraden",  pool:[38,39,40,41], opts:4, utanHjalp:true }
 ];
-/* Huvudspåret är 1–27, sidospåret Stjärnhimlen 28–31, sidospåret Gånger 32–37 */
-const HUVUD_MAX = 27, SIDO_START = 28, SIDO_MAX = 31, GANGER_START = 32, GANGER_MAX = 37;
+/* Huvudspåret är 1–27, sidospåren Stjärnhimlen 28–31, Gånger 32–37 och Talraden 38–42 */
+const HUVUD_MAX = 27, SIDO_START = 28, SIDO_MAX = 31, GANGER_START = 32, GANGER_MAX = 37, TALRAD_START = 38, TALRAD_MAX = 42;
 const huvudspar = (L) => L.id < SIDO_START;
 const gangerPa = (p) => !p || !p.settings || p.settings.ganger !== false;
 /* Banorna som finns på kartan för den här spelaren */
@@ -1554,7 +1601,7 @@ const MAKE = {
                   const a = ri(1, m), b = ri(1, m), c = ri(1, m);
                   return { kind:"add3", a, b, c, answer:a + b + c }; },
   /* Talföljd: tre tal syns, det fjärde ska fram. Steget kan gå åt båda håll. */
-  serie:   L => { const steg = pick([2, 5, 10]), upp = rnd(2) === 0, max = L.max || 100;
+  serie:   L => { const steg = pick(L.steg || [2, 5, 10]), upp = L.ner ? false : rnd(2) === 0, max = L.max || 100;
                   const start = upp
                     ? ri(1, Math.max(1, Math.floor((max - steg * 3) / steg))) * steg
                     : ri(3, Math.floor(max / steg)) * steg;
@@ -1589,14 +1636,34 @@ const MAKE = {
                   }
                   shuffle(tal);
                   return { kind:"flera", tal, a:tal[0], b:tal[1], c:tal[2],
-                           sum:tal[3], answer:sum }; }
+                           sum:tal[3], answer:sum }; },
+  /* Störst eller minst: lika många tal som rutor, alla olika. Upp till
+     hundra smyger ofta ett par med omkastade siffror in – 47 och 74 – för
+     det är där man måste titta på tiorna först. */
+  jamfor:  L => { const n = L.opts || 4, max = L.max || 20, tal = [];
+                  if(max >= 99 && rnd(2) === 0){
+                    const tior = ri(1, 9), ental = ri(1, 9);
+                    if(tior !== ental) tal.push(tior * 10 + ental, ental * 10 + tior);
+                  }
+                  while(tal.length < n){ const v = ri(1, max); if(!tal.includes(v)) tal.push(v); }
+                  shuffle(tal);
+                  const storst = rnd(2) === 0;
+                  return { kind:"jamfor", tal, storst, answer: storst ? Math.max(...tal) : Math.min(...tal),
+                           a:tal[0], b:tal[1], c:tal[2], sum:tal[3] }; },
+  /* En lucka i raden: fyra tal i följd, ett saknas mitt i. Uppåt – eller
+     oftast nedåt på Baklänges. */
+  lucka:   L => { const max = L.max || 30, ner = !!L.ner && rnd(3) > 0;
+                  const start = ri(1, max - 3);
+                  const tal = [0, 1, 2, 3].map(i => ner ? start + 3 - i : start + i);
+                  const lucka = ri(1, 2);
+                  return { kind:"lucka", tal, lucka, ner, answer: tal[lucka], a:tal[0], b:tal[3], c:lucka }; }
 };
 
 /* Hur uppgiften ser ut på skärmen. "Dubbelt" ritas som ett plustal och
    "tiokompisar" som ett fattas-tal, så de räknas som samma sort här. */
 const SHOWN = { count:"count", tiotal:"tiotal", add:"add", sub:"sub", missing:"missing",
                 double:"add", ten:"missing", add3:"add3", serie:"serie", mul:"mul",
-                half:"half", flera:"flera", div:"div", saga:"saga" };
+                half:"half", flera:"flera", div:"div", saga:"saga", jamfor:"jamfor", lucka:"lucka" };
 
 /* ── Räknesagor ─────────────────────────────────────────────────────────
    På spårvagnen är en av uppgifterna vid en hållplats en liten saga om
@@ -1708,7 +1775,7 @@ function buildRound(L, count, undvik){
   for(const kind of order){
     let q = MAKE[kind](L);
     for(let t = 0; t < 20; t++){
-      const key = q.kind + ":" + [q.count, q.a, q.b, q.c, q.sum].join("_");
+      const key = qNyckel(q);
       if(!seen.has(key)){ seen.add(key); break; }
       /* Små banor har färre uppgifter än en omgång – då börjar vi om varvet */
       if(t === 12) seen = new Set();
@@ -1721,7 +1788,7 @@ function buildRound(L, count, undvik){
   return out;
 }
 
-const qNyckel = (q) => q.kind + ":" + [q.count, q.a, q.b, q.c, q.sum].join("_");
+const qNyckel = (q) => q.kind + ":" + [q.count, q.a, q.b, q.c, q.sum, q.storst].join("_");
 
 /* ── Kluriga tal ────────────────────────────────────────────────────────
    Tal som inte gick på första försöket sparas hos spelaren och kommer
@@ -1771,6 +1838,45 @@ function blandaInKluring(p, L, queue){
   return queue;
 }
 
+/* ── Så går det ─────────────────────────────────────────────────────────
+   Spelet för bok, per sort och per dag: hur många tal, hur många rätt
+   direkt, hur många som fick visas, och hur länge det spelades. Det är
+   vad en förälder behöver för att veta vad man ska sitta bredvid med.
+   Dagarna sparas trettio dagar bakåt, sorterna för alltid. */
+const datumNyckel = (d) => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+const idag = () => datumNyckel(new Date());
+function statAv(p){
+  p.stat = p.stat || {};
+  p.stat.sorter = p.stat.sorter || {};
+  p.stat.dagar = p.stat.dagar || {};
+  return p.stat;
+}
+/* utfall: "forsta" (rätt direkt), "hjalp" (rätt efter fel) eller "visat" */
+function statSvar(p, q, utfall, datum){
+  if(!p || !q) return;
+  const s = statAv(p);
+  const r = s.sorter[q.kind] = s.sorter[q.kind] || { tal:0, forsta:0, visat:0 };
+  r.tal++;
+  if(utfall === "forsta") r.forsta++;
+  if(utfall === "visat") r.visat++;
+  const d = s.dagar[datum || idag()] = s.dagar[datum || idag()] || { tal:0, forsta:0, sek:0 };
+  d.tal++;
+  if(utfall === "forsta") d.forsta++;
+  ansaDagar(s);
+}
+/* Speltid i sekunder. En bortglömd flik får inte räknas som en timmes spel. */
+function statTid(p, sek, datum){
+  if(!p || !(sek > 0)) return;
+  const s = statAv(p);
+  const d = s.dagar[datum || idag()] = s.dagar[datum || idag()] || { tal:0, forsta:0, sek:0 };
+  d.sek += Math.min(sek, 15 * 60);
+  ansaDagar(s);
+}
+function ansaDagar(s){
+  const nycklar = Object.keys(s.dagar).sort();
+  while(nycklar.length > 30) delete s.dagar[nycklar.shift()];
+}
+
 /* ═══════════════════════════════════════════
    Delmål
    ═══════════════════════════════════════════ */
@@ -1790,6 +1896,7 @@ const BADGES = [
   { id:"regA",    name:"Ändstationen",     desc:"Alla banor vid Ändstationen", art:"spar", test:p => regionDone(p, 6) },
   { id:"regS",    name:"Stjärnhimlen klar", desc:"Alla räknebanor på sidospåret", art:"star", test:p => regionDone(p, 7) },
   { id:"regG",    name:"Tabellerna klara", desc:"Alla banor i Gånger och delat", art:"gem", test:p => regionDone(p, 8) },
+  { id:"regT",    name:"Talraden klar",   desc:"Alla banor på Talraden",  art:"bolt", test:p => regionDone(p, 9) },
   { id:"perfect", name:"Felfritt",        desc:"En bana helt utan fel",  art:"medal", test:p => (p.perfect || 0) >= 1 },
   { id:"streak10",name:"Tio i rad",       desc:"Tio rätt i rad",         art:"bolt",  test:p => (p.bestStreak || 0) >= 10 },
   { id:"coin300", name:"300 mynt",        desc:"Samla 300 guldmynt",     art:"coin",  test:p => p.coins >= 300 },
@@ -2425,17 +2532,23 @@ function gangerOppen(p){
   if(!p.gangerUpp && ((p.stars || {})[15] || 0) > 0) p.gangerUpp = GANGER_START;
   return p.gangerUpp || 0;
 }
+/* Talraden öppnas när Skogen är klar */
+function talradOppen(p){
+  if(!p.talradUpp && ((p.stars || {})[6] || 0) > 0) p.talradUpp = TALRAD_START;
+  return p.talradUpp || 0;
+}
 const sparAv = (L) => L.spar || (huvudspar(L) ? "huvud" : "rakna");
 function arLast(p, L){
   const spar = sparAv(L);
   return spar === "huvud" ? L.id > p.unlocked
        : spar === "rakna" ? L.id > sidoOppen(p)
+       : spar === "talrad" ? L.id > talradOppen(p)
        : L.id > gangerOppen(p);
 }
 /* Nästa bana i samma spår, eller null när spåret är slut */
 function nastaBana(L){
   const spar = sparAv(L);
-  const tak = spar === "huvud" ? HUVUD_MAX : spar === "rakna" ? SIDO_MAX : GANGER_MAX;
+  const tak = spar === "huvud" ? HUVUD_MAX : spar === "rakna" ? SIDO_MAX : spar === "talrad" ? TALRAD_MAX : GANGER_MAX;
   return L.id < tak ? levelById(L.id + 1) : null;
 }
 /* Öppnar nästa bana om L var den senast öppnade i sitt spår. Ger banan som
@@ -2446,15 +2559,18 @@ function oppnaEfter(p, L){
     if(L.id === p.unlocked && L.id < HUVUD_MAX){ p.unlocked = L.id + 1; return levelById(p.unlocked); }
   }else if(spar === "rakna"){
     if(L.id === sidoOppen(p) && L.id < SIDO_MAX){ p.sidoUpp = L.id + 1; return levelById(p.sidoUpp); }
+  }else if(spar === "talrad"){
+    if(L.id === talradOppen(p) && L.id < TALRAD_MAX){ p.talradUpp = L.id + 1; return levelById(p.talradUpp); }
   }else{
     if(L.id === gangerOppen(p) && L.id < GANGER_MAX){ p.gangerUpp = L.id + 1; return levelById(p.gangerUpp); }
   }
   return null;
 }
-/* Ett klarat prov kan öppna ett sidospår – det räknas också som en ny bana */
+/* En klarad bana kan öppna ett sidospår – det räknas också som en ny bana */
 function sidosparEfter(p, L){
-  if(L.id === 12 && !p.sidoUpp) return levelById(sidoOppen(p));
-  if(L.id === 15 && !p.gangerUpp && gangerPa(p)) return levelById(gangerOppen(p));
+  if(L.id === 6 && !p.talradUpp) return levelById(talradOppen(p)) || null;
+  if(L.id === 12 && !p.sidoUpp) return levelById(sidoOppen(p)) || null;
+  if(L.id === 15 && !p.gangerUpp && gangerPa(p)) return levelById(gangerOppen(p)) || null;
   return null;
 }
 function nextLevelId(p){
@@ -2477,8 +2593,16 @@ function later(fn, ms){
 function clearTimers(){ timers.forEach(clearTimeout); timers = []; }
 
 const SCREENS = ["profiles", "create", "map", "lines", "trip", "game", "result"];
+let aktivSkarm = null, spelStart = null;
 function show(name){
   clearTimers();
+  /* Speltiden bokförs när spelskärmen lämnas, vart man än går */
+  if(aktivSkarm === "game" && name !== "game" && spelStart && P()){
+    statTid(P(), (Date.now() - spelStart) / 1000);
+    spelStart = null;
+    saveProfiles();
+  }
+  aktivSkarm = name;
   try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){}
   SCREENS.forEach(n => el("screen-" + n).classList.toggle("is-active", n === name));
   const kartvy = name === "map" || name === "lines";
@@ -2615,8 +2739,11 @@ function renderMap(){
     if(reg.sidospar){
       const text = reg.spar === "ganger"
         ? (gangerOppen(p) > 0 ? "Sidospår · gånger och delat med" : "Sidospår · öppnas efter Mästarprovet")
+        : reg.spar === "talrad"
+        ? (talradOppen(p) > 0 ? "Sidospår · talens ordning" : "Sidospår · öppnas efter Skogen")
         : (sidoOppen(p) > 0 ? "Sidospår · räkna när du vill" : "Sidospår · öppnas efter Berget");
-      html += `<div class="sidospar-text" style="top:${top + 34}px">${text}</div>`;
+      /* Texten står till höger, utom när spårets första bana ligger där */
+      html += `<div class="sidospar-text ${nodeX(idx[0]) > 50 ? "vanster" : ""}" style="top:${top + 34}px">${text}</div>`;
     }
   });
 
@@ -2666,6 +2793,7 @@ el("map").addEventListener("click", (e) => {
     SFX.wrong();
     speak(sparAv(L) === "rakna" && !sidoOppen(p) ? "Sidospåret öppnas när Berget är klart!"
         : sparAv(L) === "ganger" && !gangerOppen(p) ? "Gånger och delat öppnas när Mästarprovet är klart!"
+        : sparAv(L) === "talrad" && !talradOppen(p) ? "Talraden öppnas när Skogen är klar!"
         : "Den här banan är låst. Klara banan innan så öppnas den!");
     return;
   }
@@ -2758,7 +2886,10 @@ const LANDSKAP = [
   [ {a: D.mane, w:52}, {a: D.stjarna, w:26}, {a: D.planet, w:56}, {a: D.stjarna, w:34},
     {a: D.stjarna, w:22}, {a: D.planet, w:44}, {a: D.stjarna, w:30} ],
   [ {a: D.tecken("×", "#0E9AA7"), w:44}, {a: D.tecken("/", "#9061F9"), w:38}, {a: D.tecken("=", "#FF6B6B"), w:40},
-    {a: D.tecken("×", "#FFC42E"), w:34}, {a: D.tecken("/", "#57C96B"), w:46}, {a: D.tecken("×", "#FF8AD0"), w:36} ]
+    {a: D.tecken("×", "#FFC42E"), w:34}, {a: D.tecken("/", "#57C96B"), w:46}, {a: D.tecken("×", "#FF8AD0"), w:36} ],
+  /* Talraden: siffror och större-än-tecken */
+  [ {a: D.tecken("&lt;", "#D6409B"), w:40}, {a: D.tecken("7", "#FFC42E"), w:36}, {a: D.tecken("&gt;", "#9061F9"), w:40},
+    {a: D.tecken("3", "#62CDF2"), w:34}, {a: D.tecken("9", "#57C96B"), w:38}, {a: D.tecken("1", "#FF6B6B"), w:32} ]
 ];
 
 function slumpFast(n){ const x = Math.sin(n * 127.1 + 11.7) * 43758.5453; return x - Math.floor(x); }
@@ -3794,6 +3925,67 @@ function openBadges(){
     </div>`);
 }
 
+/* ── Så går det: sidan för föräldern ─────────────────────────────────── */
+const SORTNAMN = { count:"Räkna", tiotal:"Tior och ental", add:"Plus", sub:"Minus", missing:"Vad fattas",
+                   double:"Dubbelt", ten:"Tiokompisar", add3:"Tre små tal", serie:"Talföljder", mul:"Gånger",
+                   div:"Delat med", half:"Hälften", flera:"Tal i rad", saga:"Räknesagor",
+                   jamfor:"Störst och minst", lucka:"Luckor i raden" };
+const VECKODAG = ["sön", "mån", "tis", "ons", "tor", "fre", "lör"];
+/* En kluring i klartext: "14 + 6", "hälften av 30", "störst av 47 · 74" */
+function kluringText(k){
+  if(k.kind === "count" || k.kind === "tiotal") return "räkna " + k.count;
+  if(k.kind === "jamfor") return (k.storst ? "störst" : "minst") + " av " + k.tal.join(" · ");
+  const q = k.kind === "saga" ? Object.assign({}, k, { kind:k.op }) : k;
+  return equationHTML(q).replace(/<[^>]+>/g, "").replace(/\s*=\s*\?$/, "").replace(/\s+/g, " ").trim();
+}
+function openStatistik(){
+  const p = P(), s = statAv(p);
+  const veckan = [6, 5, 4, 3, 2, 1, 0].map(bak => {
+    const d = new Date(); d.setDate(d.getDate() - bak);
+    return { d, v: s.dagar[datumNyckel(d)] || { tal:0, forsta:0, sek:0 } };
+  });
+  const maxMin = Math.max(1, ...veckan.map(x => x.v.sek / 60));
+  const idagV = veckan[6].v;
+  const sorter = Object.entries(s.sorter)
+    .filter(([, r]) => r.tal >= 3)
+    .map(([k, r]) => ({ namn: SORTNAMN[k] || k, tal:r.tal, visat:r.visat, andel:r.forsta / r.tal }))
+    .sort((a, b) => a.andel - b.andel);
+  const svaga = sorter.filter(x => x.tal >= 5 && x.andel < 0.7).slice(0, 2);
+  const min = (sek) => Math.round(sek / 60);
+  openSheet(`
+    <div class="sheet-head">
+      <div><h2>Så går det</h2><p class="sheet-sub">Idag: ${min(idagV.sek)} min · ${idagV.tal} tal · ${idagV.forsta} rätt direkt</p></div>
+      ${CLOSE_BTN}
+    </div>
+    ${svaga.length ? `<p class="stat-tips">Sitt bredvid ${escapeHtml(p.name)} vid: <b>${svaga.map(x => x.namn).join("</b> och <b>")}</b></p>`
+      : sorter.length ? `<p class="stat-tips">Det går bra på alla sorter – inget att sitta bredvid med just nu.</p>` : ""}
+    <h3 class="stat-rubrik">Senaste sju dagarna</h3>
+    <div class="stat-vecka">
+      ${veckan.map(({ d, v }, i) => `<span class="stat-dag ${i === 6 ? "idag" : ""}"><i style="height:${Math.round(v.sek / 60 / maxMin * 100)}%"></i><b>${min(v.sek)}</b><small>${VECKODAG[d.getDay()]}</small></span>`).join("")}
+    </div>
+    <p class="sheet-sub" style="margin:2px 0 10px">Minuter på spelskärmen per dag</p>
+    <h3 class="stat-rubrik">Sort för sort</h3>
+    ${sorter.length ? `<div class="stat-sorter">${sorter.map(x => `
+      <div class="stat-sort">
+        <span class="stat-namn">${x.namn}<small>${x.tal} tal${x.visat ? " · " + x.visat + " visade" : ""}</small></span>
+        <span class="line-bar"><span class="${x.andel < 0.5 ? "svag" : x.andel < 0.8 ? "mellan" : "stark"}" style="width:${Math.round(x.andel * 100)}%"></span></span>
+        <b>${Math.round(x.andel * 100)}%</b>
+      </div>`).join("")}</div>
+      <p class="sheet-sub" style="margin:6px 0 10px">Andel rätt på första försöket. Sorter med färre än tre tal väntar.</p>`
+      : `<p class="sheet-sub" style="margin:0 0 10px">Inga tal räknade än – kom tillbaka efter en omgång.</p>`}
+    <h3 class="stat-rubrik">Rekord</h3>
+    <div class="stat-rekord">
+      <span><b>${p.bestStreak || 0}</b><small>rätt i rad</small></span>
+      <span><b>${p.rounds || 0}</b><small>banor spelade</small></span>
+      <span><b>${p.stopsRidden || 0}</b><small>hållplatser</small></span>
+      <span><b>${p.kluringarKlarade || 0}</b><small>kluringar klarade</small></span>
+      <span><b>${p.uppdragKlara || 0}</b><small>uppdrag klara</small></span>
+      <span><b>${totalStars(p)}</b><small>stjärnor</small></span>
+    </div>
+    ${(p.kluriga || []).length ? `<h3 class="stat-rubrik">Kluringar som väntar</h3>
+      <p class="stat-kluringar">${p.kluriga.slice().reverse().map(k => `<span>${kluringText(k)}</span>`).join("")}</p>` : ""}`);
+}
+
 /* ── Inställningar ──────────────────────── */
 function openSettings(){
   const p = P(), s = p.settings;
@@ -3840,6 +4032,7 @@ function openSettings(){
       </div>
     </div>
     <div style="display:grid;gap:8px;margin-top:14px">
+      <button class="btn" data-action="stat" type="button" style="background:#FFF3CF">Så går det för ${escapeHtml(p.name)}</button>
       <button class="btn" data-action="foton" type="button" style="background:var(--paper-2)">Bilderna och fotograferna</button>
       <button class="btn" data-action="switch" type="button" style="background:var(--sky-hi)">Byt spelare</button>
       <button class="btn danger" data-action="erase" type="button">Ta bort ${escapeHtml(p.name)}</button>
@@ -3918,6 +4111,7 @@ sheet.addEventListener("click", (e) => {
     return;
   }
 
+  if(e.target.closest('[data-action="stat"]')){ SFX.tap(); openStatistik(); return; }
   if(e.target.closest('[data-action="foton"]')){
     SFX.tap();
     const namn = Object.keys(STOP_PHOTOS).sort();
@@ -4060,6 +4254,7 @@ function startRound(niva, mode, tramRef){
   const L = typeof niva === "object" ? niva : levelById(niva);
   g.level = L; g.mode = mode; g.tram = tramRef || null;
   g.len = g.tram ? TRAM_LEN : ROUND_LEN;
+  spelStart = Date.now();
   /* På spårvagnen är varje omgång bara fem uppgifter, så vi minns de senaste
      hållplatsernas tal och undviker dem – annars känns frågorna likadana. */
   g.queue = (L.id === -1 && g.tram)
@@ -4122,6 +4317,8 @@ function bumpCoins(){
 /* ── Så visas frågan ────────────────────── */
 function speechFor(q){
   if(q.kind === "saga")    return q.text;
+  if(q.kind === "jamfor")  return `Vilket tal är ${q.storst ? "störst" : "minst"}? ${q.tal.join(", ")}`;
+  if(q.kind === "lucka")   return `Vilket tal fattas? ${q.tal.map((v, i) => i === q.lucka ? "hmm" : v).join(", ")}`;
   if(q.kind === "count")   return "Hur många ser du?";
   if(q.kind === "add")     return "Vad blir " + q.a + " plus " + q.b + "?";
   if(q.kind === "sub")     return "Vad blir " + q.a + " minus " + q.b + "?";
@@ -4139,6 +4336,8 @@ function speechFor(q){
 }
 function labelFor(q){
   if(q.kind === "saga")    return "Räknesaga";
+  if(q.kind === "jamfor")  return `Vilket tal är ${q.storst ? "störst" : "minst"}?`;
+  if(q.kind === "lucka")   return "Vilket tal fattas?";
   if(q.kind === "count")   return "Hur många?";
   if(q.kind === "tiotal")  return "Hur många blir det?";
   if(q.kind === "serie")   return "Vilket tal kommer sen?";
@@ -4149,6 +4348,8 @@ function labelFor(q){
 function equationHTML(q){
   const op = (s) => `<span class="op">${s}</span>`;
   if(q.kind === "saga")    return `<span class="saga">${q.text}</span>`;
+  if(q.kind === "jamfor")  return q.tal.map(v => `<span class="tal" data-tal="${v}">${v}</span>`).join(op("·"));
+  if(q.kind === "lucka")   return `<span class="rad">${q.tal.map((v, i) => `<span class="ruta">${i === q.lucka ? '<span class="slot">?</span>' : v}</span>`).join("")}</span>`;
   if(q.kind === "count")   return `<span class="slot">?</span>`;
   if(q.kind === "add")     return `${q.a} ${op("+")} ${q.b} ${op("=")} <span class="slot">?</span>`;
   if(q.kind === "sub")     return `${q.a} ${op("−")} ${q.b} ${op("=")} <span class="slot">?</span>`;
@@ -4204,6 +4405,11 @@ function visualHTML(q){
      figurer, varken av inställningen eller efter ett feltryck. */
   if(q.utanHjalp) return "";
   if(!P().settings.dots && !g.hint) return "";
+  /* Störst eller minst ritas som staplar: det största talet är den högsta */
+  if(q.kind === "jamfor"){
+    const max = Math.max(...q.tal);
+    return `<span class="staplar">${q.tal.map(v => `<span class="stapel"><i style="height:${Math.round(v / max * 100)}%"></i><b>${v}</b></span>`).join("")}</span>`;
+  }
   /* Hjälpen ska räcka hela vägen upp till tjugo, annars tänds den när barnet
      behöver den mest och visar ingenting. */
   if(q.kind === "add"){
@@ -4241,7 +4447,7 @@ function paintQuestion(){
   qEquation.className = "q-equation"
     + (q.kind === "saga" ? " saga" : "")
     + (q.kind === "tiotal" || q.kind === "half" ? " ord" : "")
-    + (q.kind === "flera" ? " mellan" : "");
+    + (q.kind === "flera" || q.kind === "lucka" || q.kind === "jamfor" ? " mellan" : "");
   qEquation.style.display = q.kind === "count" ? "none" : "";
 }
 
@@ -4327,6 +4533,15 @@ function distraktorer(q){
     lagg(s + 1, `Hoppen är ${q.steg} i taget!`); lagg(s - 1, `Hoppen är ${q.steg} i taget!`);
     lagg(s + 2 * q.steg, "Två hopp för långt!"); lagg(s - 2 * q.steg, "Två hopp för kort!");
   }
+  if(kind === "jamfor"){
+    for(const v of q.tal) if(v !== s) lagg(v, q.storst ? `${v} är mindre än ${s}!` : `${v} är större än ${s}!`);
+  }
+  if(kind === "lucka"){
+    ett(s + 1); ett(s - 1);
+    if(s >= 10 && s % 10) lagg((s % 10) * 10 + Math.floor(s / 10), "Tvärtom! Tiorna först.");
+    lagg(q.tal[0], "Det talet står redan där!"); lagg(q.tal[3], "Det talet står redan där!");
+    tia(s + 10); tia(s - 10);
+  }
   /* Fyll på med tal strax intill, så det alltid finns nog att välja på */
   for(const v of [s + 1, s - 1, s + 2, s - 2, s + 3, s - 3, s + 4, s - 4])
     lagg(v, Math.abs(v - s) <= 1 ? (v > s ? "Ett för mycket!" : "Ett för lite!") : v > s ? "Lite för mycket!" : "Lite för lite!");
@@ -4343,6 +4558,8 @@ function varforFel(q, v){
   return diff > 0 ? "För mycket!" : "För lite!";
 }
 function makeOptions(q, n){
+  /* Störst eller minst: rutorna är talen i frågan, inga andra */
+  if(q.kind === "jamfor") return shuffle(q.tal.slice());
   const out = [q.answer];
   const tak = Math.max(30, q.answer + 12);
   for(const { v } of distraktorer(q)){
@@ -4408,6 +4625,7 @@ function answer(value, sourceEl){
     g.results[g.qIndex] = firstTry ? "first" : "help";
     if(q.kluring) kluringUtfall(P(), q, firstTry);
     else if(!firstTry) laggKluring(P(), q);
+    statSvar(P(), q, firstTry ? "forsta" : "hjalp");
     if(q.kluring || !firstTry) saveProfiles();   /* även om omgången lämnas mitt i */
 
     if(sourceEl) sourceEl.classList.add("right");
@@ -4448,6 +4666,7 @@ function answer(value, sourceEl){
     g.results[g.qIndex] = "help";
     if(g.tram && g.level.id === -1) justeraSkill(P(), "ned");
     if(q.kluring) kluringUtfall(P(), q, false); else laggKluring(P(), q);
+    statSvar(P(), q, "visat");
     saveProfiles();
     /* Skriv in facit där barnet letade efter det – i svarsrutan, på rätt ruta
        och i själva talet – i stället för att bara säga siffran i en bubbla. */
@@ -4475,6 +4694,8 @@ function answer(value, sourceEl){
     qEquation.innerHTML = q.kind === "count" ? facit
       : q.kind === "saga" ? equationHTML(q) + `<span class="saga-facit">${equationHTML(Object.assign({}, q, { kind:op })).replace(slot, facit)}</span>`
       : equationHTML(q).replace(slot, facit);
+    /* Störst eller minst: rätt tal lyser upp i raden */
+    qEquation.querySelectorAll("[data-tal]").forEach(x => x.classList.toggle("facit", Number(x.dataset.tal) === q.answer));
     feedback.innerHTML = `<span class="bubble soft">${varfor} Svaret är ${q.answer}.</span>`;
     speak(varfor + " Svaret är " + q.answer);
     later(() => { g.qIndex++; nextQuestion(); }, 2600);
