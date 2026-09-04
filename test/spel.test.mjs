@@ -7,7 +7,9 @@ import { REGIONS, LEVELS, SHOWN, buildRound, makeOptions, distraktorer, varforFe
          gorSaga, blandaInSaga, natAvstand, valjUppdrag, uppdragTips, ALLA_STOPP, qNyckel, TRAM_LINES, STOP_PHOTOS, TRAM_PHOTOS, vagnFoto,
          THINGS, BAS_SAKER, BUTIK, TILLBEHOR, sakerFor,
          justeraSkill, nivaForSkill, buildStigandeRound,
-         HUVUD_MAX, SIDO_START, SIDO_MAX, GANGER_START, GANGER_MAX, TALRAD_START, TALRAD_MAX, huvudspar, arLast, oppnaEfter, sidoOppen, gangerOppen, talradOppen, sidosparEfter, datumNyckel, statSvar, statTid, MAKE, SMASPEL, SPELMOTOR, spelKopt, LEK_W, LEK_H, synligaBanor, maxStars, nastaBana, blandatLevel, levelById } from "./hamta.mjs";
+         HUVUD_MAX, SIDO_START, SIDO_MAX, GANGER_START, GANGER_MAX, TALRAD_START, TALRAD_MAX, huvudspar, arLast, oppnaEfter, sidoOppen, gangerOppen, talradOppen, sidosparEfter, datumNyckel, statSvar, statTid, MAKE, SMASPEL, SPELMOTOR, spelKopt, LEK_W, LEK_H, synligaBanor, maxStars, nastaBana, blandatLevel, levelById,
+         SPAR, sparOppen, linjeOppen, klockaOppen, LINJE_START, LINJE_MAX, KLOCKA_START, KLOCKA_MAX, timme12, tidKod, tidOrd, kodTid, vantetidOrd, svarText,
+         hallFraga, tavlaHar, avgangar, VAGNAR, vagnFragaFor, rostPoang, rostNamn, bastaRost } from "./hamta.mjs";
 
 const rot = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -653,4 +655,194 @@ test("småspelen: motorerna räknar poäng, tar slut i tid och klarar sig utan s
     bast = Math.max(bast, b.poang());
   }
   assert.ok(bast > 5, `bergochdalbanan gav bara ${bast} stjärnor`);
+});
+
+test("Tallinjen och Klockan: två nya sidospår, öppnade av Grottan och Blandat till 20", () => {
+  assert.deepEqual(LEVELS.filter(L => L.spar === "linje").map(L => L.id), [43, 44, 45, 46, 47]);
+  assert.deepEqual(LEVELS.filter(L => L.spar === "klocka").map(L => L.id), [48, 49, 50, 51, 52]);
+  assert.equal(LINJE_START, 43); assert.equal(LINJE_MAX, 47); assert.equal(KLOCKA_START, 48); assert.equal(KLOCKA_MAX, 52);
+  assert.equal(REGIONS[10].spar, "linje"); assert.equal(REGIONS[11].spar, "klocka");
+  for(const spar of Object.keys(SPAR)){
+    const s = SPAR[spar];
+    assert.equal(levelById(s.start).spar, spar === "rakna" ? undefined : spar);
+    const nasta = levelById(s.max + 1);
+    assert.ok(!nasta || nasta.spar !== levelById(s.max).spar, spar + " slutar där nästa spår börjar");
+    assert.ok(huvudspar(levelById(s.efter)), spar + " öppnas av en bana på huvudspåret");
+  }
+  const p = { unlocked: 9, stars: {}, best: {}, settings: {} };
+  assert.ok(arLast(p, levelById(43)) && arLast(p, levelById(48)));
+  assert.equal(sidosparEfter(p, levelById(9)), null);
+  p.stars[9] = 1;
+  assert.equal(sidosparEfter(p, levelById(9)).id, 43, "Grottan klar öppnar Tallinjen");
+  assert.equal(linjeOppen(p), 43);
+  assert.ok(!arLast(p, levelById(43)) && arLast(p, levelById(44)));
+  for(const id of [43, 44, 45, 46]) assert.equal(oppnaEfter(p, levelById(id)).id, id + 1);
+  assert.equal(oppnaEfter(p, levelById(47)), null);
+  assert.equal(nastaBana(levelById(47)), null);
+  assert.equal(nastaBana(levelById(46)).id, 47);
+  p.stars[14] = 2;
+  assert.equal(sidosparEfter(p, levelById(14)).id, 48, "Blandat till 20 öppnar Klockan");
+  assert.equal(klockaOppen(p), 48);
+  assert.equal(sidosparEfter(p, levelById(14)), null, "bara första gången");
+  /* Klockan går att stänga av – då syns den inte och öppnas inte */
+  const q = { unlocked: 15, stars: { 14: 1 }, best: {}, settings: { klocka: false } };
+  assert.equal(klockaOppen(q), 0);
+  assert.equal(sidosparEfter(q, levelById(14)), null);
+  assert.ok(!synligaBanor(q).some(L => L.spar === "klocka"));
+  assert.equal(synligaBanor(q).length, LEVELS.length - 5);
+  assert.equal(maxStars({ settings: {} }), LEVELS.length * 3);
+  assert.equal(p.unlocked, 9, "huvudspåret rörs inte");
+  /* De gamla spåren fungerar som förut */
+  const r = { unlocked: 13, stars: { 6:1, 12:1 }, best: {}, settings: {} };
+  assert.equal(talradOppen(r), 38); assert.equal(sidoOppen(r), 28); assert.equal(gangerOppen(r), 0);
+  assert.equal(sparOppen(r, "talrad"), 38);
+});
+
+test("Tallinjen: hopp framåt är plus, bakåt minus, och avståndet är antalet hopp", () => {
+  for(let i = 0; i < 300; i++){
+    const f = MAKE.linje(levelById(43));
+    assert.ok(f.upp && f.answer === f.a + f.b && f.answer <= 20 && f.a >= 0 && f.b >= 1 && f.b <= 6, JSON.stringify(f));
+    const b = MAKE.linje(levelById(44));
+    assert.ok(!b.upp && b.answer === b.a - b.b && b.answer >= 0 && b.a <= 20, JSON.stringify(b));
+    const h = MAKE.hopp(levelById(45));
+    assert.equal(h.answer, Math.abs(h.b - h.a));
+    assert.ok(h.answer >= 1 && h.answer <= 9 && Math.max(h.a, h.b) <= 20 && Math.min(h.a, h.b) >= 0);
+    /* Felsvaren: åt andra hållet, ett hopp för långt eller kort */
+    const d = distraktorer(f).map(x => x.v);
+    assert.ok(f.a - f.b < 0 || d.includes(f.a - f.b), "åt andra hållet");
+    assert.ok(d.includes(f.answer + 1) && (f.answer === 0 || d.includes(f.answer - 1)));
+    assert.match(varforFel(h, h.answer + 1), /hopp/i);
+    if(f.a - f.b >= 0) assert.match(varforFel(f, f.a - f.b), /andra hållet/);
+    assert.match(varforFel(b, b.a + b.b), /andra hållet/);
+  }
+  const bada = Array.from({ length: 80 }, () => MAKE.linje(levelById(46)));
+  assert.ok(bada.some(q => q.upp) && bada.some(q => !q.upp), "Fram och tillbaka går åt båda håll");
+  /* Nyckeln skiljer på framåt och bakåt med samma tal */
+  assert.notEqual(qNyckel({ kind:"linje", a:7, b:3, c:1 }), qNyckel({ kind:"linje", a:7, b:3, c:0 }));
+});
+
+test("hållplatsen som tallinje: framåt, bakåt och kvar på en riktig linje, med namn i rutorna", () => {
+  const namn = TRAM_LINES.find(x => x.ref === "8").stops;
+  for(let i = 0; i < 300; i++){
+    const k = 1 + (i % (namn.length - 2));
+    const h = hallFraga("hall", namn, k);
+    if(h.kind === "hall"){
+      assert.equal(h.answer, k + h.n); assert.ok(h.n >= 2 && h.n <= 6 && h.answer <= namn.length - 1);
+      assert.equal(svarText(h), namn[h.answer]);
+      const alt = makeOptions(h, 4);
+      assert.equal(alt.length, 4); assert.equal(new Set(alt).size, 4);
+      assert.ok(alt.includes(h.answer) && alt.every(v => v >= 0 && v <= namn.length - 1), "alla rutor är hållplatser på linjen");
+      assert.match(varforFel(h, k), /står/);
+    }
+    const b = hallFraga("bak", namn, k);
+    if(b.kind === "bak"){ assert.equal(b.answer, k - b.n); assert.ok(b.answer >= 0); assert.equal(svarText(b), namn[b.answer]); }
+    const v = hallFraga("kvar", namn, k);
+    assert.equal(v.kind, "kvar"); assert.equal(v.answer, v.mal - k);
+    assert.ok(v.answer >= 1 && v.answer <= 8 && v.mal <= namn.length - 1, JSON.stringify({ k, mal:v.mal }));
+    assert.equal(svarText(v), String(v.answer));
+    assert.ok([h, b, v].every(q => q.fast), "resefrågor är fasta i omgången");
+    assert.ok(!v.svarNamn && (h.kind !== "hall" || h.svarNamn) && (b.kind !== "bak" || b.svarNamn), "bara var-frågorna svaras med namn");
+  }
+  /* Vid första hållplatsen går det inte bakåt, vid näst sista inte framåt */
+  assert.notEqual(hallFraga("bak", namn, 0).kind, "bak");
+  assert.notEqual(hallFraga("hall", namn, namn.length - 2).kind, "hall");
+  /* ... och de blir aldrig kluringar, för de hör till resan */
+  const p = { kluriga: [] };
+  laggKluring(p, Object.assign(hallFraga("hall", namn, 3), { niva: 43 }));
+  assert.equal(p.kluriga.length, 0);
+});
+
+test("Klockan: hel och halv timme, urtavlor, digital tid och avgångstavlan", () => {
+  assert.equal(tidOrd(tidKod(2, true)), "halv 3"); assert.equal(tidOrd(tidKod(14, true)), "halv 3");
+  assert.equal(tidOrd(tidKod(11, true)), "halv 12"); assert.equal(tidOrd(tidKod(0, false)), "12");
+  assert.equal(tidOrd(tidKod(23, true)), "halv 12"); assert.equal(tidOrd(tidKod(12, false)), "12");
+  assert.equal(kodTid(29), "14:30"); assert.equal(kodTid(12), "06:00");
+  assert.equal(timme12(0), 12); assert.equal(timme12(13), 1); assert.equal(timme12(-1), 11);
+  assert.equal(vantetidOrd(30), "en halvtimme"); assert.equal(vantetidOrd(90), "en och en halv timme");
+  for(let i = 0; i < 300; i++){
+    const hel = MAKE.klocka(levelById(48));
+    assert.ok(!hel.halv && hel.answer === timme12(hel.a) && hel.answer >= 1 && hel.answer <= 12);
+    assert.equal(svarText(hel), String(hel.answer));
+    const halv = MAKE.klocka(levelById(49));
+    if(halv.halv){
+      assert.equal(halv.answer, timme12(halv.a + 1)); assert.equal(svarText(halv), "halv " + halv.answer); assert.equal(halv.form, "halv");
+      assert.match(varforFel(halv, timme12(halv.a)), /förbi/);
+    }
+    for(const q of [hel, halv]){ const alt = makeOptions(q, 4); assert.equal(new Set(alt).size, 4); assert.ok(alt.every(v => v >= 1 && v <= 12) && alt.includes(q.answer)); }
+    const u = MAKE.urtavla(levelById(50));
+    assert.ok(u.answer >= 0 && u.answer <= 23 && u.form === "urtavla");
+    const alt = makeOptions(u, 4); assert.ok(alt.every(v => v >= 0 && v <= 23) && new Set(alt).size === 4 && alt.includes(u.answer));
+    const d = MAKE.digital(levelById(51));
+    assert.equal(d.answer, tidKod(d.a % 12, d.halv)); assert.ok(d.a >= 6 && d.a <= 21);
+    assert.equal(svarText(d), tidOrd(d.answer));
+    if(d.halv) assert.match(varforFel(d, (tidKod(d.a % 12, false) + 23) % 24), /på väg mot/);
+    const v = MAKE.vanta(levelById(52));
+    assert.ok([30, 60, 90, 120].includes(v.answer) && v.b - v.a === v.answer / 30);
+    assert.deepEqual(makeOptions(v, 4).slice().sort((x, y) => x - y), [30, 60, 90, 120]);
+    assert.equal(svarText(v), vantetidOrd(v.answer));
+    const f = MAKE.forst(levelById(52));
+    assert.equal(f.rader.length, 4);
+    const forst = f.rader.reduce((a, r) => r.kod < a.kod ? r : a, f.rader[0]);
+    assert.equal(f.answer, Number(forst.ref));
+    assert.equal(new Set(f.rader.map(r => r.kod)).size, 4, "alla tider olika");
+    assert.deepEqual(makeOptions(f, 4).slice().sort((x, y) => x - y), f.rader.map(r => Number(r.ref)).sort((x, y) => x - y));
+    assert.equal(svarText(f), "linje " + f.answer);
+  }
+  /* 14:30 är halv tre – och felsvaren är de klassiska misstagen */
+  const d = { kind:"digital", a:14, halv:true, answer:tidKod(2, true), form:"ord", lagst:0, hogst:23 };
+  const fel = distraktorer(d);
+  assert.ok(fel.some(x => x.v === tidKod(1, true)), "halv två finns som felsvar");
+  assert.ok(fel.some(x => x.v === tidKod(2, false)) && fel.some(x => x.v === tidKod(3, false)));
+  /* Tavlan i spårvagnen visar vagnar som verkligen går från hållplatsen */
+  const har = avgangar("Brunnsparken");
+  assert.ok(har.length >= 4);
+  const v = tavlaHar(MAKE.vanta(levelById(52)), "Brunnsparken");
+  assert.ok(har.some(a => a.ref === v.ref && a.mot === v.mot));
+  const f = tavlaHar(MAKE.forst(levelById(52)), "Brunnsparken");
+  assert.ok(f.rader.every(r => har.some(a => a.ref === r.ref && a.mot === r.mot)));
+  assert.equal(f.answer, Number(f.rader.reduce((a, r) => r.kod < a.kod ? r : a, f.rader[0]).ref));
+  assert.deepEqual(f.val.slice().sort(), f.rader.map(r => Number(r.ref)).sort());
+});
+
+test("vagnsnumren: varje märkt foto finns, numret är tresiffrigt och rutorna är siffrorna i andra ordningar", () => {
+  const filer = new Set(Object.values(STOP_PHOTOS).map(f => f.f).concat(TRAM_PHOTOS.map(f => f.f)));
+  assert.ok(Object.keys(VAGNAR).length >= 15);
+  for(const [f, v] of Object.entries(VAGNAR)){
+    assert.ok(filer.has(f), f + " är inte ett foto i spelet");
+    assert.ok(existsSync(join(rot, "bilder", f + ".jpg")), f + ".jpg saknas");
+    assert.ok(v.nr >= 100 && v.nr <= 999);
+    assert.ok(v.x > 0 && v.x < 1 && v.y > 0 && v.y < 1 && v.w > 0 && v.w < 0.3 && v.h > 0 && v.h < 0.3);
+    const q = vagnFragaFor(f);
+    assert.equal(q.answer, v.nr); assert.ok(q.fast && q.opts === 6);
+    const alt = makeOptions(q, 6);
+    assert.equal(alt.length, 6); assert.equal(new Set(alt).size, 6); assert.ok(alt.includes(v.nr));
+    const sif = String(v.nr).split("").sort().join("");
+    const perm = alt.filter(a => String(a).split("").sort().join("") === sif);
+    const olika = new Set(String(v.nr)).size;
+    assert.ok(perm.length >= (olika === 3 ? 4 : 2), `rutorna för ${v.nr} ska mest vara omkastade siffror: ${alt}`);
+    const bak = Number(String(v.nr).split("").reverse().join(""));
+    if(bak !== v.nr) assert.match(varforFel(q, bak), /Tvärtom|ordning/);
+  }
+  assert.equal(vagnFragaFor("almedal"), null);
+  const p = { kluriga: [] };
+  laggKluring(p, Object.assign(vagnFragaFor("chalmers"), { niva: 5 }));
+  assert.equal(p.kluriga.length, 0, "vagnsfrågan blir ingen kluring");
+});
+
+test("rösten: premium före förbättrad före nätröst före vanlig, och namnen städas", () => {
+  const roster = [
+    { name:"Alva", lang:"sv-SE", voiceURI:"com.apple.voice.compact.sv-SE.Alva", localService:true, default:true },
+    { name:"Google svenska", lang:"sv-SE", voiceURI:"Google svenska", localService:false },
+    { name:"Alva (Enhanced)", lang:"sv-SE", voiceURI:"com.apple.voice.enhanced.sv-SE.Alva", localService:true },
+    { name:"Alva (Premium)", lang:"sv-SE", voiceURI:"com.apple.voice.premium.sv-SE.Alva", localService:true },
+    { name:"Microsoft Sofie Online (Natural) - Swedish (Sweden)", lang:"sv-SE", voiceURI:"x", localService:false }
+  ];
+  assert.deepEqual(roster.map(rostPoang), [1, 2, 3, 4, 3]);
+  assert.equal(bastaRost(roster).name, "Alva (Premium)");
+  assert.equal(bastaRost(roster.slice(0, 2)).name, "Google svenska");
+  assert.equal(bastaRost(roster.slice(0, 1)).name, "Alva");
+  assert.equal(bastaRost([]), null);
+  assert.equal(rostNamn(roster[4]), "Sofie Online (Natural)");
+  assert.equal(rostNamn(roster[1]), "svenska");
+  assert.equal(rostNamn(roster[3]), "Alva (Premium)");
 });

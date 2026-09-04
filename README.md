@@ -15,15 +15,15 @@ stjärnor i Räknelandet och besökta hållplatser i spårvagnen.
 
 ### Räknelandet
 
-Fyrtiotvå banor genom tio områden, som var och ett ser ut som sitt namn –
+Femtiotvå banor genom tolv områden, som var och ett ser ut som sitt namn –
 blommor på Ängen, granar i Skogen, kristaller och droppstenar i Grottan,
 snöklädda toppar på Berget, moln högre upp, spårvagnar och
 kontaktledningsstolpar i Vagnhallen, stoppbockar och stationsklockor vid
-Ändstationen. En bana i taget låses upp genom att klaras med minst en stjärna –
+Ändstationen, räls och plustecken på Tallinjen, klockor på stolpar på Klockan. En bana i taget låses upp genom att klaras med minst en stjärna –
 eller genom fyra rätt av fem på en hållplats i spårvagnsvärlden – och klarade
 banor går att spela om.
 
-Stigen har fyra spår. **Huvudspåret** går från Ängen till Ändstationen, 27 banor,
+Stigen har sex spår. **Huvudspåret** går från Ängen till Ändstationen, 27 banor,
 och det är där svårigheten stiger. **Sidospåret** Stjärnhimlen – räkna till 25,
 50, 75 och 100 i tioramar – öppnas när Berget är klart och spärrar ingenting.
 Så slipper den som kan räkna till hundra i huvudet räkna hundra prickar innan
@@ -32,7 +32,11 @@ helst. **Sidospåret** Gånger och delat öppnas när Mästarprovet är klarat o
 går att stänga av i inställningarna, för den som vill vänta med tabellerna.
 **Sidospåret** Talraden – störst och minst, luckor i raden, baklänges – öppnas
 redan när Skogen är klar, för det är grundläggande och passar den som gillar
-siffror långt före tabellerna.
+siffror långt före tabellerna. **Sidospåret** Tallinjen – vagnen hoppar på
+tallinjen, framåt är plus och bakåt minus – öppnas när Grottan är klar, där
+*vad fattas* är just ett hopp på linjen. **Sidospåret** Klockan – hel och halv
+timme, urtavlor, digital tid och avgångstavlan – öppnas efter *Blandat till 20*
+och går att stänga av i inställningarna.
 
 | Område | Banor | Innehåll |
 | --- | --- | --- |
@@ -46,6 +50,8 @@ siffror långt före tabellerna.
 | Stjärnhimlen (sidospår) | 28–31 | Räkna till 25, 50, 75 och 100 – i tioramar, tior och ental |
 | Gånger och delat (sidospår) | 32–37 | Två gånger, fem och tio gånger, delat med två, delat med fem och tio, tre och fyra gånger, tabellprovet |
 | Talraden (sidospår) | 38–42 | Störst eller minst, vad fattas i raden, baklänges, störst och minst till 100, Talradens prov |
+| Tallinjen (sidospår) | 43–47 | Hoppa framåt, hoppa bakåt, hur många hopp, fram och tillbaka, Tallinjens prov |
+| Klockan (sidospår) | 48–52 | Hela timmar, halva timmar, vilken klocka, digitalt, avgångstavlan |
 
 Från Berget och uppåt har varje bana ett minsta värde på det mindre talet, så
 att 15 + 1 och 16 − 15 inte dyker upp där talen annars slutat vara små: 3 på
@@ -149,12 +155,42 @@ måste titta på tiorna först. Felsvaren förklaras som på de andra banorna: *
 ritas som rutor med luckan markerad. Spåret öppnas när Skogen är klar och
 spärrar ingenting.
 
+### Tallinjen
+
+Tallinjen är den viktigaste bilden för plus och minus, och det fjärde
+sidospåret gör den till själva uppgiften. En liten spårvagn står på ett tal och
+hoppar: *Vagnen står på 7 och hoppar 5 framåt. Var stannar den?* Linjen ritas
+som ett fönster på 0–20 kring talen i frågan, med talen under prickarna och
+vagnen där den står, och man kan svara genom att trycka på rätt tal på linjen
+lika gärna som på en ruta. På de två första banorna syns hoppen som numrerade
+bågar, så att barnet räknar vidare från 7 i stället för att börja om från ett.
+*Hur många hopp?* vänder på det – från 6 till 11, med en flagga vid målet – och
+lär att avståndet mellan två tal är ett antal hopp; där tänds bågarna först
+efter ett fel. Likheten står under linjen, `7 + 5 = ?`, så hoppen och
+plustecknet hänger ihop. Felsvaren är de fel som görs på en tallinje: *Åt
+andra hållet!*, *Ett hopp för långt!*, *Räkna hoppen, inte prickarna!*
+
+På spårvagnen är linjen själv tallinjen, se *Hållplatsen som tallinje* nedan.
+
+### Klockan
+
+Hel och halv timme, samma steg som skolan börjar med. En ritad urtavla med kort
+röd timvisare och lång minutvisare: *Vad är klockan?* – först hela timmar,
+sedan halva, där svaret sägs som man säger det, *halv 4*, och det klassiska
+felet *halv 3* får sin förklaring: *Visaren har gått förbi 3. Halv 4 betyder på
+väg till 4!* Sedan *Vilken klocka visar halv fem?* med fyra urtavlor som rutor,
+digital tid där 14:30 ska bli *halv 3* (felsvaret *halv 2* är det alla barn
+snubblar på), och till sist avgångstavlan: klockan är nu, vagnen går då, *hur
+länge får vi vänta?* i halvtimmar, och *vilken vagn går först?* bland fyra
+avgångar. Spåret öppnas efter *Blandat till 20* och går att stänga av i
+inställningarna för den som vill vänta med klockan.
+
 ### Poäng, stjärnor och märken
 
 Rätt på första försöket ger 10 guldmynt; tre rätt i rad dubblar och sex rätt i
 rad tredubblar. Rätt efter ett feltryck ger 5 mynt – aldrig minuspoäng. Efter
 varje omgång delas upp till tre stjärnor ut (4 rätt direkt ger en, 7 ger två, 9
-ger tre), och minst en stjärna öppnar nästa bana. Totalt finns 126 stjärnor (108 med gånger och delat avstängt) och 32
+ger tre), och minst en stjärna öppnar nästa bana. Totalt finns 156 stjärnor (138 med gånger och delat avstängt, 141 med klockan avstängd) och 35
 märken att samla, från *Första stjärnan* och *Ändstation* till *Hela landet*,
 *Klurig* och *Tio uppdrag*.
 
@@ -303,6 +339,27 @@ låter som ett utrop och inte som en lekkamrat.
   byta linje. Framme väntar 20 mynt per hållplats, konfetti och märkena
   *Första uppdraget* och *Tio uppdrag*. Ett tryck på rutan ger nytt mål eller
   avslutar uppdraget.
+- **Hållplatsen som tallinje.** När Tallinjen är öppen är linjen själv
+  tallinjen: hållplatserna i färdriktningen ritas som prickar med namnen snett
+  under, som på en riktig linjekarta, med vagnen där man står. *Vi står vid
+  Chalmers. Vagnen åker 4 hållplatser till. Var är vi då?* – rutorna är
+  hållplatsnamn, och man kan lika gärna trycka på rätt prick. *För 3
+  hållplatser sedan, var var vi då?* går bakåt, och *Hur många hållplatser är
+  det kvar till Frölunda Torg?* räknar stegen fram till flaggan. Väljer man
+  Tallinjens banor på resan handlar tre av fem tal om hållplatserna; på alla
+  andra banor smyger en sådan resefråga in ibland.
+- **Avgångstavlan på perrongen.** När Klockan är öppen visar tavlan riktiga
+  vagnar från hållplatsen man står vid – linje 7 mot Tynnered går 08:30 – och
+  frågar hur länge man får vänta, eller vilken av fyra vagnar som går först.
+- **Vagnsnummer i fotona.** Tjugo av fotona visar vagnens nummer tydligt –
+  vid Chalmers står vagn 318 på linje 8. Står man där börjar omgången med
+  *Vilket nummer har vagnen?*: numret ringas in i fotot och visas inzoomat
+  bredvid, och de sex rutorna är siffrorna i alla ordningar, 318, 381, 138 …
+  Att läsa ett tresiffrigt tal från vänster är hela poängen, och felsvaren
+  säger vad som hände: *Tvärtom! Läs siffrorna från vänster.* Rätt direkt ger
+  fem mynt extra, och tio lästa vagnar ger märket *Vagnkännare*. Numren och
+  var de sitter i bilden ligger i listan `VAGNAR` i `index.html`; vill du lägga
+  till ett foto som visar ett nummer är det en rad.
 
 Linje 13 är utelämnad. Västtrafiks karta visar bara linjerna 1–12, och 13 är i
 praktiken indragen sedan 2023. Vill du lägga till eller rätta något ligger alla
@@ -319,7 +376,9 @@ karta visar ingen hållplats däremellan. 28 gäller.
 - **Uppgifterna kräver ingen läskunnighet.** Varje fråga läses upp på svenska,
   rösten hälsar med namn vid start och läser även upp de val som betyder mest –
   vilken värld, vilken spårvagnslinje och vilka tal man valt. Hastigheten går att
-  ställa i tre steg. Menyerna är däremot text: räkna med att en vuxen hjälper till
+  ställa i tre steg, och under *Vilken röst* i inställningarna väljer man bland
+  plattans svenska röster – spelet tar av sig självt den finaste som finns, och
+  en stjärna markerar de röster som låter som människor. Menyerna är däremot text: räkna med att en vuxen hjälper till
   första gången, sedan hittar barnet oftast tillbaka på färg och figur.
 - **Prickar att räkna.** Talen visas som saker, fem i rad som i en tiobasram, så
   att `6 + 4` går att räkna sig fram till. Kan stängas av när det sitter.
@@ -360,6 +419,14 @@ Spelet i övrigt är identiskt.
 Safari, inte Chrome), tryck på dela-ikonen och välj *Lägg till på hemskärmen*.
 Ikonen dyker upp bland apparna och spelet startar i helskärm.
 
+**Finare röst på iPad.** Rösten som följer med iPad, *Alva*, är den lilla
+varianten och låter som en dator. Under *Inställningar → Hjälpmedel → Uppläst
+innehåll → Röster → Svenska* går samma röst att ladda ner som *Förbättrad* eller
+*Premium*, och där finns även *Klara* och *Oskar*. När nedladdningen är klar
+dyker rösterna upp under *Vilken röst* i spelets inställningar, och spelet
+väljer den bästa av sig självt. Spelet rör inte heller tonläget längre – höjs
+det låter varje röst som en robot.
+
 Tre saker värda att veta:
 
 - **Lägg till på hemskärmen först, spela sedan.** iOS ger hemskärmsappen ett eget
@@ -375,9 +442,9 @@ Tre saker värda att veta:
 
 ## För vuxna
 
-Kugghjulet uppe till höger: värld, ljud, uppläsning, rösthastighet, räknehjälp,
-gånger och delat med (av eller på), byt kompisfigur, byt spelare och ta bort
-spelare. Inställningarna hör till
+Kugghjulet uppe till höger: värld, ljud, uppläsning, rösthastighet, vilken
+röst, räknehjälp, gånger och delat med (av eller på), klockan (av eller på),
+byt kompisfigur, byt spelare och ta bort spelare. Inställningarna hör till
 spelaren, så syskon kan ha olika. Kompisfiguren står längst ner på spelskärmen
 och hejar, så frågan och svaren får hela bredden; i skrivläget hamnar den under
 knappsatsen och är aldrig i vägen.
@@ -424,7 +491,7 @@ hack i nätet släcker inte resten av resan.
 
 ## Tester
 
-`node --test` kör tjugosju tester som plockar ut spelets rena funktioner direkt
+`node --test` kör trettiotre tester som plockar ut spelets rena funktioner direkt
 ur `index.html`, så att de aldrig testar en kopia som glidit isär från källan. De
 täcker att uppgifterna håller sig inom banans tal och aldrig blir negativa, att
 rätt svar alltid finns bland alternativen och att varje felsvar har en
@@ -435,7 +502,12 @@ att hela nätet hänger ihop och uppdragens tips faktiskt tar en närmare målet
 och att ingen spårvagnslinje motsäger en annan om hållplatsernas ordning. Tre av dem
 gäller det stigande läget: att skickligheten höjs och sänks men stannar inom det
 upplåsta, att uppgifter bara dras från öppnade banor, och att ingen uppgift
-upprepas inom samma omgång ens när en lätt banas förråd tar slut.
+upprepas inom samma omgång ens när en lätt banas förråd tar slut. De senaste
+gäller Tallinjen och Klockan (spåren öppnas av rätt bana, hoppen räknar rätt,
+14:30 blir halv tre, tavlan visar vagnar som verkligen går från hållplatsen),
+hållplatsfrågorna på en riktig linje, att varje märkt vagnsnummer hör till ett
+foto som finns och får sina omkastade siffror som rutor, och att rösterna
+rangordnas premium före förbättrad före nätröst före vanlig.
 
 ## Teknik
 
@@ -444,5 +516,9 @@ API, uppläsningen sker med webbläsarens `SpeechSynthesis`, konfettin ritas på
 canvas och figurerna är handritad SVG. Typsnitten hämtas från Google Fonts med
 rundade systemtypsnitt som reserv om sidan är offline.
 
-Uppläsningen använder enhetens svenska röst. Saknas den blir spelet tyst –
-prickar och siffror fungerar ändå.
+Uppläsningen använder enhetens svenska röster. Finns flera väljer spelet den
+bästa: *Premium* före *Förbättrad* (eller *Natural*, *Neural*, *WaveNet*) före
+nätrösterna före de små inbyggda, och spelaren kan välja en annan under
+kugghjulet; valet sparas per spelare och faller tillbaka på den bästa om rösten
+tas bort från plattan. Tonläget lämnas orört. Saknas svensk röst helt blir
+spelet tyst – prickar och siffror fungerar ändå.
