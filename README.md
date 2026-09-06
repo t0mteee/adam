@@ -424,8 +424,14 @@ varianten och låter som en dator. Under *Inställningar → Hjälpmedel → Upp
 innehåll → Röster → Svenska* går samma röst att ladda ner som *Förbättrad* eller
 *Premium*, och där finns även *Klara* och *Oskar*. När nedladdningen är klar
 dyker rösterna upp under *Vilken röst* i spelets inställningar, och spelet
-väljer den bästa av sig självt. Spelet rör inte heller tonläget längre – höjs
-det låter varje röst som en robot.
+väljer den bästa av sig självt. På iPad heter den lilla och den nedladdade
+rösten samma sak, så rutorna säger vilken som är vilken: *Alva · liten* och
+*Alva · Premium*. Syns inte den nya rösten: stäng spelet helt (svep bort det
+från appväxlaren, eller stäng fliken i Safari) och öppna det igen – iPad läser
+in röstlistan när sidan startar. Under *Vad plattan säger om rösterna* står
+exakt vilka röster plattan lämnar ut, med adress, och *Leta igen* frågar en
+gång till. Spelet rör inte heller tonläget längre – höjs det låter varje röst
+som en robot.
 
 Tre saker värda att veta:
 
@@ -520,5 +526,7 @@ Uppläsningen använder enhetens svenska röster. Finns flera väljer spelet den
 bästa: *Premium* före *Förbättrad* (eller *Natural*, *Neural*, *WaveNet*) före
 nätrösterna före de små inbyggda, och spelaren kan välja en annan under
 kugghjulet; valet sparas per spelare och faller tillbaka på den bästa om rösten
-tas bort från plattan. Tonläget lämnas orört. Saknas svensk röst helt blir
+tas bort från plattan. Rösterna hämtas på nytt inför varje uppläsning, eftersom
+iPad byter ut listan när en röst laddats ner, och inställningarna ritas om när
+plattan hittar nya röster. Tonläget lämnas orört. Saknas svensk röst helt blir
 spelet tyst – prickar och siffror fungerar ändå.

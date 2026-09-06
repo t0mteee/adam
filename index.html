@@ -639,6 +639,9 @@ h1, h2, h3{ font-family: "Baloo 2", "Baloo 2 Fallback", system-ui, sans-serif; f
 .opt.klocka svg{ width: min(100%, 120px); height: auto; }
 .opt.linje{ display: flex; justify-content: center; padding: 10px; }
 .set-tips{ margin: 8px 0 0; font-size: var(--t-xs); line-height: 1.45; color: var(--ink-2); }
+.set-detaljer{ margin-top: 8px; font-size: var(--t-xs); color: var(--ink-2); }
+.set-detaljer summary{ cursor: pointer; font-weight: 800; }
+.set-detaljer div{ padding: 3px 0; border-bottom: 1px dashed rgba(46,26,102,.14); word-break: break-all; line-height: 1.35; }
 @keyframes pip-in{ from{ transform: scale(0) rotate(-25deg); } to{ transform: none; } }
 
 .speak-btn{ margin-top: 8px; display: inline-flex; align-items: center; gap: 7px; font-size: var(--t-sm); padding: 7px 15px; border-radius: 999px; background: var(--sky-hi); }
@@ -1300,7 +1303,7 @@ const pick = (arr) => arr[rnd(arr.length)];
 const INK = "#2E1A66";
 /* Syns under Inställningar, så man kan se vilken version telefonen kör.
    Höjs tillsammans med VERSION i sw.js. */
-const SPELVERSION = "20";
+const SPELVERSION = "21";
 function shuffle(a){ for(let i = a.length - 1; i > 0; i--){ const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
 function store(key, val){
@@ -2689,26 +2692,50 @@ function rostPoang(v){
   return 1;
 }
 const rostNamn = (v) => (v.name || "Röst").replace(/^(Microsoft|Google|Apple)\s+/i, "").replace(/\s+-\s+Swedish.*$/i, "").replace(/\s*\(Sweden\)/i, "").trim();
+/* Vilken variant det är. På iPad heter den lilla och den nedladdade rösten
+   samma sak, "Alva", och skiljer sig bara i adressen (voiceURI): compact,
+   enhanced eller premium. Så det står i rutan, annars går de inte att skilja. */
+function rostKvalitet(v){
+  const s = ((v.name || "") + " " + (v.voiceURI || "")).toLowerCase();
+  if(/premium/.test(s)) return "Premium";
+  if(/enhanced|förbättrad|forbattrad/.test(s)) return "Förbättrad";
+  if(/natural|neural|wavenet/.test(s)) return "Natural";
+  if(/compact/.test(s)) return "liten";
+  return v.localService === false ? "nätröst" : "";
+}
+function rostEtikett(v){
+  const namn = rostNamn(v), kval = rostKvalitet(v);
+  return kval && !new RegExp(kval, "i").test(namn) ? namn + " · " + kval : namn;
+}
 function bastaRost(roster){
   return roster.slice().sort((a, b) => rostPoang(b) - rostPoang(a) || (b.default ? 1 : 0) - (a.default ? 1 : 0))[0] || null;
 }
 let svVoice = null;
-function findVoice(){ svVoice = bastaRost(svenskaRoster()); }
+function findVoice(){
+  svVoice = bastaRost(svenskaRoster());
+  /* Hittar plattan röster medan inställningarna är uppe ritas raden om */
+  try{
+    if(overlay.classList.contains("open") && sheet.querySelector('[data-seg="rost"]')) openSettings();
+  }catch(e){}
+}
 if(window.speechSynthesis){
   findVoice();
   if(speechSynthesis.addEventListener) speechSynthesis.addEventListener("voiceschanged", findVoice);
 }
-/* Spelarens egen röst om den finns kvar på plattan, annars den bästa */
+/* Spelarens egen röst om den finns kvar på plattan, annars den bästa. Rösterna
+   hämtas på nytt varje gång: iPad byter ut listan när en röst laddats ner, och
+   ett gammalt röstobjekt kan då peka på ingenting. */
 function valdRost(p){
+  const roster = svenskaRoster();
   const vill = p && p.settings && p.settings.rost;
-  if(vill){ const v = svenskaRoster().find(x => x.voiceURI === vill); if(v) return v; }
-  return svVoice;
+  if(vill){ const v = roster.find(x => x.voiceURI === vill); if(v) return v; }
+  return bastaRost(roster) || svVoice;
 }
 function nyUtsaga(p, text){
   const u = new SpeechSynthesisUtterance(text);
   const v = valdRost(p);
-  u.lang = "sv-SE";
-  if(v) u.voice = v;
+  if(v){ u.voice = v; u.lang = v.lang || "sv-SE"; }
+  else u.lang = "sv-SE";
   /* Tonläget rörs inte: skruvar man på det låter varje röst som en robot */
   u.pitch = 1;
   return u;
@@ -4292,8 +4319,8 @@ const APPLE = /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent);
 function rostKnapparHTML(p){
   const roster = svenskaRoster().slice().sort((a, b) => rostPoang(b) - rostPoang(a) || rostNamn(a).localeCompare(rostNamn(b), "sv"));
   const vald = p.settings.rost || "", auto = bastaRost(roster);
-  return `<button type="button" data-rost="" aria-pressed="${!vald}">Automatiskt${auto ? " · " + escapeHtml(rostNamn(auto)) : ""}</button>` +
-    roster.map(v => `<button type="button" data-rost="${escapeHtml(v.voiceURI)}" aria-pressed="${vald === v.voiceURI}">${escapeHtml(rostNamn(v))}${rostPoang(v) >= 3 ? " ★" : ""}</button>`).join("");
+  return `<button type="button" data-rost="" aria-pressed="${!vald}">Automatiskt${auto ? " · " + escapeHtml(rostEtikett(auto)) : ""}</button>` +
+    roster.map(v => `<button type="button" data-rost="${escapeHtml(v.voiceURI)}" aria-pressed="${vald === v.voiceURI}">${escapeHtml(rostEtikett(v))}${rostPoang(v) >= 3 ? " ★" : ""}</button>`).join("");
 }
 function rostHint(){
   const roster = svenskaRoster();
@@ -4301,9 +4328,13 @@ function rostHint(){
   return roster.some(v => rostPoang(v) >= 3) ? "Tryck så säger rösten något. ★ är de finare rösterna" : "Tryck så säger rösten något";
 }
 function rostTipsHTML(){
-  const bast = bastaRost(svenskaRoster());
-  if(!APPLE || (bast && rostPoang(bast) >= 3)) return "";
-  return `<p class="set-tips">Vill du ha en finare röst? Ladda ner <b>Alva (Premium)</b> eller <b>Klara</b> under Inställningar → Hjälpmedel → Uppläst innehåll → Röster → Svenska. Sedan dyker den upp här.</p>`;
+  const roster = svenskaRoster(), bast = bastaRost(roster);
+  const tips = !APPLE || (bast && rostPoang(bast) >= 3) ? ""
+    : `<p class="set-tips">Vill du ha en finare röst? Ladda ner <b>Alva (Premium)</b> eller <b>Klara</b> under Inställningar → Hjälpmedel → Uppläst innehåll → Röster → Svenska. Stäng sedan spelet helt och öppna det igen, så dyker den upp här som <b>Alva · Premium</b>.</p>`;
+  /* Vad plattan faktiskt säger – bra att ha när en röst inte dyker upp */
+  const rader = roster.map(v => `<div>${escapeHtml(v.name || "?")} · ${escapeHtml(v.lang || "?")} · ${escapeHtml(v.voiceURI || "?")}${v.localService === false ? " · nät" : ""}${v.default ? " · standard" : ""}</div>`).join("");
+  return tips + `<details class="set-detaljer"><summary>Vad plattan säger om rösterna</summary>${rader || "<div>Inga svenska röster i listan just nu.</div>"}
+    <button class="btn" data-action="rost-igen" type="button" style="margin-top:8px;padding:7px 14px;font-size:var(--t-xs);background:var(--paper-2)">Leta igen</button></details>`;
 }
 function openSettings(){
   const p = P(), s = p.settings;
@@ -4397,6 +4428,13 @@ sheet.addEventListener("click", (e) => {
     return;
   }
 
+  if(e.target.closest('[data-action="rost-igen"]')){
+    SFX.tap();
+    /* En tom utsaga får iPad att läsa in röstlistan på nytt */
+    try{ speechSynthesis.getVoices(); speechSynthesis.speak(new SpeechSynthesisUtterance("")); }catch(err){}
+    later(() => { findVoice(); openSettings(); }, 350);
+    return;
+  }
   const rost = e.target.closest("[data-rost]");
   if(rost){
     p.settings.rost = rost.dataset.rost || null;

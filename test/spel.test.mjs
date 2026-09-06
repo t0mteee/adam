@@ -9,7 +9,7 @@ import { REGIONS, LEVELS, SHOWN, buildRound, makeOptions, distraktorer, varforFe
          justeraSkill, nivaForSkill, buildStigandeRound,
          HUVUD_MAX, SIDO_START, SIDO_MAX, GANGER_START, GANGER_MAX, TALRAD_START, TALRAD_MAX, huvudspar, arLast, oppnaEfter, sidoOppen, gangerOppen, talradOppen, sidosparEfter, datumNyckel, statSvar, statTid, MAKE, SMASPEL, SPELMOTOR, spelKopt, LEK_W, LEK_H, synligaBanor, maxStars, nastaBana, blandatLevel, levelById,
          SPAR, sparOppen, linjeOppen, klockaOppen, LINJE_START, LINJE_MAX, KLOCKA_START, KLOCKA_MAX, timme12, tidKod, tidOrd, kodTid, vantetidOrd, svarText,
-         hallFraga, tavlaHar, avgangar, VAGNAR, vagnFragaFor, rostPoang, rostNamn, bastaRost } from "./hamta.mjs";
+         hallFraga, tavlaHar, avgangar, VAGNAR, vagnFragaFor, rostPoang, rostNamn, rostKvalitet, rostEtikett, bastaRost } from "./hamta.mjs";
 
 const rot = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -845,4 +845,16 @@ test("rösten: premium före förbättrad före nätröst före vanlig, och namn
   assert.equal(rostNamn(roster[4]), "Sofie Online (Natural)");
   assert.equal(rostNamn(roster[1]), "svenska");
   assert.equal(rostNamn(roster[3]), "Alva (Premium)");
+  /* På iPad heter båda "Alva" – då skiljer adressen dem åt i rutan */
+  const ipad = [
+    { name:"Alva", lang:"sv-SE", voiceURI:"com.apple.voice.compact.sv-SE.Alva", localService:true, default:true },
+    { name:"Alva", lang:"sv-SE", voiceURI:"com.apple.voice.premium.sv-SE.Alva", localService:true },
+    { name:"Klara", lang:"sv-SE", voiceURI:"com.apple.voice.enhanced.sv-SE.Klara", localService:true },
+    { name:"Alva", lang:"sv-SE", voiceURI:"com.apple.ttsbundle.Alva-premium", localService:true }
+  ];
+  assert.deepEqual(ipad.map(rostEtikett), ["Alva · liten", "Alva · Premium", "Klara · Förbättrad", "Alva · Premium"]);
+  assert.deepEqual(ipad.map(rostKvalitet), ["liten", "Premium", "Förbättrad", "Premium"]);
+  assert.equal(bastaRost(ipad).voiceURI, "com.apple.voice.premium.sv-SE.Alva");
+  assert.equal(rostEtikett(roster[3]), "Alva (Premium)", "står det redan i namnet läggs inget till");
+  assert.equal(rostEtikett(roster[1]), "svenska · nätröst");
 });
