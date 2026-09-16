@@ -504,10 +504,11 @@ Tre saker värda att veta:
 
 ## För vuxna
 
-Kugghjulet uppe till höger: värld, ljud, uppläsning, rösthastighet, vilken
-röst, räknehjälp, gånger och delat med (av eller på), klockan (av eller på),
-egna utrop (av eller på) och *Spela in utrop*, byt kompisfigur, byt spelare
-och ta bort spelare. Inställningarna hör till
+Kugghjulet uppe till höger: byt namn, värld, ljud, uppläsning, rösthastighet,
+vilken röst, räknehjälp, gånger och delat med (av eller på), klockan (av eller
+på), egna utrop (av eller på) och *Spela in utrop*, byt kompisfigur, byt
+spelare och ta bort spelare. Namnet är det rösten säger och det som står på
+väggkartan; en spelare som skapats utan namn heter *Kompis* tills någon byter. Inställningarna hör till
 spelaren, så syskon kan ha olika. Kompisfiguren står längst ner på spelskärmen
 och hejar, så frågan och svaren får hela bredden; i skrivläget hamnar den under
 knappsatsen och är aldrig i vägen.

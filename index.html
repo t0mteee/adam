@@ -198,6 +198,7 @@ h1, h2, h3{ font-family: "Baloo 2", "Baloo 2 Fallback", system-ui, sans-serif; f
 }
 .name-field::placeholder{ color: rgba(46,26,102,.3); }
 .name-field:focus{ outline: 4px dashed var(--grape); outline-offset: 3px; background: #FFF9E6; }
+.name-field.tom{ animation: oops .45s ease-in-out; border-color: var(--melon); }
 
 /* ── Figurval ───────────────────────────── */
 .pick-grid{ display: grid; gap: 10px; }
@@ -1404,7 +1405,7 @@ const pick = (arr) => arr[rnd(arr.length)];
 const INK = "#2E1A66";
 /* Syns under Inställningar, så man kan se vilken version telefonen kör.
    Höjs tillsammans med VERSION i sw.js. */
-const SPELVERSION = "23";
+const SPELVERSION = "24";
 function shuffle(a){ for(let i = a.length - 1; i > 0; i--){ const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
 function store(key, val){
@@ -3478,6 +3479,9 @@ el("newProfileBtn").addEventListener("click", () => {
 });
 el("cancelCreate").addEventListener("click", () => { renderProfiles(); show("profiles"); });
 el("nameField").addEventListener("keydown", (e) => { if(e.key === "Enter") el("createBtn").click(); });
+sheet.addEventListener("keydown", (e) => {
+  if(e.key === "Enter" && e.target && e.target.id === "nyttNamn"){ e.preventDefault(); sparaNamn(); }
+});
 
 el("createBtn").addEventListener("click", () => {
   const namn = el("nameField").value.trim() || "Kompis";
@@ -5013,6 +5017,29 @@ function rostTipsHTML(p){
   return tips + `<details class="set-detaljer"><summary>Vad plattan säger om rösterna</summary>${rader}${roster.length ? "" : "<div>Inga svenska röster i listan just nu.</div>"}
     <button class="btn" data-action="rost-igen" type="button" style="margin-top:8px;padding:7px 14px;font-size:var(--t-xs);background:var(--paper-2)">Leta igen</button></details>`;
 }
+/* Byt namn på spelaren: samma namnruta som när spelaren skapades */
+function openBytNamn(){
+  const p = P();
+  openSheet(`
+    <div class="sheet-head"><div><h2>Byt namn</h2><p class="sheet-sub">Vad ska ${escapeHtml(p.name)} heta?</p></div>${CLOSE_BTN}</div>
+    <input class="name-field" id="nyttNamn" type="text" maxlength="14" value="${escapeHtml(p.name)}" placeholder="Skriv namnet"
+           autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="done">
+    <div style="display:grid;gap:8px;margin-top:12px">
+      <button class="btn btn-big" data-action="namn-spara" type="button">Spara</button>
+      <button class="btn" data-action="installningar" type="button" style="background:var(--paper-2)">Avbryt</button>
+    </div>`);
+  later(() => { const f = el("nyttNamn"); if(f){ f.focus(); f.select(); } }, 350);
+}
+function sparaNamn(){
+  const p = P(), f = el("nyttNamn"); if(!p || !f) return;
+  const namn = f.value.trim().slice(0, 14);
+  if(!namn){ f.classList.remove("tom"); void f.offsetWidth; f.classList.add("tom"); f.focus(); SFX.wrong(); return; }
+  p.name = namn; saveProfiles();
+  renderHeader();
+  SFX.correct();
+  openSettings();
+  speak(`Hej ${namn}!`, true);
+}
 function openSettings(){
   const p = P(), s = p.settings;
   openSheet(`
@@ -5028,6 +5055,10 @@ function openSettings(){
         <button type="button" data-world="tram" aria-pressed="${p.world === "tram"}">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" style="width:20px;height:20px;vertical-align:-4px;margin-right:4px"><rect x="5" y="3.5" width="14" height="14" rx="3.5"/><path d="M5 9h14M9.5 3.5V2M14.5 3.5V2M8 21l2-3.5M16 21l-2-3.5M4 21h16"/><circle cx="9" cy="13.5" r="1.1" fill="currentColor"/><circle cx="15" cy="13.5" r="1.1" fill="currentColor"/></svg>Spårvagn</button>
       </div>
+    </div>
+    <div class="set-row">
+      <span><span class="set-label">Namn</span><br><span class="set-hint">${escapeHtml(p.name)} · det som rösten säger och som står på kartan</span></span>
+      <button class="btn" data-action="namn" type="button" style="padding:8px 14px;font-size:var(--t-sm);background:var(--sky-hi)">Byt namn</button>
     </div>
     <div class="set-row">
       <span><span class="set-label">Ljud</span><br><span class="set-hint">Plingen när man svarar</span></span>
@@ -5175,6 +5206,9 @@ sheet.addEventListener("click", (e) => {
   }
 
   if(e.target.closest('[data-action="stat"]')){ SFX.tap(); openStatistik(); return; }
+  if(e.target.closest('[data-action="namn"]')){ SFX.tap(); openBytNamn(); return; }
+  if(e.target.closest('[data-action="namn-spara"]')){ sparaNamn(); return; }
+  if(e.target.closest('[data-action="installningar"]')){ SFX.tap(); openSettings(); return; }
   if(e.target.closest('[data-action="utrop"]')){ SFX.tap(); openUtrop(); return; }
   const recB = e.target.closest("[data-rec]");
   if(recB){ SFX.ensure(); utropRecKlick(recB.dataset.rec); return; }
@@ -7015,6 +7049,8 @@ function flyttaTillTvaSpar(p){
   profiles.forEach(p => {
     p.stars = p.stars || {}; p.best = p.best || {}; p.badges = p.badges || [];
     p.coins = p.coins || 0; p.unlocked = p.unlocked || 1;
+    /* Ett namn som saknas ska aldrig bli en tom rad – det går att byta under kugghjulet */
+    if(!p.name || !String(p.name).trim()){ p.name = "Kompis"; p.nyssFlyttad = true; }
     p.tram = p.tram || {}; p.world = p.world || "land";
     p.tramMode = p.tramMode || "choice"; p.stopsRidden = p.stopsRidden || 0;
     /* Stigande är nytt standardläge. Flytta över den som aldrig valt själv,
