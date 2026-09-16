@@ -190,7 +190,7 @@ inställningarna för den som vill vänta med klockan.
 Rätt på första försöket ger 10 guldmynt; tre rätt i rad dubblar och sex rätt i
 rad tredubblar. Rätt efter ett feltryck ger 5 mynt – aldrig minuspoäng. Efter
 varje omgång delas upp till tre stjärnor ut (4 rätt direkt ger en, 7 ger två, 9
-ger tre), och minst en stjärna öppnar nästa bana. Totalt finns 156 stjärnor (138 med gånger och delat avstängt, 141 med klockan avstängd) och 35
+ger tre), och minst en stjärna öppnar nästa bana. Totalt finns 156 stjärnor (138 med gånger och delat avstängt, 141 med klockan avstängd) och 40
 märken att samla, från *Första stjärnan* och *Ändstation* till *Hela landet*,
 *Klurig* och *Tio uppdrag*.
 
@@ -231,6 +231,19 @@ tid, och poängen sparas som rekord per spelare – kistan visar rekordet bredvi
 
 Två märken hör till: *Lekstugan* för alla tre spelen och *Rekordjägare* efter
 tio spelade omgångar. Spelen ger inga mynt – de är vad mynten är till för.
+
+**Förarhytten** är det fjärde spelet och det enda som är en riktig linje:
+vagnen ses från sidan, rälsen rullar och perrongerna passerar med sina
+skyltar. Skylten uppe säger var man ska stanna – *Chalmers, 3 hållplatser* –
+och prickarna bredvid fylls i allteftersom hållplatserna passerar, så man
+räknar med ögonen. Knapparna heter *Kör* och *Bromsa* (ett tryck på planen
+bromsar också). Stannar vagnens front inom sex pixlar från märket är det
+*Perfekt!* och 100 poäng, sedan 80, 60, 40 och 20 ju längre ifrån, och kör
+man förbi blir det noll. Fem stopp och sedan slut; 400 poäng ger märket
+*Spårvagnsförare*. Från Lekstugan körs en slumpad linje; på resan finns
+knappen *Kör vagnen själv* under *Åk till nästa hållplats*, och då är det
+just de hållplatser som kommer härnäst på linjen man kör. Rösten säger
+vart man ska, så det går utan att läsa.
 
 ## Så går det – sidan för föräldern
 
@@ -360,6 +373,46 @@ låter som ett utrop och inte som en lekkamrat.
   fem mynt extra, och tio lästa vagnar ger märket *Vagnkännare*. Numren och
   var de sitter i bilden ligger i listan `VAGNAR` i `index.html`; vill du lägga
   till ett foto som visar ett nummer är det en rad.
+- **Vagnkort.** Varje vagn i fotona har ett samlarkort: numret, vagnstypen
+  med en silhuett i rätt längd och rätt antal delar, hur lång den är, hur
+  många som får plats, när den byggdes och av vem – och namnet, för
+  Göteborgs vagnar bär namn efter kända göteborgare: vagn 318 heter *Bebben*
+  efter IFK-spelaren Bertil Johansson, 457 *Lasse Dahlquist*. Läser barnet
+  numret på fotot får det kortet, som firas när hållplatsen är klar, och
+  *Mina vagnkort* på startskärmen visar samlingen: 19 kort att hitta,
+  grupperade på M28, M29, M31 och M32, med skuggor för dem som återstår.
+  Typerna M33 och M34 finns med i tabellen `VAGNTYPER` men saknar foto än.
+  Fakta kommer från Wikipedias artiklar om vagntyperna, namnen från
+  Göteborgs Spårvägars lista. Märken: *Kortsamlare* och *Hela vagnhallen*.
+- **Spårarbete!** Efter ett par klarade uppdrag är vartannat ett spårarbete:
+  en sträcka på vägen till målet är avstängd, med en rödvit bom på kartan
+  och sträckan streckad. Vagnar över den avstängda sträckan går inte –
+  perrongen visar dem gråa med *Spårarbete!*, och står vagnen med spärren
+  rakt framför sig säger knappen *Byt vagn eller vänd*. Tipsen räknar med
+  omvägen, som aldrig är mer än fyra hållplatser längre än den vanliga vägen,
+  och belöningen räknas på omvägen plus tjugo mynt extra. Märke: *Omvägen*.
+- **Var är vi? Fotoquiz.** Ett foto och fyra hållplatsnamn, eller – oftare –
+  ett namn som rösten säger och fyra foton att välja bland, så att den som
+  inte läser kan spela själv. Hållplatserna tas bland dem barnet stått vid
+  när det är minst sex med foto, annars bland alla 105, och de tre felsvaren
+  ligger helst på samma linje som den rätta. Frågan smyger in i var tredje
+  spårvagnsomgång, och på startskärmen finns *Var är vi?* som en egen runda
+  om sex bilder med rekord. Märke: *Stadskännare*, 25 bilder rätt direkt.
+- **Egna utrop.** Under kugghjulet, *Spela in utrop*, läser man in
+  hållplatsnamnen och de fasta fraserna (*Nästa hållplats*, *Ändstation*,
+  *Linje 5*, *mot*) med egen röst – barnets eller förälderns. Tystnaden i
+  början och slutet klipps bort, ljudet sparas som WAV i webbläsarens
+  databas på den plattan, och vagnen ropar sedan ut med de inspelade
+  klippen där de finns: *Nästa hållplats: Chalmers* blir två klipp efter
+  varandra. Det som inte är inspelat läser rösten som vanligt. Reglaget
+  *Egna utrop* stänger av. Inspelning kräver Safari eller Chrome på en egen
+  adress (inte inbäddat i en visare), och en Safari-flik som inte öppnats på
+  sju dagar kan bli av med sina klipp – hemskärmsappen behåller dem.
+- **Karta till väggen.** Knappen på startskärmen ritar hela nätet på ett ark
+  med barnets namn överst: alla linjer i sina färger, varje hållplats som en
+  prick, de åkta gröna och namngivna, ändstationerna alltid namngivna, och
+  en linjeförteckning under. *Skriv ut* ger en A4-sida, *Spara som bild* en
+  PNG. Affischen växer med resorna.
 
 Linje 13 är utelämnad. Västtrafiks karta visar bara linjerna 1–12, och 13 är i
 praktiken indragen sedan 2023. Vill du lägga till eller rätta något ligger alla
@@ -453,7 +506,8 @@ Tre saker värda att veta:
 
 Kugghjulet uppe till höger: värld, ljud, uppläsning, rösthastighet, vilken
 röst, räknehjälp, gånger och delat med (av eller på), klockan (av eller på),
-byt kompisfigur, byt spelare och ta bort spelare. Inställningarna hör till
+egna utrop (av eller på) och *Spela in utrop*, byt kompisfigur, byt spelare
+och ta bort spelare. Inställningarna hör till
 spelaren, så syskon kan ha olika. Kompisfiguren står längst ner på spelskärmen
 och hejar, så frågan och svaren får hela bredden; i skrivläget hamnar den under
 knappsatsen och är aldrig i vägen.
@@ -500,7 +554,7 @@ hack i nätet släcker inte resten av resan.
 
 ## Tester
 
-`node --test` kör trettiotre tester som plockar ut spelets rena funktioner direkt
+`node --test` kör trettioåtta tester som plockar ut spelets rena funktioner direkt
 ur `index.html`, så att de aldrig testar en kopia som glidit isär från källan. De
 täcker att uppgifterna håller sig inom banans tal och aldrig blir negativa, att
 rätt svar alltid finns bland alternativen och att varje felsvar har en
@@ -516,7 +570,12 @@ gäller Tallinjen och Klockan (spåren öppnas av rätt bana, hoppen räknar rä
 14:30 blir halv tre, tavlan visar vagnar som verkligen går från hållplatsen),
 hållplatsfrågorna på en riktig linje, att varje märkt vagnsnummer hör till ett
 foto som finns och får sina omkastade siffror som rutor, och att rösterna
-rangordnas premium före förbättrad före nätröst före vanlig.
+rangordnas premium före förbättrad före nätröst före vanlig. De sista fem
+gäller spårarbetet (spärren sitter på en kortaste väg, målet nås ändå och
+tipsen går runt), fotoquizen, vagnkorten (nummerserierna överlappar inte och
+varje foto-vagn har en typ), Förarhytten (nära märket ger poäng, förbi ger
+inget) och de egna utropen (utropen delas i inspelade bitar och klippen blir
+riktiga WAV-filer).
 
 ## Teknik
 

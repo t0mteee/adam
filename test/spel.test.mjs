@@ -9,7 +9,7 @@ import { REGIONS, LEVELS, SHOWN, buildRound, makeOptions, distraktorer, varforFe
          justeraSkill, nivaForSkill, buildStigandeRound,
          HUVUD_MAX, SIDO_START, SIDO_MAX, GANGER_START, GANGER_MAX, TALRAD_START, TALRAD_MAX, huvudspar, arLast, oppnaEfter, sidoOppen, gangerOppen, talradOppen, sidosparEfter, datumNyckel, statSvar, statTid, MAKE, SMASPEL, SPELMOTOR, spelKopt, LEK_W, LEK_H, synligaBanor, maxStars, nastaBana, blandatLevel, levelById,
          SPAR, sparOppen, linjeOppen, klockaOppen, LINJE_START, LINJE_MAX, KLOCKA_START, KLOCKA_MAX, timme12, tidKod, tidOrd, kodTid, vantetidOrd, svarText,
-         hallFraga, tavlaHar, avgangar, VAGNAR, vagnFragaFor, rostPoang, rostNamn, rostKvalitet, rostEtikett, bastaRost, valjRost } from "./hamta.mjs";
+         hallFraga, tavlaHar, avgangar, VAGNAR, vagnFragaFor, rostPoang, rostNamn, rostKvalitet, rostEtikett, bastaRost, valjRost, sparradKant, valjSparr, FOTOQUIZ, fotoFraga, UTROP_FRASER, utropAlla, utropDelar, wavBlob, linjerVid, VAGNTYPER, VAGNNAMN, vagntypFor, vagnkortFor, VAGNKORT_ALLA } from "./hamta.mjs";
 
 const rot = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -473,7 +473,7 @@ test("uppdrag: nätet hänger ihop, målet ligger några hållplatser bort och t
   }
   const van = { uppdragKlara: 12, besokta: {} };
   const hopp = new Set();
-  for(let i = 0; i < 80; i++){ const u = valjUppdrag(van, "Brunnsparken"); hopp.add(u.hopp); assert.ok(u.hopp >= 3 && u.hopp <= 8); }
+  for(let i = 0; i < 80; i++){ const u = valjUppdrag(van, "Brunnsparken"); hopp.add(u.hopp); assert.ok(u.hopp >= 3 && u.hopp <= (u.sparr ? 12 : 8), JSON.stringify(u)); }
   assert.ok(hopp.size > 2, "längre uppdrag efter hand");
   /* Tipset: sitt kvar, vänd eller byt – och det som föreslås tar en faktiskt närmare */
   let byten = 0, vand = 0, kvar = 0;
@@ -578,7 +578,7 @@ test("så går det: bokför per sort och per dag, trettio dagar bakåt, aldrig e
 });
 
 test("småspelen: motorerna räknar poäng, tar slut i tid och klarar sig utan skärm", () => {
-  assert.deepEqual(SMASPEL.map(v => v.id), ["race", "bil", "berg"]);
+  assert.deepEqual(SMASPEL.map(v => v.id), ["race", "bil", "berg", "hytt"]);
   assert.ok(SMASPEL.every(v => v.pris > 0 && v.hur.length > 20 && v.enhet));
   assert.ok(spelKopt({ spel:["race"] }, "race") && !spelKopt({ spel:[] }, "race") && !spelKopt(null, "race"));
   const tyst = () => {};
@@ -870,4 +870,173 @@ test("rösten: premium före förbättrad före nätröst före vanlig, och namn
   assert.equal(valjRost(ipad, "finns-inte-langre", true).voiceURI, "com.apple.voice.premium.sv-SE.Alva", "en borttagen röst faller tillbaka på automatiken");
   assert.equal(valjRost([], null, false), null);
   assert.equal(valjRost(roster, null, false).name, "Alva (Premium)");
+});
+
+test("spårarbete: en avstängd sträcka på vägen, målet nås ändå på en omväg och tipsen går runt", () => {
+  assert.ok(sparradKant(["Valand", "Vasaplatsen"], "Vasaplatsen", "Valand") && !sparradKant(["Valand", "Vasaplatsen"], "Valand", "Chalmers") && !sparradKant(null, "a", "b"));
+  const utan = natAvstand("Brunnsparken");
+  const med = natAvstand("Brunnsparken", ["Brunnsparken", "Kungsportsplatsen"]);
+  assert.ok(med.get("Kungsportsplatsen") >= 2, "grannen nås på en omväg när sträckan är stängd");
+  assert.ok([...utan.keys()].every(n => med.has(n)), "ingen hållplats blir onåbar av ett enda spårarbete från Brunnsparken");
+  let antal = 0, langre = 0;
+  for(let i = 0; i < 200; i++){
+    const fran = pickStop(), dist = natAvstand(fran);
+    const mal = [...dist].filter(([, d]) => d >= 3 && d <= 8).map(([n]) => n)[i % 5];
+    if(!mal) continue;
+    const s = valjSparr(fran, mal, dist);
+    if(!s) continue;
+    antal++;
+    assert.ok(s.sparr.length === 2 && s.sparr[0] !== s.sparr[1]);
+    assert.ok(linjerVid(s.sparr[0]).some(l => Math.abs(l.stops.indexOf(s.sparr[0]) - l.stops.indexOf(s.sparr[1])) === 1), "spärren sitter mellan två grannar");
+    const d2 = natAvstand(fran, s.sparr).get(mal);
+    assert.equal(s.hopp, d2);
+    assert.ok(d2 >= dist.get(mal) && d2 <= dist.get(mal) + 4, `omvägen ${d2} mot ${dist.get(mal)}`);
+    if(d2 > dist.get(mal)) langre++;
+    /* Spärren ligger på en kortaste väg: utan den vore vägen kortare eller lika */
+    assert.ok(dist.get(s.sparr[0]) !== dist.get(s.sparr[1]));
+  }
+  assert.ok(antal > 60, `spärr hittades bara ${antal} gånger`);
+  assert.ok(langre > 20, `omvägen borde oftast bli längre, blev det ${langre} gånger`);
+  /* Uppdraget får en spärr först efter två klarade, och tipsen tar en runt */
+  let medSparr = 0;
+  for(let i = 0; i < 300; i++){
+    const p = { uppdragKlara: 4, besokta: {} };
+    const u = valjUppdrag(p, "Brunnsparken");
+    if(u && u.sparr){
+      medSparr++;
+      assert.equal(u.beloning, 20 * u.hopp + 20);
+      assert.equal(natAvstand("Brunnsparken", u.sparr).get(u.mal), u.hopp);
+      p.uppdrag = u; p.resa = { pos: "Brunnsparken", ref: "1", rikt: 1 };
+      const t = uppdragTips(p);
+      assert.ok(t && t.kvar === u.hopp);
+      assert.ok(t.val.every(a => !(a.sparrad && a.narmare)), "en spärrad vagn tar en aldrig närmare");
+      assert.ok(t.val.some(a => a.narmare), "någon vagn tar en närmare målet");
+    }
+  }
+  assert.ok(medSparr > 60 && medSparr < 240, `spärr i ${medSparr} av 300 uppdrag`);
+  const p0 = { uppdragKlara: 0, besokta: {} };
+  for(let i = 0; i < 40; i++){ const u = valjUppdrag(p0, "Brunnsparken"); assert.ok(u && !u.sparr, "nybörjaren slipper spårarbeten"); }
+  function pickStop(){ return ALLA_STOPP[Math.floor(Math.random() * ALLA_STOPP.length)]; }
+});
+
+test("fotoquizen: rätt hållplats bland fyra med foto, helst sådana barnet stått vid", () => {
+  assert.equal(FOTOQUIZ.id, -3); assert.ok(FOTOQUIZ.quiz && FOTOQUIZ.kinds.includes("foto"));
+  const tom = { besokta: {} };
+  for(let i = 0; i < 300; i++){
+    const q = fotoFraga(tom, i % 2 ? "bild" : "namn");
+    assert.equal(q.kind, i % 2 ? "fotobild" : "fotonamn");
+    assert.equal(q.namn.length, 4); assert.equal(new Set(q.namn).size, 4);
+    assert.ok(q.namn.every(n => STOP_PHOTOS[n]), "alla fyra har foto");
+    assert.equal(q.foto[q.answer], STOP_PHOTOS[q.namn[q.answer]].f);
+    assert.ok(q.answer >= 0 && q.answer < 4 && q.svarNamn && q.fast);
+    assert.deepEqual(makeOptions(q, 4).slice().sort(), [0, 1, 2, 3]);
+    const fel = distraktorer(q).filter(x => x.v <= 3);
+    assert.equal(fel.length, 3);
+    assert.ok(fel.every(x => /Det är /.test(x.varfor) && x.v !== q.answer));
+    assert.match(varforFel(q, (q.answer + 1) % 4), /Det är /);
+    /* nyckeln skiljer på hållplats och riktning */
+    assert.ok(qNyckel(q).includes(String(q.a)));
+  }
+  /* Har barnet stått vid många hållplatser med foto tas de rätta därifrån */
+  const varit = Object.keys(STOP_PHOTOS).slice(0, 8);
+  const p = { besokta: { "1": varit } };
+  for(let i = 0; i < 100; i++) assert.ok(varit.includes(fotoFraga(p, "namn").namn[fotoFraga(p, "namn").answer]) || true);
+  const ratta = new Set();
+  for(let i = 0; i < 200; i++){ const q = fotoFraga(p, "namn"); ratta.add(q.namn[q.answer]); }
+  assert.ok([...ratta].every(n => varit.includes(n)), "de rätta svaren kommer från besökta hållplatser");
+  assert.ok(ratta.size >= 5, "och det varierar");
+});
+
+test("vagnkorten: nummerserierna överlappar inte, varje foto-vagn har en typ och namnen sitter på riktiga nummer", () => {
+  assert.equal(VAGNTYPER.length, 6);
+  for(const t of VAGNTYPER){
+    assert.ok(t.fran < t.till && t.langd > 10 && t.byggd && t.av && t.om.length > 20 && t.delar >= 1, t.typ);
+    for(const u of VAGNTYPER) if(u !== t) assert.ok(t.till < u.fran || u.till < t.fran, `${t.typ} och ${u.typ} överlappar`);
+  }
+  assert.equal(vagntypFor(318).typ, "M31"); assert.equal(vagntypFor(465).typ, "M32"); assert.equal(vagntypFor(490).typ, "M33");
+  assert.equal(vagntypFor(530).typ, "M33"); assert.equal(vagntypFor(601).typ, "M34"); assert.equal(vagntypFor(770).typ, "M28"); assert.equal(vagntypFor(860).typ, "M29");
+  assert.equal(vagntypFor(500).typ, "M33", "500 finns inte som vagn men ligger i M33-serien – ofarligt");
+  assert.equal(vagntypFor(999), null); assert.equal(vagntypFor(200), null);
+  for(const v of Object.values(VAGNAR)) assert.ok(vagntypFor(v.nr), `vagn ${v.nr} saknar typ`);
+  assert.ok(VAGNKORT_ALLA.length >= 15 && VAGNKORT_ALLA.every((n, i) => i === 0 || n > VAGNKORT_ALLA[i - 1]));
+  for(const [nr, [namn, om]] of Object.entries(VAGNNAMN)){
+    assert.ok(vagntypFor(Number(nr)), `namnet ${namn} sitter på nummer ${nr} som ingen typ har`);
+    assert.ok(namn.length > 2 && om.length > 5);
+  }
+  const k = vagnkortFor(318);
+  assert.equal(k.namn, "Bebben"); assert.equal(k.typ.typ, "M31"); assert.match(k.om, /IFK/);
+  assert.equal(vagnkortFor(343).namn, null);
+  assert.equal(vagnkortFor(123), null);
+});
+
+test("Förarhytten: räkna hållplatserna, stanna vid märket – nära ger poäng, förbi ger inget", () => {
+  const tyst = () => {}, DT = 1 / 60;
+  const namn = ["Alfa", "Beta", "Gamma", "Delta", "Epsilon", "Zeta", "Eta", "Theta", "Iota", "Kappa"];
+  const h = SPELMOTOR.hytt(LEK_W, LEK_H, tyst, { namn, farg:"#fff" });
+  assert.deepEqual(h.knappar, ["Kör", "Bromsa"]);
+  assert.equal(h.stopp.length, 30, "hållplatserna räcker till fem uppdrag");
+  assert.equal(h.stopp[0].namn, "Alfa");
+  h.start();
+  assert.ok(h.s.n >= 2 && h.s.n <= 5 && h.s.mal === h.s.n - 1, `första målet ${h.s.mal}, ${h.s.n} bort`);
+  assert.equal(h.s.namnMal, namn[h.s.mal]);
+  /* kör fram och bromsa strax före märket */
+  const mal = h.stopp[h.s.mal];
+  let steg = 0;
+  while(h.s.x < mal.x - 62 && steg++ < 60 * 60) h.update(DT);
+  assert.ok(h.s.v > 100, "vagnen har fått upp farten");
+  h.styr(1);
+  steg = 0;
+  while(!(h.s.v === 0) && steg++ < 600) h.update(DT);
+  assert.ok(Math.abs(h.s.x - mal.x) < 30, `stannade ${Math.abs(h.s.x - mal.x).toFixed(0)} px från märket`);
+  assert.ok(h.s.poang >= 60, `stopp nära märket ska ge poäng, gav ${h.s.poang}`);
+  assert.equal(h.s.klara, 1);
+  assert.ok(h.s.paus > 0 && h.s.text.length > 0);
+  /* efter pausen kommer ett nytt uppdrag, framåt */
+  for(let i = 0; i < 2.5 * 60; i++) h.update(DT);
+  assert.ok(h.s.mal > mal.x ? true : h.s.mal > h.stopp.indexOf(mal), "nästa mål ligger längre fram");
+  assert.ok(!h.s.brom && h.s.paus <= 0);
+  /* att stanna mitt emellan hållplatser ger ingenting, och man kör vidare av sig själv */
+  const h2 = SPELMOTOR.hytt(LEK_W, LEK_H, tyst, { namn, farg:"#fff" });
+  h2.start();
+  for(let i = 0; i < 40; i++) h2.update(DT);
+  h2.tap();
+  steg = 0; while(h2.s.v > 0 && steg++ < 600) h2.update(DT);
+  assert.match(h2.s.text, /ingen hållplats/);
+  assert.equal(h2.s.poang, 0); assert.equal(h2.s.klara, 0);
+  for(let i = 0; i < 90; i++) h2.update(DT);
+  assert.ok(h2.s.v > 0, "kör vidare efter pausen");
+  /* aldrig bromsa: fem missar och sedan slut */
+  const h3 = SPELMOTOR.hytt(LEK_W, LEK_H, tyst, { namn, farg:"#fff" });
+  h3.start();
+  for(let i = 0; i < 90 * 60 && !h3.slut(); i++) h3.update(DT);
+  assert.ok(h3.slut(), "fem körda-förbi tar slut på spelet");
+  assert.equal(h3.s.poang, 0); assert.equal(h3.s.klara, 5);
+  assert.match(h3.status(), /5 av 5/);
+  /* utan egna hållplatser tas en riktig linje */
+  const h4 = SPELMOTOR.hytt(LEK_W, LEK_H, tyst);
+  assert.ok(h4.stopp.length >= 30 && ALLA_STOPP.includes(h4.stopp[0].namn));
+});
+
+test("egna utrop: utropen delas i inspelade bitar, och klippen blir riktiga WAV-filer", async () => {
+  const UTROP_ALLA = utropAlla();
+  assert.ok(UTROP_ALLA.length >= UTROP_FRASER.length + ALLA_STOPP.length && UTROP_ALLA.includes("Länsmansgården"), "skyltarnas mål går också att läsa in");
+  assert.ok(UTROP_FRASER.includes("Nästa hållplats") && UTROP_FRASER.includes("Linje 12") && UTROP_FRASER.includes("mot"));
+  assert.deepEqual(utropDelar("Nästa hållplats: Chalmers"), ["Nästa hållplats", "Chalmers"]);
+  assert.deepEqual(utropDelar("Chalmers"), ["Chalmers"]);
+  assert.deepEqual(utropDelar("Ändstation, Saltholmen."), ["Ändstation", "Saltholmen"]);
+  assert.deepEqual(utropDelar("Saltholmen. Ändstation."), ["Saltholmen", "Ändstation"]);
+  assert.deepEqual(utropDelar("Hållplats Valand"), ["Valand"]);
+  assert.deepEqual(utropDelar("Linje 5, mot Länsmansgården"), ["Linje 5", "mot", "Länsmansgården"]);
+  assert.equal(utropDelar("Nytt uppdrag! Ta dig till Liseberg!"), null, "annat läses av rösten");
+  assert.equal(utropDelar("Nästa hållplats: Månen"), null, "okända namn läses av rösten");
+  assert.equal(utropDelar("Linje 99, mot Valand"), null);
+  /* WAV: 44 byte huvud, 16 bitar mono, rätt längd */
+  const n = 220, buf = { length: n, sampleRate: 22050, getChannelData: () => Float32Array.from({ length: n }, (_, i) => Math.sin(i / 5) * 0.5) };
+  const blob = wavBlob(buf);
+  assert.equal(blob.size, 44 + n * 2); assert.equal(blob.type, "audio/wav");
+  const v = new DataView(await blob.arrayBuffer());
+  const s4 = (o) => String.fromCharCode(v.getUint8(o), v.getUint8(o + 1), v.getUint8(o + 2), v.getUint8(o + 3));
+  assert.equal(s4(0), "RIFF"); assert.equal(s4(8), "WAVE"); assert.equal(s4(36), "data");
+  assert.equal(v.getUint32(24, true), 22050); assert.equal(v.getUint16(22, true), 1); assert.equal(v.getUint16(34, true), 16);
+  assert.equal(v.getUint32(40, true), n * 2);
 });
