@@ -422,16 +422,19 @@ Ikonen dyker upp bland apparna och spelet startar i helskärm.
 **Finare röst på iPad.** Rösten som följer med iPad, *Alva*, är den lilla
 varianten och låter som en dator. Under *Inställningar → Hjälpmedel → Uppläst
 innehåll → Röster → Svenska* går samma röst att ladda ner som *Förbättrad* eller
-*Premium*, och där finns även *Klara* och *Oskar*. När nedladdningen är klar
-dyker rösterna upp under *Vilken röst* i spelets inställningar, och spelet
-väljer den bästa av sig självt. På iPad heter den lilla och den nedladdade
-rösten samma sak, så rutorna säger vilken som är vilken: *Alva · liten* och
-*Alva · Premium*. Syns inte den nya rösten: stäng spelet helt (svep bort det
-från appväxlaren, eller stäng fliken i Safari) och öppna det igen – iPad läser
-in röstlistan när sidan startar. Under *Vad plattan säger om rösterna* står
-exakt vilka röster plattan lämnar ut, med adress, och *Leta igen* frågar en
-gång till. Spelet rör inte heller tonläget längre – höjs det låter varje röst
-som en robot.
+*Premium*. Men Safari lämnar aldrig ut nedladdade röster till webbsidor och
+spel – bara de förinstallerade, det har Apple bekräftat i sitt
+utvecklarforum – så *Alva (Premium)* dyker inte upp i spelets lista hur mycket
+man än letar. Det finns en väg runt: pekar spelet inte ut någon röst alls tar
+iPad den röst som är vald för svenska under *Uppläst innehåll*. Så gör så här:
+tryck på *Alva* i listan över svenska röster och bocka för *Premium*. I spelet
+gör *Automatiskt* på iPad samma sak som *Plattans val* (som också går att välja
+uttryckligen), och frågorna läses då med rösten iPad har valt. Under *Vad
+plattan säger om rösterna* står exakt vilka röster Safari lämnar ut, med
+adress, och vilken röst spelet talar med just nu. Spelet rör inte heller
+tonläget – höjs det låter varje röst som en robot – och avbryter bara
+pågående tal när det finns något att avbryta, eftersom iPad annars tappar den
+valda rösten.
 
 Tre saker värda att veta:
 
@@ -525,8 +528,13 @@ rundade systemtypsnitt som reserv om sidan är offline.
 Uppläsningen använder enhetens svenska röster. Finns flera väljer spelet den
 bästa: *Premium* före *Förbättrad* (eller *Natural*, *Neural*, *WaveNet*) före
 nätrösterna före de små inbyggda, och spelaren kan välja en annan under
-kugghjulet; valet sparas per spelare och faller tillbaka på den bästa om rösten
-tas bort från plattan. Rösterna hämtas på nytt inför varje uppläsning, eftersom
-iPad byter ut listan när en röst laddats ner, och inställningarna ritas om när
-plattan hittar nya röster. Tonläget lämnas orört. Saknas svensk röst helt blir
-spelet tyst – prickar och siffror fungerar ändå.
+kugghjulet; valet sparas per spelare och faller tillbaka på automatiken om
+rösten tas bort från plattan. På Apples enheter pekar spelet inte ut någon
+röst alls när listan bara har de små inbyggda, utan säger bara att språket är
+svenska: då använder plattan rösten som är vald under *Uppläst innehåll*,
+vilket är enda sättet att nå en nedladdad röst från Safari. *Plattans val* gör
+samma sak på begäran, överallt. Rösterna hämtas på nytt inför varje
+uppläsning, eftersom iPad byter ut listan när en röst laddats ner, och
+inställningarna ritas om när plattan hittar nya röster. Tonläget lämnas
+orört. Saknas svensk röst helt blir spelet tyst – prickar och siffror fungerar
+ändå.

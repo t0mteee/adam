@@ -9,7 +9,7 @@ import { REGIONS, LEVELS, SHOWN, buildRound, makeOptions, distraktorer, varforFe
          justeraSkill, nivaForSkill, buildStigandeRound,
          HUVUD_MAX, SIDO_START, SIDO_MAX, GANGER_START, GANGER_MAX, TALRAD_START, TALRAD_MAX, huvudspar, arLast, oppnaEfter, sidoOppen, gangerOppen, talradOppen, sidosparEfter, datumNyckel, statSvar, statTid, MAKE, SMASPEL, SPELMOTOR, spelKopt, LEK_W, LEK_H, synligaBanor, maxStars, nastaBana, blandatLevel, levelById,
          SPAR, sparOppen, linjeOppen, klockaOppen, LINJE_START, LINJE_MAX, KLOCKA_START, KLOCKA_MAX, timme12, tidKod, tidOrd, kodTid, vantetidOrd, svarText,
-         hallFraga, tavlaHar, avgangar, VAGNAR, vagnFragaFor, rostPoang, rostNamn, rostKvalitet, rostEtikett, bastaRost } from "./hamta.mjs";
+         hallFraga, tavlaHar, avgangar, VAGNAR, vagnFragaFor, rostPoang, rostNamn, rostKvalitet, rostEtikett, bastaRost, valjRost } from "./hamta.mjs";
 
 const rot = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -857,4 +857,17 @@ test("rösten: premium före förbättrad före nätröst före vanlig, och namn
   assert.equal(bastaRost(ipad).voiceURI, "com.apple.voice.premium.sv-SE.Alva");
   assert.equal(rostEtikett(roster[3]), "Alva (Premium)", "står det redan i namnet läggs inget till");
   assert.equal(rostEtikett(roster[1]), "svenska · nätröst");
+  /* Safari visar bara de förinstallerade rösterna. Finns bara lilla Alva pekar
+     spelet på iPad inte ut någon röst alls, så plattan får ta den som är vald
+     under Uppläst innehåll – enda vägen till en nedladdad Premium-röst. */
+  const liten = [ipad[0]];
+  assert.equal(valjRost(liten, null, true), null, "iPad med bara liten Alva: plattans val");
+  assert.equal(valjRost(liten, null, false).voiceURI, ipad[0].voiceURI, "andra plattor tar den som finns");
+  assert.equal(valjRost(ipad, null, true).voiceURI, "com.apple.voice.premium.sv-SE.Alva", "finns en fin röst i listan tas den");
+  assert.equal(valjRost(ipad, "system", true), null);
+  assert.equal(valjRost(ipad, "system", false), null, "plattans val gäller överallt");
+  assert.equal(valjRost(ipad, ipad[0].voiceURI, true).voiceURI, ipad[0].voiceURI, "ett uttryckligt val gäller även om det är den lilla");
+  assert.equal(valjRost(ipad, "finns-inte-langre", true).voiceURI, "com.apple.voice.premium.sv-SE.Alva", "en borttagen röst faller tillbaka på automatiken");
+  assert.equal(valjRost([], null, false), null);
+  assert.equal(valjRost(roster, null, false).name, "Alva (Premium)");
 });

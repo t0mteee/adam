@@ -1303,7 +1303,7 @@ const pick = (arr) => arr[rnd(arr.length)];
 const INK = "#2E1A66";
 /* Syns under Inställningar, så man kan se vilken version telefonen kör.
    Höjs tillsammans med VERSION i sw.js. */
-const SPELVERSION = "21";
+const SPELVERSION = "22";
 function shuffle(a){ for(let i = a.length - 1; i > 0; i--){ const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
 function store(key, val){
@@ -2710,6 +2710,23 @@ function rostEtikett(v){
 function bastaRost(roster){
   return roster.slice().sort((a, b) => rostPoang(b) - rostPoang(a) || (b.default ? 1 : 0) - (a.default ? 1 : 0))[0] || null;
 }
+/* iPad, iPhone eller Mac? Safari lämnar aldrig ut nedladdade röster till
+   webbsidor – bara de förinstallerade – så där får plattan själv välja röst
+   när ingen fin finns i listan. */
+const APPLE = typeof navigator !== "undefined" && /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent || "");
+/* Vilken röst som ska tala: ett röstobjekt, eller null. Null betyder att
+   spelet inte pekar ut någon röst alls utan bara säger "svenska", och då tar
+   plattan den röst som är vald under Uppläst innehåll → Röster → Svenska. På
+   iPad är det enda sättet att få en nedladdad röst som Alva (Premium), för
+   Safari visar den inte i listan. vill är spelarens val: "system", en
+   röstadress, eller inget alls (automatiskt). */
+function valjRost(roster, vill, apple){
+  if(vill === "system") return null;
+  if(vill){ const v = roster.find(x => x.voiceURI === vill); if(v) return v; }
+  const bast = bastaRost(roster);
+  if(apple && (!bast || rostPoang(bast) < 3)) return null;
+  return bast;
+}
 let svVoice = null;
 function findVoice(){
   svVoice = bastaRost(svenskaRoster());
@@ -2726,19 +2743,21 @@ if(window.speechSynthesis){
    hämtas på nytt varje gång: iPad byter ut listan när en röst laddats ner, och
    ett gammalt röstobjekt kan då peka på ingenting. */
 function valdRost(p){
-  const roster = svenskaRoster();
-  const vill = p && p.settings && p.settings.rost;
-  if(vill){ const v = roster.find(x => x.voiceURI === vill); if(v) return v; }
-  return bastaRost(roster) || svVoice;
+  return valjRost(svenskaRoster(), p && p.settings ? p.settings.rost : null, APPLE);
 }
 function nyUtsaga(p, text){
   const u = new SpeechSynthesisUtterance(text);
   const v = valdRost(p);
-  if(v){ u.voice = v; u.lang = v.lang || "sv-SE"; }
-  else u.lang = "sv-SE";
+  u.lang = "sv-SE";
+  if(v){ u.voice = v; if(v.lang) u.lang = v.lang; }
   /* Tonläget rörs inte: skruvar man på det låter varje röst som en robot */
   u.pitch = 1;
   return u;
+}
+/* Pågående tal avbryts bara när det finns något att avbryta. På iPad tappar en
+   utsaga som avbryter en annan sin valda röst, så det görs så sällan det går. */
+function tystna(){
+  try{ if(speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel(); }catch(e){}
 }
 /* Hållplatsutrop läses lite lugnare än matteuppgifterna, så att det låter
    mer som ett utrop och mindre som en lekkamrat. */
@@ -2746,7 +2765,7 @@ function speakUtrop(text){
   const p = P();
   if(!window.speechSynthesis || !text || !p || !p.settings.voice) return;
   try{
-    speechSynthesis.cancel();
+    tystna();
     const u = nyUtsaga(p, text);
     u.rate = Math.max(0.55, RATES[p.settings.rate != null ? p.settings.rate : 1].v - 0.12);
     speechSynthesis.speak(u);
@@ -2758,7 +2777,7 @@ function speak(text, force){
   if(!window.speechSynthesis || !text) return;
   if(!force && (!p || !p.settings.voice)) return;
   try{
-    speechSynthesis.cancel();
+    tystna();
     const u = nyUtsaga(p, text);
     u.rate = RATES[(p && p.settings.rate) != null ? p.settings.rate : 1].v;
     speechSynthesis.speak(u);
@@ -2923,7 +2942,7 @@ function show(name){
   /* Ett småspel som lämnas ska sluta rita och räkna */
   if(aktivSkarm === "lek" && name !== "lek") stoppaLek();
   aktivSkarm = name;
-  try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){}
+  if(window.speechSynthesis) tystna();
   SCREENS.forEach(n => el("screen-" + n).classList.toggle("is-active", n === name));
   const kartvy = name === "map" || name === "lines";
   el("mapHeader").hidden = !kartvy;
@@ -4315,25 +4334,32 @@ function openStatistik(){
 
 /* ── Inställningar ──────────────────────── */
 /* Röstväljaren: alla svenska röster på plattan, de finaste först */
-const APPLE = /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent);
+/* Röstraden: Automatiskt (och vad det blir), Plattans val, och varje röst
+   Safari lämnar ut. På iPad blir Automatiskt oftast Plattans val, för de
+   nedladdade rösterna syns inte i listan. */
 function rostKnapparHTML(p){
   const roster = svenskaRoster().slice().sort((a, b) => rostPoang(b) - rostPoang(a) || rostNamn(a).localeCompare(rostNamn(b), "sv"));
-  const vald = p.settings.rost || "", auto = bastaRost(roster);
-  return `<button type="button" data-rost="" aria-pressed="${!vald}">Automatiskt${auto ? " · " + escapeHtml(rostEtikett(auto)) : ""}</button>` +
+  const vald = p.settings.rost || "";
+  const auto = valjRost(roster, null, APPLE);
+  const autoText = auto ? rostEtikett(auto) : APPLE ? "plattans val" : "";
+  return `<button type="button" data-rost="" aria-pressed="${!vald}">Automatiskt${autoText ? " · " + escapeHtml(autoText) : ""}</button>` +
+    `<button type="button" data-rost="system" aria-pressed="${vald === "system"}">Plattans val</button>` +
     roster.map(v => `<button type="button" data-rost="${escapeHtml(v.voiceURI)}" aria-pressed="${vald === v.voiceURI}">${escapeHtml(rostEtikett(v))}${rostPoang(v) >= 3 ? " ★" : ""}</button>`).join("");
 }
 function rostHint(){
   const roster = svenskaRoster();
-  if(!roster.length) return "Ingen svensk röst hittades på den här plattan";
+  if(!roster.length) return APPLE ? "Safari visar inga svenska röster – plattan väljer själv" : "Ingen svensk röst hittades på den här plattan";
   return roster.some(v => rostPoang(v) >= 3) ? "Tryck så säger rösten något. ★ är de finare rösterna" : "Tryck så säger rösten något";
 }
-function rostTipsHTML(){
+function rostTipsHTML(p){
   const roster = svenskaRoster(), bast = bastaRost(roster);
   const tips = !APPLE || (bast && rostPoang(bast) >= 3) ? ""
-    : `<p class="set-tips">Vill du ha en finare röst? Ladda ner <b>Alva (Premium)</b> eller <b>Klara</b> under Inställningar → Hjälpmedel → Uppläst innehåll → Röster → Svenska. Stäng sedan spelet helt och öppna det igen, så dyker den upp här som <b>Alva · Premium</b>.</p>`;
+    : `<p class="set-tips">Safari lämnar aldrig ut nedladdade röster till spel och webbsidor, så <b>Alva (Premium)</b> dyker inte upp här hur mycket man än letar. Men plattan får själv välja röst när spelet inte pekar ut någon: gå till Inställningar → Hjälpmedel → Uppläst innehåll → Röster → Svenska, tryck på <b>Alva</b> och bocka för <b>Premium</b>. Sedan gäller <b>Plattans val</b> här – det är också vad Automatiskt gör på iPad.</p>`;
   /* Vad plattan faktiskt säger – bra att ha när en röst inte dyker upp */
-  const rader = roster.map(v => `<div>${escapeHtml(v.name || "?")} · ${escapeHtml(v.lang || "?")} · ${escapeHtml(v.voiceURI || "?")}${v.localService === false ? " · nät" : ""}${v.default ? " · standard" : ""}</div>`).join("");
-  return tips + `<details class="set-detaljer"><summary>Vad plattan säger om rösterna</summary>${rader || "<div>Inga svenska röster i listan just nu.</div>"}
+  const nu = valdRost(p);
+  const rader = `<div><b>Spelet talar nu med:</b> ${nu ? escapeHtml(rostEtikett(nu)) : "plattans egen svenska röst – ingen utpekad"}</div>` +
+    roster.map(v => `<div>${escapeHtml(v.name || "?")} · ${escapeHtml(v.lang || "?")} · ${escapeHtml(v.voiceURI || "?")}${v.localService === false ? " · nät" : ""}${v.default ? " · standard" : ""}</div>`).join("");
+  return tips + `<details class="set-detaljer"><summary>Vad plattan säger om rösterna</summary>${rader}${roster.length ? "" : "<div>Inga svenska röster i listan just nu.</div>"}
     <button class="btn" data-action="rost-igen" type="button" style="margin-top:8px;padding:7px 14px;font-size:var(--t-xs);background:var(--paper-2)">Leta igen</button></details>`;
 }
 function openSettings(){
@@ -4369,7 +4395,7 @@ function openSettings(){
     <div class="set-row" style="display:block">
       <span class="set-label">Vilken röst</span><br><span class="set-hint">${rostHint()}</span>
       <div class="seg" data-seg="rost" style="flex-wrap:wrap;margin-top:8px">${rostKnapparHTML(p)}</div>
-      ${rostTipsHTML()}
+      ${rostTipsHTML(p)}
     </div>
     <div class="set-row">
       <span><span class="set-label">Räknehjälp på de lätta banorna</span><br><span class="set-hint">Talen som saker att räkna, till och med Grottan</span></span>
@@ -4441,7 +4467,7 @@ sheet.addEventListener("click", (e) => {
     sheet.querySelectorAll("[data-rost]").forEach(b => b.setAttribute("aria-pressed", String((b.dataset.rost || "") === (p.settings.rost || ""))));
     saveProfiles();
     const v = valdRost(p);
-    speak(`Hej ${p.name}! ${v ? "Jag heter " + rostNamn(v).replace(/\s*\(.*\)\s*$/, "") + ", och så här låter jag." : "Så här låter jag."}`, true);
+    speak(`Hej ${p.name}! ${v ? "Jag heter " + rostNamn(v).replace(/\s*\(.*\)\s*$/, "") + ", och så här låter jag." : "Så här låter plattans egen röst."}`, true);
     return;
   }
 
@@ -6034,7 +6060,7 @@ el("againBtn").addEventListener("click", () => { SFX.tap(); startRound(g.level, 
 el("backBtn").addEventListener("click", () => { SFX.tap(); enterWorld(false); });
 el("homeBtn").addEventListener("click", () => {
   SFX.tap();
-  try{ speechSynthesis.cancel(); }catch(e){}
+  tystna();
   if(g.tram){ renderTrip(false); show("trip"); } else enterWorld(false);
 });
 el("speakBtn").addEventListener("click", () => {
