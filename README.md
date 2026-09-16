@@ -566,7 +566,7 @@ hack i nätet släcker inte resten av resan.
 
 ## Tester
 
-`node --test` kör trettioåtta tester som plockar ut spelets rena funktioner direkt
+`node --test` kör trettionio tester som plockar ut spelets rena funktioner direkt
 ur `index.html`, så att de aldrig testar en kopia som glidit isär från källan. De
 täcker att uppgifterna håller sig inom banans tal och aldrig blir negativa, att
 rätt svar alltid finns bland alternativen och att varje felsvar har en
