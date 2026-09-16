@@ -502,6 +502,17 @@ Tre saker värda att veta:
   nyare hämtats i bakgrunden visar appen en knapp för att ladda om. Hemskärmsappen hämtar den nya versionen först när
   den stängts och öppnats igen.
 
+**Säkerhetskopia.** Under kugghjulet, *Säkerhetskopia*, sparar *Spara kopia*
+alla spelare – stjärnor, mynt, märken, vagnkort och inställningar – som en
+fil. På iPad öppnas delningsrutan, så filen kan läggas i Filer, skickas med
+AirDrop eller mejlas till en själv; på en dator laddas den ner. *Läs in kopia*
+tar en sådan fil och visar vad den innehåller innan något ändras: spelare som
+redan finns på plattan ersätts av kopian, andra rörs inte, och spelet startar
+om. Samma knapp finns på skärmen *Vem ska spela?*, så att en rensad platta går
+att fylla på igen utan att först skapa en spelare. Utropen ingår inte i
+kopian – ljudklippen är för stora och hör till plattan. Kugghjulet visar när
+kopian senast sparades.
+
 ## För vuxna
 
 Kugghjulet uppe till höger: byt namn, värld, ljud, uppläsning, rösthastighet,

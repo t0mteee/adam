@@ -9,7 +9,7 @@ import { REGIONS, LEVELS, SHOWN, buildRound, makeOptions, distraktorer, varforFe
          justeraSkill, nivaForSkill, buildStigandeRound,
          HUVUD_MAX, SIDO_START, SIDO_MAX, GANGER_START, GANGER_MAX, TALRAD_START, TALRAD_MAX, huvudspar, arLast, oppnaEfter, sidoOppen, gangerOppen, talradOppen, sidosparEfter, datumNyckel, statSvar, statTid, MAKE, SMASPEL, SPELMOTOR, spelKopt, LEK_W, LEK_H, synligaBanor, maxStars, nastaBana, blandatLevel, levelById,
          SPAR, sparOppen, linjeOppen, klockaOppen, LINJE_START, LINJE_MAX, KLOCKA_START, KLOCKA_MAX, timme12, tidKod, tidOrd, kodTid, vantetidOrd, svarText,
-         hallFraga, tavlaHar, avgangar, VAGNAR, vagnFragaFor, rostPoang, rostNamn, rostKvalitet, rostEtikett, bastaRost, valjRost, sparradKant, valjSparr, FOTOQUIZ, fotoFraga, UTROP_FRASER, utropAlla, utropDelar, wavBlob, linjerVid, VAGNTYPER, VAGNNAMN, vagntypFor, vagnkortFor, VAGNKORT_ALLA } from "./hamta.mjs";
+         hallFraga, tavlaHar, avgangar, VAGNAR, vagnFragaFor, rostPoang, rostNamn, rostKvalitet, rostEtikett, bastaRost, valjRost, sparradKant, valjSparr, FOTOQUIZ, fotoFraga, granskaKopia, UTROP_FRASER, utropAlla, utropDelar, wavBlob, linjerVid, VAGNTYPER, VAGNNAMN, vagntypFor, vagnkortFor, VAGNKORT_ALLA } from "./hamta.mjs";
 
 const rot = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -1039,4 +1039,16 @@ test("egna utrop: utropen delas i inspelade bitar, och klippen blir riktiga WAV-
   assert.equal(s4(0), "RIFF"); assert.equal(s4(8), "WAVE"); assert.equal(s4(36), "data");
   assert.equal(v.getUint32(24, true), 22050); assert.equal(v.getUint16(22, true), 1); assert.equal(v.getUint16(34, true), 16);
   assert.equal(v.getUint32(40, true), n * 2);
+});
+
+test("säkerhetskopian: bara riktiga kopior med spelare läses in", () => {
+  const bra = { raknelandet: 1, version: "25", datum: "2026-09-16T10:00:00Z", active: "p1", profiles: [{ id: "p1", name: "Adam", coins: 5, stars: {} }] };
+  assert.equal(granskaKopia(bra), bra);
+  assert.equal(granskaKopia(null), null);
+  assert.equal(granskaKopia({}), null);
+  assert.equal(granskaKopia({ raknelandet: 2, profiles: bra.profiles }), null, "fel format");
+  assert.equal(granskaKopia({ raknelandet: 1, profiles: [] }), null, "tom");
+  assert.equal(granskaKopia({ raknelandet: 1, profiles: "Adam" }), null);
+  assert.equal(granskaKopia({ raknelandet: 1, profiles: [{ name: "Adam" }] }), null, "spelare utan id");
+  assert.equal(granskaKopia({ raknelandet: 1, profiles: [{ id: 7, name: "Adam" }] }), null);
 });

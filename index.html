@@ -199,6 +199,13 @@ h1, h2, h3{ font-family: "Baloo 2", "Baloo 2 Fallback", system-ui, sans-serif; f
 .name-field::placeholder{ color: rgba(46,26,102,.3); }
 .name-field:focus{ outline: 4px dashed var(--grape); outline-offset: 3px; background: #FFF9E6; }
 .name-field.tom{ animation: oops .45s ease-in-out; border-color: var(--melon); }
+/* Säkerhetskopian: spelarna i filen, innan de läses in */
+.kopia-rad{ display: flex; align-items: center; gap: 10px; background: var(--paper-2); border: 2.5px solid var(--ink); border-radius: 16px; padding: 8px 12px; margin-bottom: 8px; text-align: left; }
+.kopia-rad svg{ width: 46px; height: auto; flex: none; }
+.kopia-rad b{ display: block; font-family: "Baloo 2", system-ui, sans-serif; font-weight: 800; font-size: var(--t-md); line-height: 1.1; }
+.kopia-rad small{ font-size: var(--t-xs); color: var(--ink-2); }
+.kopia-knappar{ display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+.kopia-knappar .btn{ padding: 10px 8px; font-size: var(--t-sm); }
 
 /* ── Figurval ───────────────────────────── */
 .pick-grid{ display: grid; gap: 10px; }
@@ -1219,6 +1226,7 @@ body.poster-visning{ overflow: hidden; }
     <div class="panel">
       <div class="profile-list" id="profileList"></div>
       <button class="btn btn-big" id="newProfileBtn" type="button">+ Ny spelare</button>
+      <button class="btn" id="kopiaBtn" type="button" style="width:100%;margin-top:10px;background:var(--paper-2)">Läs in en säkerhetskopia</button>
     </div>
   </section>
 
@@ -1376,6 +1384,8 @@ body.poster-visning{ overflow: hidden; }
 
 </main>
 
+<input type="file" id="kopiaFil" accept=".json,application/json" hidden>
+
 <!-- ── Kartan till väggen ─────────────────── -->
 <div id="poster" hidden>
   <div class="poster-knappar">
@@ -1405,7 +1415,7 @@ const pick = (arr) => arr[rnd(arr.length)];
 const INK = "#2E1A66";
 /* Syns under Inställningar, så man kan se vilken version telefonen kör.
    Höjs tillsammans med VERSION i sw.js. */
-const SPELVERSION = "24";
+const SPELVERSION = "25";
 function shuffle(a){ for(let i = a.length - 1; i > 0; i--){ const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
 function store(key, val){
@@ -3364,6 +3374,89 @@ function nextLevelId(p){
   return HUVUD_MAX;
 }
 
+/* ── Säkerhetskopia ─────────────────────────────────────────────────────
+   Allt som sparas – spelare, stjärnor, mynt, märken, kort, inställningar –
+   som en fil att lägga i Filer, skicka till sig själv eller läsa in på en
+   annan platta. Safari rensar en sidas minne efter sju dagar utan besök,
+   och då är filen det enda som finns kvar. Utropen (ljudklippen) ingår
+   inte; de är för stora och hör till plattan. */
+function kopiaData(){
+  return { raknelandet: 1, version: SPELVERSION, datum: new Date().toISOString(), active: activeId, profiles };
+}
+/* Är det här en fil vi kan läsa in? Ger datan tillbaka, eller null. */
+function granskaKopia(data){
+  if(!data || data.raknelandet !== 1 || !Array.isArray(data.profiles) || !data.profiles.length) return null;
+  if(!data.profiles.every(p => p && typeof p.id === "string" && typeof p.name === "string")) return null;
+  return data;
+}
+const kopiaDatum = (iso) => { const d = new Date(iso); return isNaN(d) ? "okänt datum" : d.toLocaleDateString("sv-SE", { day: "numeric", month: "long", year: "numeric" }); };
+/* Delningsrutan på iPad (Spara i Filer, AirDrop, mejl) – annars en vanlig nedladdning */
+async function sparaKopia(){
+  const text = JSON.stringify(kopiaData());
+  const namn = "raknelandet-sakerhetskopia-" + idag() + ".json";
+  try{
+    if(navigator.canShare && window.File){
+      const fil = new File([text], namn, { type: "application/json" });
+      if(navigator.canShare({ files: [fil] })){
+        await navigator.share({ files: [fil], title: "Räknelandet – säkerhetskopia" });
+        store("kopia", new Date().toISOString());
+        return true;
+      }
+    }
+  }catch(e){ if(e && e.name === "AbortError") return false; }
+  try{
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([text], { type: "application/json" })); a.download = namn;
+    document.body.appendChild(a); a.click();
+    later(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000);
+    store("kopia", new Date().toISOString());
+    return true;
+  }catch(e){ return false; }
+}
+let kopiaVantande = null;
+function lasKopiaFil(fil){
+  if(!fil) return;
+  const r = new FileReader();
+  r.onload = () => {
+    let data = null;
+    try{ data = granskaKopia(JSON.parse(r.result)); }catch(e){}
+    if(!data){
+      openSheet(`<div class="sheet-head"><div><h2>Det gick inte</h2><p class="sheet-sub">Filen gick inte att läsa som en säkerhetskopia från Räknelandet.</p></div>${CLOSE_BTN}</div>
+        <button class="btn" data-action="close" type="button" style="width:100%;background:var(--paper-2)">Stäng</button>`);
+      return;
+    }
+    kopiaVantande = data;
+    const rader = data.profiles.map(q => {
+      const finns = profiles.find(p => p.id === q.id);
+      const bild = CHARACTERS.some(c => c.id === q.char) ? kompisSVG(q, "happy") : "";
+      return `<div class="kopia-rad">${bild}<span style="min-width:0"><b>${escapeHtml(q.name)}</b><small>${totalStars(q)} stjärnor · ${q.coins || 0} mynt · ${(q.badges || []).length} märken${finns ? ` · ersätter <b>${escapeHtml(finns.name)}</b> som redan finns här` : ""}</small></span></div>`;
+    }).join("");
+    openSheet(`
+      <div class="sheet-head"><div><h2>Läs in säkerhetskopian?</h2><p class="sheet-sub">Sparad ${kopiaDatum(data.datum)}${data.version ? " · version " + escapeHtml(String(data.version)) : ""}</p></div>${CLOSE_BTN}</div>
+      ${rader}
+      <p class="sheet-sub" style="margin:4px 0 12px">Spelare som redan finns på plattan ersätts av kopian. Andra spelare på plattan rörs inte.</p>
+      <div style="display:grid;gap:8px">
+        <button class="btn btn-big" data-action="kopia-ja" type="button">Läs in</button>
+        <button class="btn" data-action="close" type="button" style="background:var(--paper-2)">Avbryt</button>
+      </div>`);
+  };
+  r.onerror = () => { kopiaVantande = null; };
+  r.readAsText(fil);
+}
+function lasInKopia(){
+  const data = kopiaVantande; if(!data) return;
+  kopiaVantande = null;
+  const kart = new Map(profiles.map(p => [p.id, p]));
+  for(const q of data.profiles) kart.set(q.id, q);
+  profiles = [...kart.values()];
+  activeId = data.active && kart.has(data.active) ? data.active : profiles[0].id;
+  saveProfiles();
+  /* Starta om: då städas sparfilerna som vid varje start, och spelaren hälsas */
+  location.reload();
+}
+el("kopiaBtn").addEventListener("click", () => { SFX.tap(); el("kopiaFil").click(); });
+el("kopiaFil").addEventListener("change", (e) => { const f = e.target.files && e.target.files[0]; e.target.value = ""; lasKopiaFil(f); });
+
 /* ═══════════════════════════════════════════
    Skärmar och kort
    ═══════════════════════════════════════════ */
@@ -5104,6 +5197,13 @@ function openSettings(){
         ${CHARACTERS.map(c => `<button type="button" data-setchar="${c.id}" aria-pressed="${p.char === c.id}">${c.name}</button>`).join("")}
       </div>
     </div>
+    <div class="set-row" style="display:block">
+      <span class="set-label">Säkerhetskopia</span><br><span class="set-hint">Alla spelare med stjärnor, mynt, märken, kort och inställningar i en fil. Utropen ingår inte.${store("kopia") ? ` Senast sparad ${kopiaDatum(store("kopia"))}.` : ""}</span>
+      <div class="kopia-knappar">
+        <button class="btn" data-action="kopia-spara" type="button" style="background:var(--sun)">Spara kopia</button>
+        <button class="btn" data-action="kopia-las" type="button" style="background:var(--paper-2)">Läs in kopia</button>
+      </div>
+    </div>
     <div style="display:grid;gap:8px;margin-top:14px">
       <button class="btn" data-action="stat" type="button" style="background:#FFF3CF">Så går det för ${escapeHtml(p.name)}</button>
       <button class="btn" data-action="foton" type="button" style="background:var(--paper-2)">Bilderna och fotograferna</button>
@@ -5207,6 +5307,9 @@ sheet.addEventListener("click", (e) => {
 
   if(e.target.closest('[data-action="stat"]')){ SFX.tap(); openStatistik(); return; }
   if(e.target.closest('[data-action="namn"]')){ SFX.tap(); openBytNamn(); return; }
+  if(e.target.closest('[data-action="kopia-spara"]')){ SFX.tap(); sparaKopia().then(ok => { if(ok && sheet.querySelector('[data-action="kopia-spara"]')) openSettings(); }); return; }
+  if(e.target.closest('[data-action="kopia-las"]')){ SFX.tap(); el("kopiaFil").click(); return; }
+  if(e.target.closest('[data-action="kopia-ja"]')){ SFX.tap(); lasInKopia(); return; }
   if(e.target.closest('[data-action="namn-spara"]')){ sparaNamn(); return; }
   if(e.target.closest('[data-action="installningar"]')){ SFX.tap(); openSettings(); return; }
   if(e.target.closest('[data-action="utrop"]')){ SFX.tap(); openUtrop(); return; }
