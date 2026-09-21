@@ -9,7 +9,7 @@ import { REGIONS, LEVELS, SHOWN, buildRound, makeOptions, distraktorer, varforFe
          justeraSkill, nivaForSkill, buildStigandeRound,
          HUVUD_MAX, SIDO_START, SIDO_MAX, GANGER_START, GANGER_MAX, TALRAD_START, TALRAD_MAX, huvudspar, arLast, oppnaEfter, sidoOppen, gangerOppen, talradOppen, sidosparEfter, datumNyckel, statSvar, statTid, MAKE, SMASPEL, SPELMOTOR, spelKopt, LEK_W, LEK_H, synligaBanor, maxStars, nastaBana, blandatLevel, levelById,
          SPAR, sparOppen, linjeOppen, klockaOppen, LINJE_START, LINJE_MAX, KLOCKA_START, KLOCKA_MAX, timme12, tidKod, tidOrd, kodTid, vantetidOrd, svarText,
-         hallFraga, tavlaHar, avgangar, VAGNAR, vagnFragaFor, rostPoang, rostNamn, rostKvalitet, rostEtikett, bastaRost, valjRost, sparradKant, valjSparr, FOTOQUIZ, fotoFraga, granskaKopia, UTROP_FRASER, utropAlla, utropDelar, wavBlob, linjerVid, VAGNTYPER, VAGNNAMN, vagntypFor, vagnkortFor, VAGNKORT_ALLA } from "./hamta.mjs";
+         hallFraga, tavlaHar, avgangar, VAGNAR, vagnFragaFor, rostPoang, rostNamn, rostKvalitet, rostEtikett, bastaRost, valjRost, sparradKant, valjSparr, FOTOQUIZ, fotoFraga, granskaKopia, UTROP_FRASER, utropAlla, utropDelar, wavBlob, linjerVid, VAGNTYPER, VAGNNAMN, vagntypFor, vagnkortFor, VAGNKORT_ALLA, vagnTypAv, vagnNummerFinns, stegaVagnNummer, slumpaVagnNummer, VAGNSAKER, standardVagn, vagnAv, baraRutorPa, lageFor, sparaLage, omradesStjarnor, kompisRepliker, kompisReplik, lineByRef } from "./hamta.mjs";
 
 const rot = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -1052,4 +1052,59 @@ test("säkerhetskopian: bara riktiga kopior med spelare läses in", () => {
   assert.equal(granskaKopia({ raknelandet: 1, profiles: "Adam" }), null);
   assert.equal(granskaKopia({ raknelandet: 1, profiles: [{ name: "Adam" }] }), null, "spelare utan id");
   assert.equal(granskaKopia({ raknelandet: 1, profiles: [{ id: 7, name: "Adam" }] }), null);
+});
+
+test("Min vagn: modellerna, numren och pyntet", () => {
+  assert.deepEqual(VAGNTYPER.map(t => t.typ), ["M28", "M29", "M31", "M31B", "M32", "M33", "M34"]);
+  assert.equal(vagnTypAv("M31B").ombyggd, true);
+  assert.equal(vagnTypAv("M34").langd, 45);
+  assert.equal(vagnTypAv("M34").delar.length, 5, "M34 har fem delar");
+  assert.equal(vagnTypAv("M28").museum, true);
+  const m33 = vagnTypAv("M33"), m31 = vagnTypAv("M31"), m34 = vagnTypAv("M34");
+  assert.ok(vagnNummerFinns(m33, 490) && vagnNummerFinns(m33, 530) && !vagnNummerFinns(m33, 500) && !vagnNummerFinns(m33, 531));
+  assert.ok(!vagnNummerFinns(m31, 306) && vagnNummerFinns(m31, 380) && !vagnNummerFinns(m31, 381));
+  assert.equal(stegaVagnNummer(m31, 305, 1), 307, "306 hoppas över uppåt");
+  assert.equal(stegaVagnNummer(m31, 307, -1), 305, "och neråt");
+  assert.equal(stegaVagnNummer(m33, 499, 1), 501);
+  assert.equal(stegaVagnNummer(m33, 530, 1), 490, "runt om vid slutet");
+  assert.equal(stegaVagnNummer(m33, 490, -10), 521, "runt om vid början");
+  assert.equal(stegaVagnNummer(m34, 655, 10), 605);
+  for(let i = 0; i < 200; i++){ const n = slumpaVagnNummer(m33); assert.ok(vagnNummerFinns(m33, n), "slumpat " + n); }
+  const v = standardVagn({ resa: { ref: "11" } });
+  assert.equal(v.typ, "M33"); assert.equal(v.linje, "11"); assert.ok(vagnNummerFinns(m33, v.nr));
+  const a = vagnAv({ vagn: { typ: "M31", nr: 318, linje: "6", mot: "a" } });
+  assert.equal(a.namn, "Bebben"); assert.equal(a.linje.ref, "6"); assert.equal(a.mot, lineByRef("6").a);
+  assert.equal(vagnAv({}).typ.typ, "M33", "utan byggd vagn får resan en M33");
+  assert.equal(vagnAv({ vagn: { typ: "M99", nr: 1, linje: "6", mot: "b" } }).typ.typ, "M33", "en okänd typ blir M33");
+  assert.deepEqual(VAGNSAKER.map(s => s.id), ["flaggor", "jul"]);
+  assert.ok(VAGNSAKER.every(s => s.pris > 0 && s.name && s.ord));
+});
+
+test("svarsläget minns per bana", () => {
+  const p = { lage: {}, senasteLage: null };
+  const L4 = levelById(4), L50 = levelById(50);
+  assert.equal(lageFor(p, L4), "choice", "rutor från början");
+  sparaLage(p, 4, "type");
+  assert.equal(lageFor(p, L4), "type");
+  assert.equal(lageFor(p, levelById(5)), "type", "en ny bana tar det senaste läget");
+  assert.equal(lageFor(p, L50), "choice", "banor med bara rutor är alltid rutor");
+  assert.ok(baraRutorPa(L50) && !baraRutorPa(L4));
+  assert.equal(lageFor({}, L4), "choice", "en gammal spelare utan fält");
+});
+
+test("stjärnburken räknar områdets stjärnor", () => {
+  const p = { stars: { 1: 3, 2: 2, 3: 0, 4: 1 }, settings: {} };
+  assert.deepEqual(omradesStjarnor(p, 0), { har: 5, max: 9 });
+  assert.deepEqual(omradesStjarnor(p, 1), { har: 1, max: 9 });
+  assert.equal(omradesStjarnor(p, 11).max, 15, "Klockan har fem banor");
+  assert.equal(omradesStjarnor({ stars: {}, settings: { klocka: false } }, 11).max, 0, "avstängt spår räknas inte");
+});
+
+test("kompisen har något att säga och upprepar sig inte", () => {
+  const p = { name: "Adam", stars: { 1: 3 }, coins: 12, unlocked: 2 };
+  const r = kompisRepliker(p);
+  assert.ok(r.length >= 10 && r.every(t => typeof t === "string" && t.length > 3));
+  assert.ok(r.some(t => t.includes("Adam")) && r.some(t => /Bebben/.test(t)) && r.some(t => /Räkna till 10/.test(t)));
+  let forra = kompisReplik(p);
+  for(let i = 0; i < 40; i++){ const nu = kompisReplik(p); assert.notEqual(nu, forra); forra = nu; }
 });

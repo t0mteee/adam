@@ -1264,24 +1264,23 @@ body.poster-visning{ overflow: hidden; }
   .badge-grid{ grid-template-columns: repeat(2, 1fr); }
 }
 /* Resan: himmel, mark och den egna vagnen som rullar från vänster till höger */
-#resa{
-  position: fixed; inset: 0; z-index: 55; overflow: hidden; cursor: pointer;
-  background: linear-gradient(180deg, #A6E7FF 0%, #62CDF2 58%, #8FE07E 58%, #57C96B 100%);
-  display: grid; grid-template-rows: 1fr auto auto 1fr; align-items: end; justify-items: center;
-}
+#resa{ position: fixed; inset: 0; z-index: 55; overflow: hidden; cursor: pointer; display: flex; flex-direction: column; }
 #resa[hidden]{ display: none; }
-.resa-text{ text-align: center; padding-bottom: 6vh; display: grid; gap: 4px; }
+.resa-himmel{ flex: 1 1 0; background: linear-gradient(180deg, #A6E7FF 0%, #62CDF2 100%); display: grid; align-items: end; justify-items: center; }
+.resa-text{ text-align: center; padding-bottom: 5vh; display: grid; gap: 4px; }
 .resa-text .resa-nasta{ font-family: "Baloo 2", system-ui, sans-serif; font-weight: 800; font-size: var(--t-lg); color: var(--ink-2); }
 .resa-text b{ font-family: "Lilita One", system-ui, sans-serif; font-weight: 400; font-size: var(--t-2xl); color: var(--ink); line-height: 1; text-shadow: 0 4px 0 #FFFDF7; }
-.resa-mark{ width: 100%; height: 12px; background: repeating-linear-gradient(90deg, #B9A98A 0 22px, #D9D2C0 22px 44px); border-top: 3px solid var(--ink); border-bottom: 3px solid var(--ink); }
-#resa.kor .resa-mark{ animation: resa-slipers .35s linear infinite; }
+/* Spåret: slipers längst ner i himlen, vagnen står med hjulen på dem */
+.resa-spar{ width: 100%; height: clamp(130px, 28vw, 250px); position: relative; background: #62CDF2; border-bottom: 3px solid var(--ink); }
+.resa-spar::after{ content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 12px; background: repeating-linear-gradient(90deg, #B9A98A 0 22px, #D9D2C0 22px 44px); border-top: 3px solid var(--ink); }
+#resa.kor .resa-spar::after{ animation: resa-slipers .35s linear infinite; }
 @keyframes resa-slipers{ from{ background-position: 0 0; } to{ background-position: -44px 0; } }
-.resa-spar{ width: 100%; height: clamp(120px, 24vw, 220px); position: relative; margin-top: -6px; }
-.resa-vagn{ position: absolute; bottom: 8px; left: 50%; width: min(72vw, 560px); transform: translateX(-190%); }
+.resa-vagn{ position: absolute; bottom: 8px; left: 50%; width: min(80vw, 620px); transform: translateX(-190%); }
 .resa-vagn svg{ width: 100%; height: auto; display: block; filter: drop-shadow(0 10px 8px rgba(46,26,102,.25)); }
 #resa.kor .resa-vagn{ animation: resa-rull 2.4s cubic-bezier(.3,.2,.7,.8) forwards; }
 @keyframes resa-rull{ from{ transform: translateX(-190%); } to{ transform: translateX(90%); } }
-.resa-tips{ align-self: end; padding-bottom: 14px; font-size: var(--t-xs); color: var(--ink-2); font-weight: 800; }
+.resa-mark{ flex: 1 1 0; background: linear-gradient(180deg, #8FE07E 0%, #57C96B 100%); display: grid; align-items: end; justify-items: center; }
+.resa-tips{ padding-bottom: 14px; font-size: var(--t-xs); color: var(--ink-2); font-weight: 800; margin: 0; }
 @media (prefers-reduced-motion: reduce){ #resa{ display: none !important; } }
 /* Kartan till väggen: en egen vy ovanpå allt, och det enda som skrivs ut */
 #poster{ position: fixed; inset: 0; z-index: 70; background: #EEF2F6; overflow: auto; padding: 12px; }
@@ -1488,10 +1487,9 @@ body.poster-visning{ overflow: hidden; }
 
 <!-- ── Resan: vagnen rullar mellan hållplatserna ── -->
 <div id="resa" hidden>
-  <div class="resa-text"><span class="resa-nasta">Nästa hållplats</span><b id="resaMal"></b></div>
-  <div class="resa-mark"></div>
+  <div class="resa-himmel"><div class="resa-text"><span class="resa-nasta">Nästa hållplats</span><b id="resaMal"></b></div></div>
   <div class="resa-spar"><div class="resa-vagn" id="resaVagn"></div></div>
-  <p class="resa-tips">Tryck för att hoppa över</p>
+  <div class="resa-mark"><p class="resa-tips">Tryck för att hoppa över</p></div>
 </div>
 
 <!-- ── Kartan till väggen ─────────────────── -->

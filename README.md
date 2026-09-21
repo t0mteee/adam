@@ -94,6 +94,13 @@ bara att det blev fel: trycker man 2 på `7 + 5` säger rösten *Det blev minus,
 inte plus!*, på 13 *Ett för mycket!* och på 74 när talet är sju tior och fyra
 ental *Tvärtom! Tiorna först.* I skrivläget döms det man knappat in efter hur
 långt ifrån det var. Vid sista felet står förklaringen tillsammans med svaret.
+Och när svaret är rätt hoppar det in i luckan i talet i grönt, så att hela
+likheten står där en stund – `4 + 4 = 8` – i stället för ett frågetecken.
+
+Banekortet har en enda stor *Spela!*-knapp. Hur banan svaras på, rutor att
+trycka på eller siffror att knappa in, väljs med två små kort under knappen och
+spelet minns valet per bana (och tar det senaste valet för en ny bana). Banor
+som bara går att svara på med rutor visar inga kort.
 
 ### Kluriga tal
 
@@ -190,15 +197,24 @@ inställningarna för den som vill vänta med klockan.
 Rätt på första försöket ger 10 guldmynt; tre rätt i rad dubblar och sex rätt i
 rad tredubblar. Rätt efter ett feltryck ger 5 mynt – aldrig minuspoäng. Efter
 varje omgång delas upp till tre stjärnor ut (4 rätt direkt ger en, 7 ger två, 9
-ger tre), och minst en stjärna öppnar nästa bana. Totalt finns 156 stjärnor (138 med gånger och delat avstängt, 141 med klockan avstängd) och 40
+ger tre), och minst en stjärna öppnar nästa bana. Totalt finns 156 stjärnor (138 med gånger och delat avstängt, 141 med klockan avstängd) och 41
 märken att samla, från *Första stjärnan* och *Ändstation* till *Hela landet*,
-*Klurig* och *Tio uppdrag*.
+*Klurig*, *Tio uppdrag* och *Egen vagn*.
+
+Topplisten visar inte *44 av 156* utan en **stjärnburk**: burken fylls med
+stjärnorna i området där nästa bana ligger, med antalet bredvid, så att varje
+ny stjärna syns. Hela siffran finns under *Mina märken*. I spårvagnen fylls
+burken med hållplatserna man stått vid. På resultatskärmen poppar stjärnorna
+upp en och en med varsin ton, allt högre, och mynten flyger ett och ett från
+*nya mynt* in i skattkistan medan kistans siffra räknas upp.
 
 Mynten går att göra av med. Myntraden i topplisten öppnar **skattkistan** med
 tre hyllor. *Småspel* överst, se nästa avsnitt. *Till kompisen*: keps (60 mynt), rosett (100), förarmössa (150),
 partyhatt (200), krona (300) och stjärnpannband (450). Den man köper tas på
 direkt och syns på kompisen överallt – i topplisten, på kartan, på spelskärmen
 och på resultatskärmen, i båda världarna – och går att ta av och på i kistan.
+*Till vagnen*: flaggor (80) och julbelysning (150) till den egna spårvagnen,
+se *Min egen vagn* under Spårvagn.
 *Leksaker*: spårvagn (50), katt (80), glass (120), raket (170), hjärta (230)
 och måne (300). De står på marken bredvid kompisen på spelskärmen och
 resultatskärmen, senast köpta närmast, och blandas dessutom in bland de sex
@@ -408,6 +424,29 @@ låter som ett utrop och inte som en lekkamrat.
   *Egna utrop* stänger av. Inspelning kräver Safari eller Chrome på en egen
   adress (inte inbäddat i en visare), och en Safari-flik som inte öppnats på
   sju dagar kan bli av med sina klipp – hemskärmsappen behåller dem.
+- **Min egen vagn.** Kortet *Min egen vagn* på startskärmen bygger en spårvagn
+  av dem som rullar i Göteborg: M28 (museivagnen, ur trafik 2021), M29, M31,
+  den ombyggda M31B (Škoda, i trafik sedan december 2025), M32 Sirio, M33
+  Flexity och den 45 meter långa M34. Varje modell ritas med sina delar, sina
+  hjulpar och sitt fönsterband – vitt på de gamla, svart på de nya. Numret
+  stegas med −10, −1, +1 och +10 inom modellens riktiga serie (M33 har
+  490–530 men inget 500, M31 300–380 men inget 306), och rösten läser
+  numret – och namnet, om vagnen har ett: 318 heter *Bebben*. Linjen på
+  skylten väljs bland de tolv, med riktning. Flaggor (som på flaggdagar) och
+  julbelysning köps i skattkistan. Vagnen står bakom kompisen på kartan,
+  syns på startskärmen och rullar mellan hållplatserna. Märke: *Egen vagn*.
+  Under *Mina vagnkort* finns nu också alla sju modellerna som kort att läsa,
+  även de som ännu inte har några foton i nätet.
+- **Resan.** När man tryckt *Åk till Storås!* rullar den egna vagnen över
+  skärmen, klockan ringer och utropet *Nästa hållplats: Storås* hörs, innan
+  första frågan kommer. Ett tryck hoppar över; med *reducera rörelse* på
+  visas den inte alls. Framme hörs dörrsignalen när vagnen rullat in på
+  kartan. Klockan är byggd av deltoner som i en slagen metallklocka, inte en
+  ren ton – lägger man en riktig inspelning i `ljud/klocka.mp3` (och
+  `ljud/dorr.mp3`) används den i stället.
+- **Resehuvudet** säger bara *mot Mölndal* och *Hållplats 3 av 21* i linjens
+  färg. Vilka tal man räknar på resan (*Stigande*, *Blandat* eller en bana)
+  byts under kugghjulet, raden *Tal i spårvagnen*.
 - **Karta till väggen.** Knappen på startskärmen ritar hela nätet på ett ark
   med barnets namn överst: alla linjer i sina färger, varje hållplats som en
   prick, de åkta gröna och namngivna, ändstationerna alltid namngivna, och
@@ -515,14 +554,17 @@ kopian senast sparades.
 
 ## För vuxna
 
-Kugghjulet uppe till höger: byt namn, värld, ljud, uppläsning, rösthastighet,
-vilken röst, räknehjälp, gånger och delat med (av eller på), klockan (av eller
-på), egna utrop (av eller på) och *Spela in utrop*, byt kompisfigur, byt
-spelare och ta bort spelare. Namnet är det rösten säger och det som står på
-väggkartan; en spelare som skapats utan namn heter *Kompis* tills någon byter. Inställningarna hör till
-spelaren, så syskon kan ha olika. Kompisfiguren står längst ner på spelskärmen
-och hejar, så frågan och svaren får hela bredden; i skrivläget hamnar den under
-knappsatsen och är aldrig i vägen.
+Kugghjulet uppe till höger: värld, tal i spårvagnen, byt namn, ljud,
+uppläsning, rösthastighet, vilken röst, räknehjälp, gånger och delat med (av
+eller på), klockan (av eller på), egna utrop (av eller på) och *Spela in
+utrop*, byt kompisfigur, byt spelare och ta bort spelare. Namnet är det rösten
+säger och det som står på väggkartan; en spelare som skapats utan namn heter
+*Kompis* tills någon byter. Inställningarna hör till spelaren, så syskon kan ha
+olika. Kompisfiguren hejar på spelskärmen: på en stående platta står den uppe
+vid frågekortet, lutad över kortets kant, på en telefon längst ner så frågan
+och svaren får hela bredden. Ett tryck på den läser frågen igen. På kartan och
+på spårvagnens startskärm säger den något när man trycker – en hälsning, en
+siffra, något om spårvagnarna – och aldrig samma sak två gånger i rad.
 
 Flera spelare får plats. Allt sparas lokalt i webbläsaren (`localStorage`) –
 ingenting skickas någonstans. Rensas webbläsardata försvinner även framstegen.
@@ -566,7 +608,7 @@ hack i nätet släcker inte resten av resan.
 
 ## Tester
 
-`node --test` kör trettionio tester som plockar ut spelets rena funktioner direkt
+`node --test` kör fyrtiotre tester som plockar ut spelets rena funktioner direkt
 ur `index.html`, så att de aldrig testar en kopia som glidit isär från källan. De
 täcker att uppgifterna håller sig inom banans tal och aldrig blir negativa, att
 rätt svar alltid finns bland alternativen och att varje felsvar har en
@@ -592,8 +634,11 @@ riktiga WAV-filer).
 ## Teknik
 
 En fil, inga beroenden, inget byggsteg. Ljudeffekterna genereras med Web Audio
-API, uppläsningen sker med webbläsarens `SpeechSynthesis`, konfettin ritas på en
-canvas och figurerna är handritad SVG. Typsnitten hämtas från Google Fonts med
+API – spårvagnsklockan som en slagen klocka med fem deltoner och ett kort brus
+i anslaget, dörrsignalen som tre pip – uppläsningen sker med webbläsarens
+`SpeechSynthesis`, konfettin ritas på en canvas och figurerna är handritad SVG.
+Ligger `ljud/klocka.mp3` eller `ljud/dorr.mp3` bredvid `index.html` spelas de i
+stället för syntesen. Typsnitten hämtas från Google Fonts med
 rundade systemtypsnitt som reserv om sidan är offline.
 
 Uppläsningen använder enhetens svenska röster. Finns flera väljer spelet den
