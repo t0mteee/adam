@@ -948,10 +948,11 @@ test("fotoquizen: rätt hållplats bland fyra med foto, helst sådana barnet st�
 });
 
 test("vagnkorten: nummerserierna överlappar inte, varje foto-vagn har en typ och namnen sitter på riktiga nummer", () => {
-  assert.equal(VAGNTYPER.length, 6);
+  assert.equal(VAGNTYPER.length, 7);
   for(const t of VAGNTYPER){
-    assert.ok(t.fran < t.till && t.langd > 10 && t.byggd && t.av && t.om.length > 20 && t.delar >= 1, t.typ);
-    for(const u of VAGNTYPER) if(u !== t) assert.ok(t.till < u.fran || u.till < t.fran, `${t.typ} och ${u.typ} överlappar`);
+    assert.ok(t.fran < t.till && t.langd > 10 && t.byggd && t.av && t.om.length > 20 && Array.isArray(t.delar) && t.delar.length >= 1 && t.boggier.length === t.delar.length && ["vit", "svart"].includes(t.band), t.typ);
+    /* M31B är samma vagnar som M31, ombyggda – de får dela serie. Inga andra överlappar. */
+    for(const u of VAGNTYPER) if(u !== t && !t.ombyggd && !u.ombyggd) assert.ok(t.till < u.fran || u.till < t.fran, `${t.typ} och ${u.typ} överlappar`);
   }
   assert.equal(vagntypFor(318).typ, "M31"); assert.equal(vagntypFor(465).typ, "M32"); assert.equal(vagntypFor(490).typ, "M33");
   assert.equal(vagntypFor(530).typ, "M33"); assert.equal(vagntypFor(601).typ, "M34"); assert.equal(vagntypFor(770).typ, "M28"); assert.equal(vagntypFor(860).typ, "M29");
