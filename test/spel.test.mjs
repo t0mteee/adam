@@ -980,6 +980,12 @@ test("Förarhytten: räkna hållplatserna, stanna vid märket – nära ger poä
   h.start();
   assert.ok(h.s.n >= 2 && h.s.n <= 5 && h.s.mal === h.s.n - 1, `första målet ${h.s.mal}, ${h.s.n} bort`);
   assert.equal(h.s.namnMal, namn[h.s.mal]);
+  /* vagnen står stilla tills föraren trycker Kör */
+  for(let i = 0; i < 60; i++) h.update(DT);
+  assert.equal(h.s.v, 0, "ingen rullar iväg av sig själv");
+  assert.equal(h.s.text, "Tryck Kör!");
+  h.styr(-1);
+  assert.equal(h.s.text, "", "uppmaningen försvinner när man kör");
   /* kör fram och bromsa strax före märket */
   const mal = h.stopp[h.s.mal];
   let steg = 0;
@@ -992,24 +998,34 @@ test("Förarhytten: räkna hållplatserna, stanna vid märket – nära ger poä
   assert.ok(h.s.poang >= 60, `stopp nära märket ska ge poäng, gav ${h.s.poang}`);
   assert.equal(h.s.klara, 1);
   assert.ok(h.s.paus > 0 && h.s.text.length > 0);
-  /* efter pausen kommer ett nytt uppdrag, framåt */
+  /* efter pausen kommer ett nytt uppdrag, framåt – och vagnen väntar på Kör igen */
   for(let i = 0; i < 2.5 * 60; i++) h.update(DT);
   assert.ok(h.s.mal > mal.x ? true : h.s.mal > h.stopp.indexOf(mal), "nästa mål ligger längre fram");
   assert.ok(!h.s.brom && h.s.paus <= 0);
-  /* att stanna mitt emellan hållplatser ger ingenting, och man kör vidare av sig själv */
+  assert.equal(h.s.v, 0, "står kvar vid hållplatsen tills man trycker Kör");
+  assert.equal(h.s.text, "Tryck Kör!");
+  h.tap();
+  for(let i = 0; i < 30; i++) h.update(DT);
+  assert.ok(h.s.v > 0, "ett tryck på planen när man står stilla är Kör");
+  h.tap();
+  assert.ok(h.s.brom, "och ett tryck i farten är Bromsa");
+  /* att stanna mitt emellan hållplatser ger ingenting, och sedan väntar vagnen på Kör */
   const h2 = SPELMOTOR.hytt(LEK_W, LEK_H, tyst, { namn, farg:"#fff" });
-  h2.start();
+  h2.start(); h2.styr(-1);
   for(let i = 0; i < 40; i++) h2.update(DT);
-  h2.tap();
+  h2.styr(1);
   steg = 0; while(h2.s.v > 0 && steg++ < 600) h2.update(DT);
   assert.match(h2.s.text, /ingen hållplats/);
   assert.equal(h2.s.poang, 0); assert.equal(h2.s.klara, 0);
   for(let i = 0; i < 90; i++) h2.update(DT);
-  assert.ok(h2.s.v > 0, "kör vidare efter pausen");
+  assert.equal(h2.s.v, 0, "väntar på Kör efter pausen");
+  h2.styr(-1);
+  for(let i = 0; i < 30; i++) h2.update(DT);
+  assert.ok(h2.s.v > 0, "och kör när man trycker Kör");
   /* aldrig bromsa: fem missar och sedan slut */
   const h3 = SPELMOTOR.hytt(LEK_W, LEK_H, tyst, { namn, farg:"#fff" });
   h3.start();
-  for(let i = 0; i < 90 * 60 && !h3.slut(); i++) h3.update(DT);
+  for(let i = 0; i < 90 * 60 && !h3.slut(); i++){ if(h3.s.paus <= 0 && h3.s.v === 0) h3.styr(-1); h3.update(DT); }
   assert.ok(h3.slut(), "fem körda-förbi tar slut på spelet");
   assert.equal(h3.s.poang, 0); assert.equal(h3.s.klara, 5);
   assert.match(h3.status(), /5 av 5/);

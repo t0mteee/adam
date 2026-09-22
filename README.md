@@ -252,8 +252,9 @@ tio spelade omgångar. Spelen ger inga mynt – de är vad mynten är till för.
 vagnen ses från sidan, rälsen rullar och perrongerna passerar med sina
 skyltar. Skylten uppe säger var man ska stanna – *Chalmers, 3 hållplatser* –
 och prickarna bredvid fylls i allteftersom hållplatserna passerar, så man
-räknar med ögonen. Knapparna heter *Kör* och *Bromsa* (ett tryck på planen
-bromsar också). Stannar vagnens front inom sex pixlar från märket är det
+räknar med ögonen. Vagnen står stilla tills man trycker *Kör* och väntar på *Kör* igen
+efter varje stopp – det är föraren som kör. *Bromsa* bromsar; ett tryck på
+planen är Kör när vagnen står stilla och Bromsa i farten. Stannar vagnens front inom sex pixlar från märket är det
 *Perfekt!* och 100 poäng, sedan 80, 60, 40 och 20 ju längre ifrån, och kör
 man förbi blir det noll. Fem stopp och sedan slut; 400 poäng ger märket
 *Spårvagnsförare*. Från Lekstugan körs en slumpad linje; på resan finns

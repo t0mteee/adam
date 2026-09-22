@@ -1277,7 +1277,7 @@ body.poster-visning{ overflow: hidden; }
 @keyframes resa-slipers{ from{ background-position: 0 0; } to{ background-position: -44px 0; } }
 .resa-vagn{ position: absolute; bottom: 8px; left: 50%; width: min(80vw, 620px); transform: translateX(-190%); }
 .resa-vagn svg{ width: 100%; height: auto; display: block; filter: drop-shadow(0 10px 8px rgba(46,26,102,.25)); }
-#resa.kor .resa-vagn{ animation: resa-rull 2.4s cubic-bezier(.3,.2,.7,.8) forwards; }
+#resa.kor .resa-vagn{ animation: resa-rull 3.8s cubic-bezier(.4,.05,.75,.85) forwards; }
 @keyframes resa-rull{ from{ transform: translateX(-190%); } to{ transform: translateX(90%); } }
 .resa-mark{ flex: 1 1 0; background: linear-gradient(180deg, #8FE07E 0%, #57C96B 100%); display: grid; align-items: end; justify-items: center; }
 .resa-tips{ padding-bottom: 14px; font-size: var(--t-xs); color: var(--ink-2); font-weight: 800; margin: 0; }
@@ -5480,7 +5480,7 @@ function resaScen(p, nasta, l, sedan){
   box.hidden = false;
   box.classList.remove("kor"); void box.offsetWidth; box.classList.add("kor");
   SFX.klocka();
-  const utropId = setTimeout(() => { if(tok === resaToken) speakUtrop("Nästa hållplats " + nasta); }, 650);
+  const utropId = setTimeout(() => { if(tok === resaToken) speakUtrop("Nästa hållplats " + nasta); }, 900);
   const slut = () => {
     if(tok !== resaToken) return;
     resaToken++;
@@ -5488,7 +5488,7 @@ function resaScen(p, nasta, l, sedan){
     box.hidden = true; box.classList.remove("kor"); box.onclick = null;
     sedan();
   };
-  const slutId = setTimeout(slut, 2400);
+  const slutId = setTimeout(slut, 3900);
   box.onclick = () => { tystna(); slut(); };
 }
 el("goBtn").addEventListener("click", () => {
@@ -6043,8 +6043,8 @@ const SMASPEL = [
     hur:"Tryck så hoppar vagnen. Fånga så många stjärnor du kan!",
     tips:"Tryck var som helst på planen så hoppar vagnen" },
   { id:"hytt", name:"Förarhytten", ord:"Förarhytten", pris:200, tid:0, enhet:"poäng",
-    hur:"Kör vagnen och räkna hållplatserna! Skylten säger var du ska stanna. Bromsa lagom tidigt så vagnen stannar precis vid märket – ju närmare, desto fler poäng.",
-    tips:"Tryck på planen för att bromsa – eller på Kör och Bromsa" }
+    hur:"Kör vagnen och räkna hållplatserna! Skylten säger var du ska stanna. Tryck Kör så rullar vagnen, och Bromsa lagom tidigt så den stannar precis vid märket – ju närmare, desto fler poäng.",
+    tips:"Kör och Bromsa – eller tryck på planen: en gång för att köra, en gång för att bromsa" }
 ];
 const spelKopt = (p, id) => !!p && (p.spel || []).includes(id);
 const SPELMOTOR = {
@@ -6266,7 +6266,10 @@ const SPELMOTOR = {
     while(namn.length < 30) namn = namn.concat(namn.slice(0, 30 - namn.length));
     const stopp = namn.map((n, i) => ({ namn: n, x: 340 + i * 330 + (((i * 7919) % 5) - 2) * 15, passerad: false }));
     const VMAX = 170, ACC = 95, BROMS = 250, FRONT = 180, NARA = 60;
-    const s = { t:0, x:0, v:0, brom:false, stannat:false, idx:-1, start:-1, mal:null, namnMal:"", n:0,
+    /* Vagnen står stilla tills föraren trycker Kör, och väntar på Kör igen
+       efter varje stopp – annars gör knappen ingenting, och det är föraren
+       som ska köra. Bromsa (eller ett tryck på planen i farten) bromsar. */
+    const s = { t:0, x:0, v:0, kor:false, brom:false, stannat:false, idx:-1, start:-1, mal:null, namnMal:"", n:0,
                 klara:0, poang:0, text:"", textTid:0, paus:0, dorrar:0, nyttEfter:false, hjul:0 };
     const meddela = (text, tid) => { s.text = text; s.textTid = tid || 1.4; };
     const nytt = () => {
@@ -6301,20 +6304,26 @@ const SPELMOTOR = {
       poang: () => s.poang,
       status: () => `Stopp ${Math.min(5, s.klara + 1)} av 5`,
       slut: () => s.klara >= 5,
-      start(){ nytt(); },
-      tap(){ if(s.paus > 0) return; s.brom = s.v > 0; },
-      styr(r){ if(s.paus > 0) return; s.brom = r > 0; },
+      start(){ nytt(); meddela("Tryck Kör!", 3); },
+      kor(){ s.kor = true; s.brom = false; s.text = s.text === "Tryck Kör!" ? "" : s.text; },
+      bromsa(){ s.brom = true; s.kor = false; },
+      tap(){ if(s.paus > 0) return; if(s.v > 0 && !s.brom) this.bromsa(); else this.kor(); },
+      styr(r){ if(s.paus > 0) return; if(r > 0) this.bromsa(); else this.kor(); },
       update(dt){
         s.t += dt;
         if(s.textTid > 0){ s.textTid -= dt; if(s.textTid <= 0) s.text = ""; }
         if(s.paus > 0){
           s.paus -= dt; s.dorrar = Math.min(1, s.dorrar + dt * 3);
-          if(s.paus <= 0){ s.brom = false; s.stannat = false; if(s.nyttEfter){ s.nyttEfter = false; if(s.klara < 5) nytt(); } }
+          if(s.paus <= 0){
+            s.brom = false; s.kor = false; s.stannat = false;
+            if(s.nyttEfter){ s.nyttEfter = false; if(s.klara < 5) nytt(); }
+            if(s.klara < 5) meddela("Tryck Kör!", 3);
+          }
           return;
         }
         s.dorrar = Math.max(0, s.dorrar - dt * 3);
         if(s.brom) s.v = Math.max(0, s.v - BROMS * dt);
-        else s.v = Math.min(VMAX, s.v + ACC * dt);
+        else if(s.kor) s.v = Math.min(VMAX, s.v + ACC * dt);
         s.x += s.v * dt; s.hjul += s.v * dt;
         /* Stannat: hur nära ett märke blev det? */
         if(s.brom && s.v === 0){ if(!s.stannat){ s.stannat = true; stanna(); } }
