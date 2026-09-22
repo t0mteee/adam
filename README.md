@@ -438,13 +438,20 @@ låter som ett utrop och inte som en lekkamrat.
   syns på startskärmen och rullar mellan hållplatserna. Märke: *Egen vagn*.
   Under *Mina vagnkort* finns nu också alla sju modellerna som kort att läsa,
   även de som ännu inte har några foton i nätet.
-- **Resan.** När man tryckt *Åk till Storås!* rullar den egna vagnen över
-  skärmen, klockan ringer och utropet *Nästa hållplats: Storås* hörs, innan
-  första frågan kommer. Ett tryck hoppar över; med *reducera rörelse* på
-  visas den inte alls. Framme hörs dörrsignalen när vagnen rullat in på
-  kartan. Klockan är byggd av deltoner som i en slagen metallklocka, inte en
-  ren ton – lägger man en riktig inspelning i `ljud/klocka.mp3` (och
-  `ljud/dorr.mp3`) används den i stället.
+- **Resan.** När man tryckt *Åk till Storås!* rullar den egna vagnen in
+  från vänster med klockan ringande, utropet *Nästa hållplats: Storås* hörs,
+  och vagnen bromsar och stannar vid perrongen med hållplatsens skylt. Där
+  öppnas dörrarna med dörrsignalen och knappen *Hoppa på och räkna!* dyker
+  upp; först när barnet trycker kommer frågorna. Trycket är med flit: på
+  iPad får rösten bara börja tala i ett tryck, så frågan läses i barnets
+  eget tryck och inte i en timer. Under åkturen gör tryck ingenting, så ett
+  extra tryck hoppar inte över något; kommer inget tryck på sex sekunder
+  fortsätter spelet ändå. Med *reducera rörelse* på står vagnen still vid
+  perrongen från början. Klockan är byggd av deltoner som i en slagen
+  metallklocka, inte en ren ton – lägger man en riktig inspelning i
+  `ljud/klocka.mp3` (och `ljud/dorr.mp3`) används den i stället; spelet
+  frågar servern en gång vid start om filerna finns och rör annars inga
+  ljudelement alls, eftersom ett ljudelement kan tysta uppläsningen på iOS.
 - **Resehuvudet** säger bara *mot Mölndal* och *Hållplats 3 av 21* i linjens
   färg. Vilka tal man räknar på resan (*Stigande*, *Blandat* eller en bana)
   byts under kugghjulet, raden *Tal i spårvagnen*.

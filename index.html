@@ -1273,15 +1273,21 @@ body.poster-visning{ overflow: hidden; }
 /* Spåret: slipers längst ner i himlen, vagnen står med hjulen på dem */
 .resa-spar{ width: 100%; height: clamp(130px, 28vw, 250px); position: relative; background: #62CDF2; border-bottom: 3px solid var(--ink); }
 .resa-spar::after{ content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 12px; background: repeating-linear-gradient(90deg, #B9A98A 0 22px, #D9D2C0 22px 44px); border-top: 3px solid var(--ink); }
-#resa.kor .resa-spar::after{ animation: resa-slipers .35s linear infinite; }
-@keyframes resa-slipers{ from{ background-position: 0 0; } to{ background-position: -44px 0; } }
+/* Perrongen med skylten står där vagnen stannar */
+.resa-perrong{ position: absolute; left: 50%; bottom: 12px; width: min(84vw, 660px); height: 10px; transform: translateX(-50%); background: #E9E2D2; border: 3px solid var(--ink); border-bottom: none; border-radius: 6px 6px 0 0; }
+.resa-skylt{ position: absolute; right: 12px; bottom: 22px; display: grid; justify-items: center; }
+.resa-skylt::after{ content: ""; width: 5px; height: clamp(40px, 9vw, 80px); background: var(--ink); border-radius: 2px; }
+.resa-skylt span{ background: #FFFDF7; border: 3px solid var(--ink); border-radius: 10px; padding: 4px 12px; font-family: "Baloo 2", system-ui, sans-serif; font-weight: 800; font-size: var(--t-sm); white-space: nowrap; }
 .resa-vagn{ position: absolute; bottom: 8px; left: 50%; width: min(80vw, 620px); transform: translateX(-190%); }
 .resa-vagn svg{ width: 100%; height: auto; display: block; filter: drop-shadow(0 10px 8px rgba(46,26,102,.25)); }
-#resa.kor .resa-vagn{ animation: resa-rull 3.8s cubic-bezier(.4,.05,.75,.85) forwards; }
-@keyframes resa-rull{ from{ transform: translateX(-190%); } to{ transform: translateX(90%); } }
-.resa-mark{ flex: 1 1 0; background: linear-gradient(180deg, #8FE07E 0%, #57C96B 100%); display: grid; align-items: end; justify-items: center; }
-.resa-tips{ padding-bottom: 14px; font-size: var(--t-xs); color: var(--ink-2); font-weight: 800; margin: 0; }
-@media (prefers-reduced-motion: reduce){ #resa{ display: none !important; } }
+/* Vagnen rullar in från vänster, bromsar och stannar mitt på perrongen */
+#resa.kor .resa-vagn{ animation: resa-in 3.2s cubic-bezier(.3,.15,.2,1) forwards; }
+@keyframes resa-in{ from{ transform: translateX(-190%); } to{ transform: translateX(-50%); } }
+#resa.stilla .resa-vagn{ transform: translateX(-50%); animation: none; }
+.resa-mark{ flex: 1 1 0; background: linear-gradient(180deg, #8FE07E 0%, #57C96B 100%); display: grid; place-items: center; }
+.resa-ga{ width: min(84vw, 460px); animation: right-pop .5s cubic-bezier(.3,1.6,.5,1); }
+.resa-ga[hidden]{ display: none; }
+@media (prefers-reduced-motion: reduce){ #resa .resa-vagn{ transform: translateX(-50%); } }
 /* Kartan till väggen: en egen vy ovanpå allt, och det enda som skrivs ut */
 #poster{ position: fixed; inset: 0; z-index: 70; background: #EEF2F6; overflow: auto; padding: 12px; }
 #poster[hidden]{ display: none; }
@@ -1488,8 +1494,12 @@ body.poster-visning{ overflow: hidden; }
 <!-- ── Resan: vagnen rullar mellan hållplatserna ── -->
 <div id="resa" hidden>
   <div class="resa-himmel"><div class="resa-text"><span class="resa-nasta">Nästa hållplats</span><b id="resaMal"></b></div></div>
-  <div class="resa-spar"><div class="resa-vagn" id="resaVagn"></div></div>
-  <div class="resa-mark"><p class="resa-tips">Tryck för att hoppa över</p></div>
+  <div class="resa-spar">
+    <div class="resa-perrong"></div>
+    <div class="resa-skylt"><span id="resaSkylt"></span></div>
+    <div class="resa-vagn" id="resaVagn"></div>
+  </div>
+  <div class="resa-mark"><button class="btn btn-big resa-ga" id="resaGa" type="button" hidden>Hoppa på och räkna!</button></div>
 </div>
 
 <!-- ── Kartan till väggen ─────────────────── -->
@@ -1521,7 +1531,7 @@ const pick = (arr) => arr[rnd(arr.length)];
 const INK = "#2E1A66";
 /* Syns under Inställningar, så man kan se vilken version telefonen kör.
    Höjs tillsammans med VERSION i sw.js. */
-const SPELVERSION = "26";
+const SPELVERSION = "27";
 function shuffle(a){ for(let i = a.length - 1; i > 0; i--){ const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
 function store(key, val){
@@ -3325,26 +3335,29 @@ const SFX = {
   },
   /* Dörrsignalen när vagnen är framme: tre korta pip, som på de nya vagnarna */
   dorr(){ this.spelaFil("dorr", () => { [0, 0.2, 0.4].forEach(t => { this.tone(1760, t, 0.11, "sine", 0.11); this.tone(2640, t, 0.07, "triangle", 0.03); }); }); },
-  /* En riktig inspelning om filen finns, annars det syntetiska ljudet.
-     Filen provas en gång; saknas den går alla senare anrop direkt till syntesen. */
-  filer: {},
+  /* En riktig inspelning om filen finns, annars det syntetiska ljudet. Om
+     filerna finns tas reda på en gång vid start, utan att något ljudelement
+     skapas: ett ljudelement som försöker spela en fil som inte finns kan
+     störa uppläsningen på iOS, och det får inte hända i onödan. */
+  filer: {}, ljud: {},
+  provaFiler(){
+    if(!/^https?:$/.test(location.protocol) || typeof fetch !== "function") return;
+    for(const namn of ["klocka", "dorr"]){
+      fetch("ljud/" + namn + ".mp3", { method: "HEAD", cache: "no-cache" })
+        .then(r => { if(r.ok && /audio|octet-stream/.test(r.headers.get("content-type") || "")) this.filer[namn] = true; })
+        .catch(() => {});
+    }
+  },
   spelaFil(namn, annars){
     if(!P() || !P().settings.sound) return;
-    const st = this.filer[namn];
-    if(st === "saknas" || typeof Audio === "undefined"){ annars(); return; }
-    if(!st){
-      const a = new Audio("ljud/" + namn + ".mp3");
-      a.preload = "auto"; a.volume = 0.8;
-      a.addEventListener("error", () => { this.filer[namn] = "saknas"; }, { once: true });
-      this.filer[namn] = a;
-    }
-    const a = this.filer[namn];
-    if(a === "saknas"){ annars(); return; }
+    if(this.filer[namn] !== true || typeof Audio === "undefined"){ annars(); return; }
     try{
+      if(!this.ljud[namn]){ const a = new Audio("ljud/" + namn + ".mp3"); a.preload = "auto"; a.volume = 0.8; this.ljud[namn] = a; }
+      const a = this.ljud[namn];
       a.currentTime = 0;
       const p = a.play();
-      if(p && p.catch) p.catch(() => { this.filer[namn] = "saknas"; annars(); });
-    }catch(e){ this.filer[namn] = "saknas"; annars(); }
+      if(p && p.catch) p.catch(() => annars());
+    }catch(e){ annars(); }
   },
   /* Två mjuka toner före hållplatsutropet, som signalen i en spårvagn */
   utrop(){
@@ -3354,6 +3367,7 @@ const SFX = {
     });
   }
 };
+SFX.provaFiler();
 
 /* ── Rösten ─────────────────────────────────────────────────────────────
    Plattan kan ha flera svenska röster. På iPad följer en liten "Alva" med,
@@ -3455,6 +3469,7 @@ function speakUtrop(text){
   if(!window.speechSynthesis) return;
   try{
     tystna();
+    if(speechSynthesis.paused) speechSynthesis.resume();
     const u = nyUtsaga(p, text);
     u.rate = Math.max(0.55, RATES[p.settings.rate != null ? p.settings.rate : 1].v - 0.12);
     speechSynthesis.speak(u);
@@ -3467,6 +3482,9 @@ function speak(text, force){
   if(!force && (!p || !p.settings.voice)) return;
   try{
     tystna();
+    /* iOS kan lämna talsyntesen pausad efter ett avbrott – då säger den
+       ingenting mer förrän någon väcker den */
+    if(speechSynthesis.paused) speechSynthesis.resume();
     const u = nyUtsaga(p, text);
     u.rate = RATES[(p && p.settings.rate) != null ? p.settings.rate : 1].v;
     speechSynthesis.speak(u);
@@ -5467,29 +5485,43 @@ function vaxlaZoom(){
   })(start);
 }
 
-/* Resan: när man tryckt Åk rullar den egna vagnen över skärmen med klockan
-   och utropet innan första frågan – ett par sekunder som gör att det känns
-   som att åka. Ett tryck hoppar över, och med reduce-motion visas den inte. */
+/* Resan: när man tryckt Åk rullar den egna vagnen in från vänster med
+   klockan och utropet, bromsar och stannar vid perrongen. Där väntar den på
+   ett tryck – "Hoppa på och räkna!" – och först då kommer frågorna. Trycket
+   är viktigt på iPad: rösten får bara börja tala i ett tryck, så frågan läses
+   i barnets eget tryck i stället för i en timer flera sekunder senare. Under
+   åkturen gör tryck ingenting, så ett extra tryck hoppar inte över något.
+   Kommer inget tryck på sex sekunder fortsätter spelet av sig självt. Med
+   reduce-motion står vagnen still vid perrongen från början. */
 let resaToken = 0;
 function resaScen(p, nasta, l, sedan){
   const box = el("resa");
-  if(reduceMotion || !box || !nasta){ sedan(); return; }
+  if(!box || !nasta){ sedan(); return; }
   const tok = ++resaToken;
+  const stilla = reduceMotion;
   el("resaMal").textContent = nasta;
+  el("resaSkylt").textContent = nasta;
   el("resaVagn").innerHTML = vagnBild(p, { ref: l.ref, stor: true });
+  const ga = el("resaGa"); ga.hidden = true;
   box.hidden = false;
-  box.classList.remove("kor"); void box.offsetWidth; box.classList.add("kor");
+  box.classList.remove("kor", "stilla", "framme"); void box.offsetWidth; box.classList.add(stilla ? "stilla" : "kor");
   SFX.klocka();
-  const utropId = setTimeout(() => { if(tok === resaToken) speakUtrop("Nästa hållplats " + nasta); }, 900);
-  const slut = () => {
+  const timers = [];
+  const om = (fn, ms) => timers.push(setTimeout(() => { if(tok === resaToken) fn(); }, ms));
+  om(() => speakUtrop("Nästa hållplats " + nasta), 500);
+  const fortsatt = () => {
     if(tok !== resaToken) return;
     resaToken++;
-    clearTimeout(utropId); clearTimeout(slutId);
-    box.hidden = true; box.classList.remove("kor"); box.onclick = null;
+    timers.forEach(clearTimeout);
+    box.hidden = true; box.classList.remove("kor", "stilla", "framme"); ga.hidden = true; box.onclick = null;
     sedan();
   };
-  const slutId = setTimeout(slut, 3900);
-  box.onclick = () => { tystna(); slut(); };
+  om(() => {
+    box.classList.add("framme"); ga.hidden = false;
+    SFX.dorr();
+    om(fortsatt, 6000);
+  }, stilla ? 1200 : 3300);
+  box.onclick = () => { if(!box.classList.contains("framme")) return; SFX.tap(); fortsatt(); };
 }
 el("goBtn").addEventListener("click", () => {
   const p = P();
