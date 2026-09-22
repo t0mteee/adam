@@ -9,7 +9,7 @@ import { REGIONS, LEVELS, SHOWN, buildRound, makeOptions, distraktorer, varforFe
          justeraSkill, nivaForSkill, buildStigandeRound,
          HUVUD_MAX, SIDO_START, SIDO_MAX, GANGER_START, GANGER_MAX, TALRAD_START, TALRAD_MAX, huvudspar, arLast, oppnaEfter, sidoOppen, gangerOppen, talradOppen, sidosparEfter, datumNyckel, statSvar, statTid, MAKE, SMASPEL, SPELMOTOR, spelKopt, LEK_W, LEK_H, synligaBanor, maxStars, nastaBana, blandatLevel, levelById,
          SPAR, sparOppen, linjeOppen, klockaOppen, LINJE_START, LINJE_MAX, KLOCKA_START, KLOCKA_MAX, timme12, tidKod, tidOrd, kodTid, vantetidOrd, svarText,
-         hallFraga, tavlaHar, avgangar, VAGNAR, vagnFragaFor, rostPoang, rostNamn, rostKvalitet, rostEtikett, bastaRost, valjRost, sparradKant, valjSparr, FOTOQUIZ, fotoFraga, granskaKopia, UTROP_FRASER, utropAlla, utropDelar, wavBlob, linjerVid, VAGNTYPER, VAGNNAMN, vagntypFor, vagnkortFor, VAGNKORT_ALLA, vagnTypAv, vagnNummerFinns, stegaVagnNummer, slumpaVagnNummer, VAGNSAKER, standardVagn, vagnAv, baraRutorPa, lageFor, sparaLage, omradesStjarnor, kompisRepliker, kompisReplik, lineByRef } from "./hamta.mjs";
+         hallFraga, tavlaHar, avgangar, VAGNAR, vagnFragaFor, rostPoang, rostNamn, rostKvalitet, rostEtikett, bastaRost, valjRost, sparradKant, valjSparr, FOTOQUIZ, fotoFraga, granskaKopia, UTROP_FRASER, utropAlla, utropDelar, wavBlob, linjerVid, VAGNTYPER, VAGNNAMN, vagntypFor, vagnkortFor, VAGNKORT_ALLA, vagnTypAv, vagnNummerFinns, stegaVagnNummer, slumpaVagnNummer, VAGNSAKER, standardVagn, vagnAv, baraRutorPa, lageFor, sparaLage, omradesStjarnor, kompisRepliker, kompisReplik, lineByRef, skillGolv, skillNu } from "./hamta.mjs";
 
 const rot = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -1123,4 +1123,23 @@ test("kompisen har något att säga och upprepar sig inte", () => {
   assert.ok(r.some(t => t.includes("Adam")) && r.some(t => /Bebben/.test(t)) && r.some(t => /Räkna till 10/.test(t)));
   let forra = kompisReplik(p);
   for(let i = 0; i < 40; i++){ const nu = kompisReplik(p); assert.notEqual(nu, forra); forra = nu; }
+});
+
+test("stigande sjunker aldrig under det barnet visat på kartan", () => {
+  /* två stjärnor till och med bana 12 ⇒ golvet är 10 */
+  const stars = {}; for(let i = 1; i <= 12; i++) stars[i] = 2;
+  const p = { unlocked: 14, skill: 14, stars };
+  assert.equal(skillGolv(p), 10);
+  for(let i = 0; i < 100; i++) justeraSkill(p, "ned");
+  assert.equal(p.skill, 10, "golvet håller");
+  assert.equal(skillNu({ unlocked: 14, skill: 2, stars }), 10, "en gammal låg skicklighet lyfts till golvet");
+  assert.equal(skillNu({ unlocked: 5, skill: 2, stars }), 5, "golvet är aldrig högre än det upplåsta");
+  assert.equal(skillGolv({ stars: { 1: 3, 2: 1 } }), 1, "en stjärna räcker inte");
+  assert.equal(skillGolv({ stars: { 28: 3, 32: 3 } }), 1, "sidospåren räknas inte");
+  /* felfri hållplats: ett halvt steg extra */
+  const q = { unlocked: 20, skill: 12, stars: {} };
+  justeraSkill(q, "perfekt");
+  assert.equal(q.skill, 12.5);
+  for(let i = 0; i < 5; i++) justeraSkill(q, "ratt");
+  assert.ok(Math.abs(q.skill - 13.75) < 1e-9, "fem rätt är 1,25 steg");
 });

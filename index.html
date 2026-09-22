@@ -1287,7 +1287,7 @@ body.poster-visning{ overflow: hidden; }
 .resa-mark{ flex: 1 1 0; background: linear-gradient(180deg, #8FE07E 0%, #57C96B 100%); display: grid; place-items: center; }
 .resa-ga{ width: min(84vw, 460px); animation: right-pop .5s cubic-bezier(.3,1.6,.5,1); }
 .resa-ga[hidden]{ display: none; }
-@media (prefers-reduced-motion: reduce){ #resa .resa-vagn{ transform: translateX(-50%); } }
+body.stilla #resa .resa-vagn{ transform: translateX(-50%); animation: none; }
 /* Kartan till väggen: en egen vy ovanpå allt, och det enda som skrivs ut */
 #poster{ position: fixed; inset: 0; z-index: 70; background: #EEF2F6; overflow: auto; padding: 12px; }
 #poster[hidden]{ display: none; }
@@ -1305,11 +1305,11 @@ body.poster-visning{ overflow: hidden; }
   .poster-ark{ max-width: none; border: none; box-shadow: none; border-radius: 0; padding: 0; }
   @page{ size: A4 portrait; margin: 8mm; }
 }
-@media (prefers-reduced-motion: reduce){
-  *, *::before, *::after{
-    animation-duration: .01ms !important; animation-iteration-count: 1 !important;
-    transition-duration: .01ms !important;
-  }
+/* Stilla: sätts på body av spelet – av Rörelse-inställningen, eller av
+   plattans Minska rörelse när inställningen står på Automatiskt */
+body.stilla *, body.stilla *::before, body.stilla *::after{
+  animation-duration: .01ms !important; animation-iteration-count: 1 !important;
+  transition-duration: .01ms !important;
 }
 </style>
 </head>
@@ -1531,7 +1531,7 @@ const pick = (arr) => arr[rnd(arr.length)];
 const INK = "#2E1A66";
 /* Syns under Inställningar, så man kan se vilken version telefonen kör.
    Höjs tillsammans med VERSION i sw.js. */
-const SPELVERSION = "27";
+const SPELVERSION = "28";
 function shuffle(a){ for(let i = a.length - 1; i > 0; i--){ const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
 function store(key, val){
@@ -3684,7 +3684,20 @@ function openUtrop(){
 const CONFETTI_COLORS = ["#FFC42E", "#FF6B6B", "#62CDF2", "#57C96B", "#FF8AD0", "#9061F9"];
 const fx = el("fx"), fxCtx = fx.getContext("2d");
 let bits = [], fxRunning = false;
-const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+/* Rörelse: vagnen som rullar, kompisen som hoppar, mynten som flyger.
+   Automatiskt följer plattans Minska rörelse; På och Av under kugghjulet
+   bestämmer själva. Många barnplattor har Minska rörelse på utan att någon
+   valt det, och då stod allt still – nu kan föräldern slå på det ändå. */
+const rorelseMedia = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
+const plattanMinskar = () => !!(rorelseMedia && rorelseMedia.matches);
+let reduceMotion = plattanMinskar();
+function rorelseVal(p){ const v = p && p.settings && p.settings.rorelse; return v === "pa" || v === "av" ? v : "auto"; }
+function uppdateraRorelse(){
+  const v = rorelseVal(P());
+  reduceMotion = v === "av" ? true : v === "pa" ? false : plattanMinskar();
+  document.body.classList.toggle("stilla", reduceMotion);
+}
+if(rorelseMedia){ if(rorelseMedia.addEventListener) rorelseMedia.addEventListener("change", uppdateraRorelse); else rorelseMedia.addListener(uppdateraRorelse); }
 
 function sizeCanvas(){
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -4331,16 +4344,25 @@ function blandatLevel(p){
    vid rätt svar och sänker det vid fel. Uppgifterna dras från nivån runt det
    talet, så svårigheten stiger av sig själv och backar tillfälligt när det
    kärvar – tills nivån sitter igen. */
-const SKILL_UPP = 0.2, SKILL_HJALP = -0.15, SKILL_NED = -0.5;
+const SKILL_UPP = 0.25, SKILL_HJALP = -0.1, SKILL_NED = -0.5, SKILL_PERFEKT = 0.5;
 
+/* Golvet: barnet har redan visat på kartan vad det kan. Den högsta banan på
+   huvudspåret med minst två stjärnor, minus två, är så lågt Stigande får
+   sjunka. En dålig dag i spårvagnen – eller ett syskon som tryckt på måfå –
+   ska inte skicka tillbaka till 1 + 1 när barnet räknar till 20 på kartan. */
+function skillGolv(p){
+  let hogst = 0;
+  for(const L of LEVELS) if(huvudspar(L) && ((p.stars || {})[L.id] || 0) >= 2) hogst = Math.max(hogst, L.id);
+  return Math.max(1, hogst - 2);
+}
 function skillNu(p){
-  const topp = Math.min(p.unlocked || 1, HUVUD_MAX);
-  return Math.max(1, Math.min(topp, p.skill == null ? topp : p.skill));
+  const topp = Math.min(p.unlocked || 1, HUVUD_MAX), golv = Math.min(topp, skillGolv(p));
+  return Math.max(golv, Math.min(topp, p.skill == null ? topp : p.skill));
 }
 function justeraSkill(p, utfall){
-  const topp = Math.min(p.unlocked || 1, HUVUD_MAX);
-  const steg = utfall === "ratt" ? SKILL_UPP : utfall === "hjalp" ? SKILL_HJALP : SKILL_NED;
-  p.skill = Math.max(1, Math.min(topp, skillNu(p) + steg));
+  const topp = Math.min(p.unlocked || 1, HUVUD_MAX), golv = Math.min(topp, skillGolv(p));
+  const steg = utfall === "ratt" ? SKILL_UPP : utfall === "hjalp" ? SKILL_HJALP : utfall === "perfekt" ? SKILL_PERFEKT : SKILL_NED;
+  p.skill = Math.max(golv, Math.min(topp, skillNu(p) + steg));
 }
 function nivaForSkill(p){
   const topp = Math.min(p.unlocked || 1, HUVUD_MAX);
@@ -5535,6 +5557,7 @@ el("goBtn").addEventListener("click", () => {
 
 function enterWorld(halsa, isNew){
   const p = P(); if(!p) return;
+  uppdateraRorelse();
   if(p.world === "tram"){
     renderStart(); show("lines");
   }else{
@@ -5715,6 +5738,12 @@ function openSettings(){
       <span><span class="set-label">Namn</span><br><span class="set-hint">${escapeHtml(p.name)} · det som rösten säger och som står på kartan</span></span>
       <button class="btn" data-action="namn" type="button" style="padding:8px 14px;font-size:var(--t-sm);background:var(--sky-hi)">Byt namn</button>
     </div>
+    <div class="set-row" style="display:block">
+      <span class="set-label">Rörelse</span><br><span class="set-hint">Vagnen som rullar, kompisen som hoppar, mynten som flyger. Automatiskt följer plattans <i>Minska rörelse</i>, som just nu är ${plattanMinskar() ? "på – då står allt still" : "av"}.</span>
+      <div class="seg" style="margin-top:8px">
+        ${[["auto", "Automatiskt"], ["pa", "På"], ["av", "Av"]].map(([v, t]) => `<button type="button" data-rorelse="${v}" aria-pressed="${rorelseVal(p) === v}">${t}</button>`).join("")}
+      </div>
+    </div>
     <div class="set-row">
       <span><span class="set-label">Ljud</span><br><span class="set-hint">Plingen när man svarar</span></span>
       <button class="toggle" data-toggle="sound" aria-pressed="${s.sound}" type="button"><span class="dot"></span></button>
@@ -5833,6 +5862,13 @@ sheet.addEventListener("click", (e) => {
     return;
   }
 
+  const ror = e.target.closest("[data-rorelse]");
+  if(ror){
+    p.settings.rorelse = ror.dataset.rorelse; saveProfiles(); uppdateraRorelse(); SFX.tap();
+    sheet.querySelectorAll("[data-rorelse]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.rorelse === p.settings.rorelse)));
+    speak(reduceMotion ? "Nu står allt still." : "Nu rör sig allt igen!", true);
+    return;
+  }
   const rate = e.target.closest("[data-rate]");
   if(rate){
     p.settings.rate = Number(rate.dataset.rate);
@@ -7596,7 +7632,11 @@ function finishTramStop(p, perfect){
      den svåraste banan man har öppen (eller på Blandat) öppnar nästa bana.
      Annars vore man tvungen att spela Räknelandet för att få svårare tal. */
   let nyBana = null;
-  if(perfect === g.len) p.tramPerfect = (p.tramPerfect || 0) + 1;
+  if(perfect === g.len){
+    p.tramPerfect = (p.tramPerfect || 0) + 1;
+    /* En felfri hållplats på Stigande är ett bevis – då tar nivån ett extra kliv */
+    if(g.level && g.level.id === -1) justeraSkill(p, "perfekt");
+  }
   /* Fyra av fem räcker. Ett enda feltryck ska inte stoppa en fyraåring.
      Stigande och Blandat för huvudspåret framåt; en vald bana för sitt spår. */
   if(perfect >= g.len - 1){

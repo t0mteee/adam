@@ -330,11 +330,17 @@ låter som ett utrop och inte som en lekkamrat.
 - **Kort summering.** När hållplatsen är avklarad visas bara mynten och en enda
   knapp: *Åk vidare!* Sedan rullar vagnen in på nästa hållplats.
 - **Svårigheten anpassar sig.** Standardläget **Stigande** håller reda på var
-  barnet ligger och flyttar sig: rätt svar höjer, ett feltryck sänker lite, och
-  ett tal som måste visas sänker mer. Uppgifterna dras från nivån runt det
-  läget, så det blir svårare när det går bra och backar tillfälligt när det
-  kärvar – tills nivån sitter igen. Rubriken visar var man är just nu, till
-  exempel *Stigande · Plus till 10*.
+  barnet ligger med ett flyttal som börjar på den svåraste upplåsta banan,
+  höjs vid rätt svar (0,25 per tal, plus ett halvt steg för en felfri
+  hållplats), sänks lite vid rätt efter ett feltryck och ett halvt steg när
+  facit fick visas. Uppgifterna dras från banan runt talet, ibland en lättare
+  och ibland en svårare. Nivån sjunker aldrig under det barnet redan visat på
+  kartan: den högsta banan med två stjärnor, minus två, är golvet – så en dålig
+  dag i spårvagnen, eller ett syskon som tryckt på måfå, skickar ingen tillbaka
+  till 1 + 1. Under kugghjulet, raden *Tal i spårvagnen*, står vilken bana
+  Stigande ligger på just nu, till exempel *Stigande · Plus till 10*, och där
+  går det också att välja **Blandat** (allt från de två senaste områdena) eller
+  en bestämd bana.
 - **Andra lägen finns kvar.** **Blandat** drar ur de två senaste områdena barnet
   öppnat på huvudspåret, så en van spelare slipper 1 + 1. Man kan också välja en
   enskild bana: listan är grupperad per område, med det senaste uppfällt och
@@ -446,8 +452,9 @@ låter som ett utrop och inte som en lekkamrat.
   iPad får rösten bara börja tala i ett tryck, så frågan läses i barnets
   eget tryck och inte i en timer. Under åkturen gör tryck ingenting, så ett
   extra tryck hoppar inte över något; kommer inget tryck på sex sekunder
-  fortsätter spelet ändå. Med *reducera rörelse* på står vagnen still vid
-  perrongen från början. Klockan är byggd av deltoner som i en slagen
+  fortsätter spelet ändå. Står *Rörelse* på Av under kugghjulet – eller på
+  Automatiskt när plattan har *Minska rörelse* påslaget – står vagnen still
+  vid perrongen från början. Klockan är byggd av deltoner som i en slagen
   metallklocka, inte en ren ton – lägger man en riktig inspelning i
   `ljud/klocka.mp3` (och `ljud/dorr.mp3`) används den i stället; spelet
   frågar servern en gång vid start om filerna finns och rör annars inga
@@ -562,7 +569,8 @@ kopian senast sparades.
 
 ## För vuxna
 
-Kugghjulet uppe till höger: värld, tal i spårvagnen, byt namn, ljud,
+Kugghjulet uppe till höger: värld, tal i spårvagnen, byt namn, rörelse
+(automatiskt, på eller av), ljud,
 uppläsning, rösthastighet, vilken röst, räknehjälp, gånger och delat med (av
 eller på), klockan (av eller på), egna utrop (av eller på) och *Spela in
 utrop*, byt kompisfigur, byt spelare och ta bort spelare. Namnet är det rösten
