@@ -187,6 +187,8 @@ h1, h2, h3{ font-family: "Baloo 2", "Baloo 2 Fallback", system-ui, sans-serif; f
   border: var(--stroke); display: grid; place-items: center; flex: none;
 }
 .p-go svg{ width: 22px; height: 22px; }
+.p-go.tabort{ background: var(--melon); }
+.profile-card.tabort{ background: #FFE3E3; }
 
 /* ── Namnfält ───────────────────────────── */
 .name-field{
@@ -290,6 +292,18 @@ h1, h2, h3{ font-family: "Baloo 2", "Baloo 2 Fallback", system-ui, sans-serif; f
   border-radius: 34px; border: var(--stroke);
   box-shadow: 0 5px 0 rgba(46,26,102,.5);
 }
+/* Nivåmätaren */
+.niva-matare{ display: grid; grid-template-columns: repeat(27, 1fr); gap: 2px; height: 12px; margin: 4px 0; }
+.niva-matare.stor{ height: 18px; gap: 3px; margin: 6px 0 10px; }
+.niva-steg{ display: block; background: var(--paper-2); border: 1.5px solid rgba(46,26,102,.35); border-radius: 3px; }
+.niva-steg.oppen{ background: var(--f); border-color: var(--ink); }
+.niva-steg.golv{ border-bottom: 3px solid var(--ink); }
+.niva-steg.nu{ outline: 3px solid var(--ink); outline-offset: 1.5px; transform: scaleY(1.35); position: relative; z-index: 1; border-radius: 4px; }
+.niva-rad{ display: grid; grid-template-columns: 52px 1fr 52px; gap: 8px; align-items: center; }
+.niva-rad .btn{ padding: 8px 0; font-size: 1.5rem; line-height: 1; background: var(--sky-hi); }
+.niva-text{ text-align: center; min-width: 0; }
+.niva-text b{ display: block; font-family: "Baloo 2", system-ui, sans-serif; font-size: var(--t-md); line-height: 1.15; }
+.niva-text small{ display: block; font-size: var(--t-xs); color: var(--ink-2); font-weight: 700; margin-top: 2px; }
 .banval{ display: grid; gap: 6px; max-height: 38vh; overflow-y: auto; padding-right: 2px; }
 .banval details{ border: 2px solid var(--ink); border-radius: 14px; background: var(--paper-2); }
 .banval summary{
@@ -423,6 +437,17 @@ h1, h2, h3{ font-family: "Baloo 2", "Baloo 2 Fallback", system-ui, sans-serif; f
 .mode-card:focus-visible{ outline: 4px dashed var(--grape); outline-offset: 3px; }
 
 /* ── Inställningar ──────────────────────── */
+.set-grupp{ border: 2.5px solid var(--ink); border-radius: 16px; background: var(--paper); margin-bottom: 10px; padding: 0 12px; }
+.set-grupp summary{
+  list-style: none; display: flex; align-items: baseline; gap: 8px; padding: 11px 0; cursor: pointer;
+  font-family: "Baloo 2", system-ui, sans-serif; font-weight: 800; font-size: var(--t-md);
+}
+.set-grupp summary::-webkit-details-marker{ display: none; }
+.set-grupp summary small{ font-size: var(--t-xs); color: var(--ink-2); font-weight: 700; flex: 1; min-width: 0; }
+.set-grupp summary::after{ content: "▸"; color: var(--ink-2); flex: none; }
+.set-grupp[open] summary::after{ content: "▾"; }
+.set-grupp[open] summary{ border-bottom: 2px dashed rgba(46,26,102,.25); }
+.set-grupp .set-row:last-child{ border-bottom: none; }
 .set-row{
   display: flex; align-items: center; justify-content: space-between; gap: 10px;
   padding: 9px 0; border-bottom: 2px dashed rgba(46,26,102,.16);
@@ -885,6 +910,19 @@ body.poster-visning{ overflow: hidden; }
 .fortsatt .scen-mini svg{ width: 100%; height: 100%; display: block; }
 .fortsatt b{ font-family: "Baloo 2", system-ui, sans-serif; font-size: var(--t-md); display: block; line-height: 1.1; }
 .fortsatt small{ font-size: var(--t-xs); color: var(--ink-2); display: block; margin-top: 2px; }
+/* Startskärmens hopfällda delar: en knapp med rubrik och en pil som vänder */
+.start-knapp{
+  display: flex; align-items: center; gap: 10px; width: 100%; margin-top: 12px; padding: 12px 14px;
+  background: var(--paper); border: var(--stroke); border-radius: 18px; box-shadow: var(--lift-sm);
+  font-family: inherit; color: inherit; text-align: left; cursor: pointer; touch-action: manipulation;
+}
+.start-knapp b{ display: block; font-family: "Baloo 2", system-ui, sans-serif; font-size: var(--t-md); line-height: 1.1; }
+.start-knapp small{ display: block; font-size: var(--t-xs); color: var(--ink-2); margin-top: 2px; }
+.start-knapp > span{ min-width: 0; flex: 1; }
+.start-knapp::after{ content: "▸"; font-size: 1.4rem; color: var(--ink-2); flex: none; }
+.start-knapp[aria-expanded="true"]::after{ content: "▾"; }
+.start-knapp:active{ transform: translateY(3px); box-shadow: 0 0 0 var(--ink); }
+.start-sektion{ margin-top: 6px; }
 .linjechips{ display: flex; gap: 7px; overflow-x: auto; padding: 4px 2px 10px; scrollbar-width: none; }
 .linjechips::-webkit-scrollbar{ display: none; }
 .linjechips button{
@@ -1038,8 +1076,10 @@ body.poster-visning{ overflow: hidden; }
 .avgang .mal-tips{ color: var(--grass-deep); }
 .natkarta .nat-namn.mal{ fill: #DD4747; font-family: "Baloo 2", system-ui, sans-serif; }
 .unlock-note.uppdrag-klart{ background: #FFE3E3; border-color: var(--melon-deep); }
-.trip-knappar{ display: flex; gap: 8px; margin-bottom: 14px; }
-.trip-knappar .btn{ flex: 1; padding: 11px 8px; font-size: var(--t-sm); background: var(--paper-2); display: flex; align-items: center; justify-content: center; gap: 8px; }
+.trip-knappar{ display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.trip-knappar .btn{ flex: 1 1 200px; padding: 11px 8px; font-size: var(--t-sm); background: var(--paper-2); display: flex; align-items: center; justify-content: center; gap: 8px; }
+.trip-knappar .btn[hidden]{ display: none; }
+.trip-knappar .hytt-btn{ width: auto; margin-top: 0; }
 .trip-knappar .btn svg{ width: 24px; height: 24px; flex: none; }
 .go-btn svg{ width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
 /* Kartans zoomknapp */
@@ -1331,7 +1371,10 @@ body.stilla *, body.stilla *::before, body.stilla *::after{
     <div class="panel">
       <div class="profile-list" id="profileList"></div>
       <button class="btn btn-big" id="newProfileBtn" type="button">+ Ny spelare</button>
-      <button class="btn" id="kopiaBtn" type="button" style="width:100%;margin-top:10px;background:var(--paper-2)">Läs in en säkerhetskopia</button>
+      <div class="kopia-knappar" style="margin-top:10px">
+        <button class="btn" id="kopiaBtn" type="button" style="background:var(--paper-2)">Läs in en säkerhetskopia</button>
+        <button class="btn" id="redigeraBtn" type="button" style="background:var(--paper-2)" hidden>Ändra spelare</button>
+      </div>
     </div>
   </section>
 
@@ -1401,16 +1444,16 @@ body.stilla *, body.stilla *::before, body.stilla *::after{
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg>
         Byt vagn eller riktning
       </button>
+      <button class="btn hytt-btn" id="hyttBtn" type="button" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="#2E1A66" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="15" rx="4" fill="#FFFDF7"/><path d="M4 9h16M8 3V1.5M16 3V1.5M7 22l2-4M17 22l-2-4M3 22h18"/><circle cx="8.5" cy="13.5" r="1.3" fill="#2E1A66"/><circle cx="15.5" cy="13.5" r="1.3" fill="#2E1A66"/></svg>
+        Kör vagnen själv
+      </button>
     </div>
     <details class="alla-stopp" id="allaStopp">
       <summary>Alla hållplatser på linjen</summary>
       <div class="route" id="route"></div>
     </details>
     <button class="btn go-btn" id="goBtn" type="button">Åk till nästa hållplats!</button>
-    <button class="btn hytt-btn" id="hyttBtn" type="button" hidden>
-      <svg viewBox="0 0 24 24" fill="none" stroke="#2E1A66" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="15" rx="4" fill="#FFFDF7"/><path d="M4 9h16M8 3V1.5M16 3V1.5M7 22l2-4M17 22l-2-4M3 22h18"/><circle cx="8.5" cy="13.5" r="1.3" fill="#2E1A66"/><circle cx="15.5" cy="13.5" r="1.3" fill="#2E1A66"/></svg>
-      Kör vagnen själv
-    </button>
   </section>
 
   <!-- ── LEKSTUGAN: SMÅSPEL ─────────────── -->
@@ -1531,7 +1574,7 @@ const pick = (arr) => arr[rnd(arr.length)];
 const INK = "#2E1A66";
 /* Syns under Inställningar, så man kan se vilken version telefonen kör.
    Höjs tillsammans med VERSION i sw.js. */
-const SPELVERSION = "28";
+const SPELVERSION = "29";
 function shuffle(a){ for(let i = a.length - 1; i > 0; i--){ const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
 function store(key, val){
@@ -3974,25 +4017,78 @@ const CLOSE_BTN = `<button class="icon-btn sheet-close" data-action="close" type
   <svg viewBox="0 0 24 24" fill="none" stroke="#2E1A66" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>`;
 
 /* ── Välj spelare ───────────────────────── */
+/* Ändra spelare: korten byter pil mot papperskorg, och ett tryck börjar
+   borttagningen i två steg i stället för att starta spelet */
+let redigerar = false;
 function renderProfiles(){
   const list = el("profileList");
+  const knapp = el("redigeraBtn");
+  if(!profiles.length) redigerar = false;
+  knapp.hidden = !profiles.length;
+  knapp.textContent = redigerar ? "Klar" : "Ändra spelare";
   if(!profiles.length){
     list.innerHTML = `<p class="footnote" style="font-size:var(--t-sm);margin:2px 0 12px">Ingen spelare än. Skapa en så börjar äventyret!</p>`;
   }else{
-    list.innerHTML = profiles.map(p => `
-      <button class="profile-card" data-profile="${p.id}" type="button">
+    list.innerHTML = (redigerar ? `<p class="footnote" style="font-size:var(--t-sm);margin:0 0 4px">Tryck på den spelare som ska tas bort</p>` : "") + profiles.map(p => `
+      <button class="profile-card${redigerar ? " tabort" : ""}" ${redigerar ? `data-tabort="${p.id}" aria-label="Ta bort ${escapeHtml(p.name)}"` : `data-profile="${p.id}"`} type="button">
         ${kompisSVG(p, "happy")}
         <span style="min-width:0">
           <span class="p-name">${escapeHtml(p.name)}</span><br>
           <span class="p-meta">${totalStars(p)} av ${MAX_STARS} stjärnor · ${p.coins} mynt</span>
         </span>
-        <span class="p-go"><svg viewBox="0 0 24 24" fill="none" stroke="#2E1A66" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5l8 7-8 7"/></svg></span>
+        ${redigerar
+          ? `<span class="p-go tabort"><svg viewBox="0 0 24 24" fill="none" stroke="#FFFDF7" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></span>`
+          : `<span class="p-go"><svg viewBox="0 0 24 24" fill="none" stroke="#2E1A66" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5l8 7-8 7"/></svg></span>`}
       </button>`).join("");
   }
 }
+/* Borttagningen: två rutor, och knappen i den andra är låst i tre sekunder,
+   så att ett barn som trycker snabbt två gånger inte kommer igenom */
+let tabortId = null, tabortTimer = null;
+function openTaBort(id, steg){
+  const q = profiles.find(x => x.id === id); if(!q) return;
+  tabortId = id;
+  if(steg === 1){
+    openSheet(`
+      <div class="sheet-head"><div><h2>Ta bort ${escapeHtml(q.name)}?</h2>
+      <p class="sheet-sub">Spelaren försvinner från den här plattan. Det går inte att ångra.</p></div>${CLOSE_BTN}</div>
+      <div style="display:grid;gap:8px">
+        <button class="btn danger" data-action="tabort-2" type="button">Ja, ta bort</button>
+        <button class="btn" data-action="close" type="button" style="background:var(--paper-2)">Nej, behåll</button>
+      </div>`);
+    return;
+  }
+  const delar = [`${totalStars(q)} stjärnor`, `${q.coins} mynt`, `${(q.badges || []).length} märken`];
+  if((q.vagnkort || []).length) delar.push(`${q.vagnkort.length} vagnkort`);
+  if(q.vagn) delar.push("den egna vagnen");
+  openSheet(`
+    <div class="sheet-head"><div><h2>Är du säker?</h2>
+    <p class="sheet-sub">Allt ${escapeHtml(q.name)} har försvinner: ${delar.join(", ")}. Spara en säkerhetskopia först om du är osäker.</p></div>${CLOSE_BTN}</div>
+    <div style="display:grid;gap:8px">
+      <button class="btn danger" data-action="tabort-ja" id="tabortJa" type="button" disabled>Vänta 3…</button>
+      <button class="btn" data-action="close" type="button" style="background:var(--paper-2)">Nej, behåll</button>
+    </div>`);
+  let kvar = 3;
+  clearInterval(tabortTimer);
+  tabortTimer = setInterval(() => {
+    const b = el("tabortJa");
+    if(!b){ clearInterval(tabortTimer); return; }
+    kvar--;
+    if(kvar > 0) b.textContent = `Vänta ${kvar}…`;
+    else { b.textContent = `Ja, ta bort ${q.name} för alltid`; b.disabled = false; clearInterval(tabortTimer); }
+  }, 1000);
+}
+function taBortSpelare(id){
+  profiles = profiles.filter(x => x.id !== id);
+  if(activeId === id) activeId = profiles.length ? profiles[0].id : null;
+  saveProfiles(); closeSheet(); redigerar = false; renderProfiles(); show("profiles");
+}
+el("redigeraBtn").addEventListener("click", () => { SFX.tap(); redigerar = !redigerar; renderProfiles(); });
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c])); }
 
 el("profileList").addEventListener("click", (e) => {
+  const t = e.target.closest("[data-tabort]");
+  if(t){ SFX.tap(); openTaBort(t.dataset.tabort, 1); return; }
   const b = e.target.closest("[data-profile]"); if(!b) return;
   activeId = b.dataset.profile; saveProfiles();
   SFX.tap();
@@ -4350,10 +4446,17 @@ const SKILL_UPP = 0.25, SKILL_HJALP = -0.1, SKILL_NED = -0.5, SKILL_PERFEKT = 0.
    huvudspåret med minst två stjärnor, minus två, är så lågt Stigande får
    sjunka. En dålig dag i spårvagnen – eller ett syskon som tryckt på måfå –
    ska inte skicka tillbaka till 1 + 1 när barnet räknar till 20 på kartan. */
-function skillGolv(p){
+function stjarnGolv(p){
   let hogst = 0;
   for(const L of LEVELS) if(huvudspar(L) && ((p.stars || {})[L.id] || 0) >= 2) hogst = Math.max(hogst, L.id);
   return Math.max(1, hogst - 2);
+}
+/* Golvet från stjärnorna – eller lägre, om en förälder dragit ner nivån
+   under det med minusknappen (p.golv). Det manuella golvet släpper så fort
+   nivån är ovanför stjärngolvet igen. */
+function skillGolv(p){
+  const g = stjarnGolv(p);
+  return p.golv != null ? Math.min(g, p.golv) : g;
 }
 function skillNu(p){
   const topp = Math.min(p.unlocked || 1, HUVUD_MAX), golv = Math.min(topp, skillGolv(p));
@@ -4363,6 +4466,43 @@ function justeraSkill(p, utfall){
   const topp = Math.min(p.unlocked || 1, HUVUD_MAX), golv = Math.min(topp, skillGolv(p));
   const steg = utfall === "ratt" ? SKILL_UPP : utfall === "hjalp" ? SKILL_HJALP : utfall === "perfekt" ? SKILL_PERFEKT : SKILL_NED;
   p.skill = Math.max(golv, Math.min(topp, skillNu(p) + steg));
+}
+/* Nivåmätarens knappar. Minus går ett steg ner, även under stjärngolvet.
+   Plus går ett steg upp, och står nivån redan på taket öppnas nästa bana på
+   kartan. Börja om från toppen glömmer allt och ställer nivån på den
+   svåraste öppnade banan. Sätt efter stjärnorna låser om kartan till banan
+   efter den sista med en stjärna – för den som fått banor öppnade av lätta
+   tal i vagnen innan det felet rättades. */
+function nivaJustera(p, steg){
+  const topp = () => Math.min(p.unlocked || 1, HUVUD_MAX);
+  const nu = Math.round(skillNu(p));
+  if(steg > 0){
+    if(nu >= topp() && topp() < HUVUD_MAX) p.unlocked = topp() + 1;
+    p.skill = Math.min(topp(), nu + 1);
+  }else{
+    p.skill = Math.max(1, nu - 1);
+  }
+  if(p.skill < stjarnGolv(p)) p.golv = p.skill; else delete p.golv;
+  return skillNu(p);
+}
+function nivaFranToppen(p){ p.skill = null; delete p.golv; return skillNu(p); }
+function nivaEfterStjarnor(p){
+  let hogst = 0;
+  for(const L of LEVELS) if(huvudspar(L) && ((p.stars || {})[L.id] || 0) >= 1) hogst = Math.max(hogst, L.id);
+  p.unlocked = Math.max(1, Math.min(HUVUD_MAX, hogst + 1));
+  if(p.tramLevel > 0 && p.tramLevel <= HUVUD_MAX && p.tramLevel > p.unlocked) p.tramLevel = -1;
+  p.skill = null; delete p.golv;
+  return p.unlocked;
+}
+/* Vilken bana en klarad hållplats får öppna nästa efter: en vald bana sig
+   själv, Blandat den svåraste öppnade, och Stigande den svåraste bara om
+   omgången faktiskt låg där. Annars öppnade lätta tal i vagnen svårare
+   banor på kartan medan talen förblev lätta. */
+function banaSomOppnar(p, tramLevel, stigandeNiva){
+  const topp = Math.min(p.unlocked || 1, HUVUD_MAX);
+  if(tramLevel > 0) return levelById(tramLevel) || null;
+  if(tramLevel === 0) return levelById(topp) || null;
+  return stigandeNiva != null && stigandeNiva >= topp ? levelById(topp) || null : null;
 }
 function nivaForSkill(p){
   const topp = Math.min(p.unlocked || 1, HUVUD_MAX);
@@ -4472,7 +4612,7 @@ function talvalHTML(p){
       <button type="button" data-trammode="type" aria-pressed="${p.tramMode === "type"}">Skriv svar</button>
     </div>
     ${nasta ? `<p class="sheet-sub" style="margin:12px 0 0;text-align:center">
-      Klara fyra av fem på ${vald === -1 ? "Stigande" : vald === 0 ? "Blandat" : spelad.name} så öppnas <b>${nasta.name}</b>.</p>` : ""}`;
+      Klara fyra av fem på ${vald === -1 ? "Stigande, när nivån står på den svåraste banan," : vald === 0 ? "Blandat" : spelad.name} så öppnas <b>${nasta.name}</b>.</p>` : ""}`;
 }
 /* ── Spårvagnen: ett eget äventyr ────────────────────────────────────────
    Spelaren står på en hållplats, väljer vagn och riktning, åker en hållplats
@@ -4617,6 +4757,9 @@ function stoppBildHTML(namn, cls){
 }
 
 let startFilter = "and";   /* "and" = ändstationer, "alla", eller ett linjenummer */
+/* Vad som är utfällt på startskärmen. Pågår en resa är allt hopfällt utom
+   korten överst; utan resa står hållplatsväljaren öppen. */
+let startVisa = { annanstans: null, resor: false };
 
 function renderStart(){
   const p = P();
@@ -4650,7 +4793,12 @@ function renderStart(){
       <span style="min-width:0"><b>Mina vagnkort</b><small>${(p.vagnkort || []).length} av ${VAGNKORT_ALLA.length} · läs numret på vagnarna i fotona</small></span>
       <span class="roundel" style="background:#EAF6FF">${(p.vagnkort || []).length}</span>
     </button>
-    <h2 class="start-rubrik">${r ? "Eller börja någon annanstans" : "Var vill du börja?"}</h2>
+    ${(() => {
+      const oppen = startVisa.annanstans == null ? !r : startVisa.annanstans;
+      return `<button class="start-knapp" data-visa="annanstans" type="button" aria-expanded="${oppen}">
+        <span><b>${r ? "Börja någon annanstans" : "Var vill du börja?"}</b><small>Ändstationerna, en linje eller alla ${ALLA_STOPP.length} hållplatser</small></span>
+      </button>
+      ${oppen ? `<div class="start-sektion" id="sektionAnnanstans">
     <div class="linjechips">
       <button type="button" data-filter="and" aria-pressed="${startFilter === "and"}">Ändstationer</button>
       <button type="button" data-filter="alla" aria-pressed="${startFilter === "alla"}">Alla</button>
@@ -4663,7 +4811,11 @@ function renderStart(){
           <span>${namn}</span>
           <span class="linjer" style="padding-top:0">${linjerVid(namn).map(l => `<i style="background:${l.col};color:${ljusFarg(l.col) ? INK : "#FFFDF7"}">${l.ref}</i>`).join("")}</span>
         </button>`).join("")}
-    </div>
+    </div></div>` : ""}`; })()}
+    <button class="start-knapp" data-visa="resor" type="button" aria-expanded="${startVisa.resor}">
+      <span><b>Mina resor</b><small>${besoktaAlla(p).size} av ${ALLA_STOPP.length} hållplatser · ${(p.linesDone || []).length} hela linjer · kartan till väggen</small></span>
+    </button>
+    ${startVisa.resor ? `<div class="start-sektion" id="sektionResor">
     <h2 class="start-rubrik">Hela nätet</h2>
     <div class="line-row" style="--linecol:var(--grape);cursor:default">
       <span class="roundel" style="background:var(--grape);color:#FFFDF7">${Math.round(besoktaAlla(p).size / ALLA_STOPP.length * 100)}%</span>
@@ -4674,7 +4826,7 @@ function renderStart(){
       </span>
     </div>
     <button class="btn" data-poster type="button" style="width:100%;margin-top:10px;background:var(--paper-2);display:flex;align-items:center;justify-content:center;gap:8px">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#2E1A66" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="7" rx="1"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="#2E1A66" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:24px;height:24px;flex:none"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="7" rx="1"/></svg>
       Karta till väggen – skriv ut
     </button>
     ${p.uppdrag ? `<p class="sheet-sub uppdrag-rad">${FLAGGA_SVG} Uppdrag: ta dig till <b>${p.uppdrag.mal}</b></p>` : ""}
@@ -4691,16 +4843,28 @@ function renderStart(){
           </span>
           <span class="line-prog ${klar ? "klar" : ""}">${klar ? "Hela linjen!" : b + "/" + n}</span>
         </button>`; }).join("")}
-    </div>`;
+    </div></div>` : ""}`;
   el("tramCredit").innerHTML = "Hållplatser, linjefärger och lägen från OpenStreetMap (© OpenStreetMap-bidragsgivare)";
 }
 
 el("startTram").addEventListener("click", (e) => {
+  const visa = e.target.closest("[data-visa]");
+  if(visa){
+    SFX.tap();
+    const k = visa.dataset.visa;
+    const oppen = k === "annanstans" && startVisa.annanstans == null ? !(P().resa && lineByRef(P().resa.ref)) : !!startVisa[k];
+    startVisa[k] = !oppen;
+    renderStart();
+    if(startVisa[k]){ const s = el(k === "annanstans" ? "sektionAnnanstans" : "sektionResor"); if(s) later(() => s.scrollIntoView({ block: "start", behavior: reduceMotion ? "auto" : "smooth" }), 60); }
+    return;
+  }
   const f = e.target.closest("[data-filter]");
   if(f){
-    SFX.tap(); startFilter = f.dataset.filter; renderStart();
-    /* Från "Mina linjer" längst ner: rulla upp till korten som just filtrerades */
-    if(f.hasAttribute("data-rulla")) el("startTram").querySelector(".linjechips").scrollIntoView({ block: "start", behavior: reduceMotion ? "auto" : "smooth" });
+    SFX.tap(); startFilter = f.dataset.filter;
+    /* Från "Mina linjer": öppna hållplatsväljaren och rulla upp till korten som just filtrerades */
+    if(f.hasAttribute("data-rulla")) startVisa.annanstans = true;
+    renderStart();
+    if(f.hasAttribute("data-rulla")){ const c = el("startTram").querySelector(".linjechips"); if(c) c.scrollIntoView({ block: "start", behavior: reduceMotion ? "auto" : "smooth" }); }
     return;
   }
   const fort = e.target.closest("[data-fortsatt]");
@@ -5448,13 +5612,45 @@ el("uppdrag").addEventListener("click", (e) => {
 });
 
 /* Vilka tal ska man räkna under resan? */
+/* Nivåmätaren: huvudspårets 27 banor som en rad i områdenas färger, de
+   öppnade fyllda, med nivån markerad. Den lilla visas under kugghjulet,
+   den stora med knappar i Vilka tal. */
+function nivaLage(p){
+  const topp = Math.min(p.unlocked || 1, HUVUD_MAX);
+  const nu = Math.round(skillNu(p));
+  return { topp, nu, golv: Math.min(topp, skillGolv(p)), bana: levelById(nu) || LEVELS[0] };
+}
+function nivaMatareHTML(p, stor){
+  const { topp, nu, golv } = nivaLage(p);
+  return `<div class="niva-matare ${stor ? "stor" : ""}" role="img" aria-label="Nivå ${nu} av ${topp} öppnade banor, golv ${golv}">
+    ${LEVELS.filter(huvudspar).map(L => `<span class="niva-steg${L.id <= topp ? " oppen" : ""}${L.id === nu ? " nu" : ""}${L.id === golv ? " golv" : ""}" style="--f:${REGIONS[L.r].color}" title="Bana ${L.id} · ${L.name}"></span>`).join("")}
+  </div>`;
+}
+function nivaKnapparHTML(p){
+  const { topp, nu, golv, bana } = nivaLage(p);
+  return `
+    <p class="sheet-sub" style="margin:0 0 6px"><b>Nivån just nu</b> – var Stigande hämtar sina tal</p>
+    ${nivaMatareHTML(p, true)}
+    <div class="niva-rad">
+      <button class="btn" data-niva="-1" type="button" aria-label="Lättare">−</button>
+      <span class="niva-text"><b>Bana ${nu} · ${bana.name}</b><small>golv bana ${golv} · tak bana ${topp}${topp < HUVUD_MAX ? " · plus på taket öppnar bana " + (topp + 1) : ""}</small></span>
+      <button class="btn" data-niva="1" type="button" aria-label="Svårare">+</button>
+    </div>
+    <div class="kopia-knappar" style="margin-top:8px">
+      <button class="btn" data-niva="topp" type="button" style="background:var(--sky-hi)">Börja om från toppen</button>
+      <button class="btn" data-niva="stjarnor" type="button" style="background:var(--paper-2)">Sätt efter stjärnorna</button>
+    </div>
+    <p class="sheet-sub" style="margin:6px 0 14px">Golvet är stjärnorna på kartan: nivån sjunker aldrig under den högsta banan med två stjärnor, minus två. <i>Sätt efter stjärnorna</i> låser om kartan till banan efter den sista med en stjärna.</p>`;
+}
 function openTramLevelSheet(franInstallningar){
   const p = P();
+  if(p.tramLevel == null) p.tramLevel = -1;
   openSheet(`
     <div class="sheet-head">
       <div><h2>Vilka tal?</h2><p class="sheet-sub">Gäller när du åker spårvagn</p></div>
       ${CLOSE_BTN}
     </div>
+    ${nivaKnapparHTML(p)}
     ${talvalHTML(p)}
     ${franInstallningar ? `<button class="btn" data-action="installningar" type="button" style="width:100%;margin-top:12px;background:var(--paper-2)">Tillbaka till inställningarna</button>` : ""}`);
 }
@@ -5714,13 +5910,24 @@ function sparaNamn(){
   openSettings();
   speak(`Hej ${namn}!`, true);
 }
+/* Inställningarna i fyra grupper. Spelet står öppet från början; det man
+   fällt ut ligger kvar utfällt medan kugghjulet är öppet. */
+let setOppna = { spelet: true, ljud: false, spelaren: false, vuxna: false };
+const setGrupp = (id, rubrik, hint, inre) => `
+    <details class="set-grupp" data-grupp="${id}" ${setOppna[id] ? "open" : ""}>
+      <summary><span>${rubrik}</span><small>${hint}</small></summary>
+      ${inre}
+    </details>`;
 function openSettings(){
   const p = P(), s = p.settings;
+  const niva = nivaLage(p.tramLevel == null ? Object.assign({}, p, { tramLevel: -1 }) : p);
+  const talniva = tramLevelDef(p.tramLevel == null ? Object.assign({}, p, { tramLevel: -1 }) : p);
   openSheet(`
     <div class="sheet-head">
       <div><h2>Inställningar</h2><p class="sheet-sub">Gäller för ${escapeHtml(p.name)} · version ${SPELVERSION}</p></div>
       ${CLOSE_BTN}
     </div>
+    ${setGrupp("spelet", "Spelet", "värld, nivå, räknehjälp, spåren", `
     <div class="set-row" style="display:block">
       <span class="set-label">Värld</span><br><span class="set-hint">Vad ${escapeHtml(p.name)} spelar just nu</span>
       <div class="seg" style="margin-top:8px">
@@ -5730,20 +5937,28 @@ function openSettings(){
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" style="width:20px;height:20px;vertical-align:-4px;margin-right:4px"><rect x="5" y="3.5" width="14" height="14" rx="3.5"/><path d="M5 9h14M9.5 3.5V2M14.5 3.5V2M8 21l2-3.5M16 21l-2-3.5M4 21h16"/><circle cx="9" cy="13.5" r="1.1" fill="currentColor"/><circle cx="15" cy="13.5" r="1.1" fill="currentColor"/></svg>Spårvagn</button>
       </div>
     </div>
-    <div class="set-row">
-      <span><span class="set-label">Tal i spårvagnen</span><br><span class="set-hint">${(() => { const t = tramLevelDef(p.tramLevel == null ? Object.assign({}, p, { tramLevel: -1 }) : p); return t.name + (t.nuvarande ? " · " + t.nuvarande : ""); })()}</span></span>
-      <button class="btn" data-action="talval" type="button" style="padding:8px 14px;font-size:var(--t-sm);background:var(--sky-hi)">Byt</button>
-    </div>
-    <div class="set-row">
-      <span><span class="set-label">Namn</span><br><span class="set-hint">${escapeHtml(p.name)} · det som rösten säger och som står på kartan</span></span>
-      <button class="btn" data-action="namn" type="button" style="padding:8px 14px;font-size:var(--t-sm);background:var(--sky-hi)">Byt namn</button>
-    </div>
     <div class="set-row" style="display:block">
-      <span class="set-label">Rörelse</span><br><span class="set-hint">Vagnen som rullar, kompisen som hoppar, mynten som flyger. Automatiskt följer plattans <i>Minska rörelse</i>, som just nu är ${plattanMinskar() ? "på – då står allt still" : "av"}.</span>
-      <div class="seg" style="margin-top:8px">
-        ${[["auto", "Automatiskt"], ["pa", "På"], ["av", "Av"]].map(([v, t]) => `<button type="button" data-rorelse="${v}" aria-pressed="${rorelseVal(p) === v}">${t}</button>`).join("")}
+      <span class="set-label">Nivå i spårvagnen</span><br><span class="set-hint">${talniva.name}${talniva.nuvarande ? " · " + talniva.nuvarande : ""} · bana ${niva.nu} av ${niva.topp} öppnade</span>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:6px">
+        <div style="flex:1;min-width:0">${nivaMatareHTML(p)}</div>
+        <button class="btn" data-action="talval" type="button" style="padding:8px 14px;font-size:var(--t-sm);background:var(--sky-hi);flex:none">Ändra</button>
       </div>
     </div>
+
+    <div class="set-row">
+      <span><span class="set-label">Räknehjälp på de lätta banorna</span><br><span class="set-hint">Talen som saker att räkna, till och med Grottan</span></span>
+      <button class="toggle" data-toggle="dots" aria-pressed="${s.dots}" type="button"><span class="dot"></span></button>
+    </div>
+    <div class="set-row">
+      <span><span class="set-label">Gånger och delat med</span><br><span class="set-hint">Ett eget spår som öppnas efter Mästarprovet</span></span>
+      <button class="toggle" data-toggle="ganger" aria-pressed="${s.ganger !== false}" type="button"><span class="dot"></span></button>
+    </div>
+    <div class="set-row">
+      <span><span class="set-label">Klockan</span><br><span class="set-hint">Hel och halv timme – ett eget spår som öppnas efter Blandat till 20</span></span>
+      <button class="toggle" data-toggle="klocka" aria-pressed="${s.klocka !== false}" type="button"><span class="dot"></span></button>
+    </div>
+`)}
+    ${setGrupp("ljud", "Ljud och röst", "ljud, uppläsning, rösten, egna utrop", `
     <div class="set-row">
       <span><span class="set-label">Ljud</span><br><span class="set-hint">Plingen när man svarar</span></span>
       <button class="toggle" data-toggle="sound" aria-pressed="${s.sound}" type="button"><span class="dot"></span></button>
@@ -5764,23 +5979,17 @@ function openSettings(){
       ${rostTipsHTML(p)}
     </div>
     <div class="set-row">
-      <span><span class="set-label">Räknehjälp på de lätta banorna</span><br><span class="set-hint">Talen som saker att räkna, till och med Grottan</span></span>
-      <button class="toggle" data-toggle="dots" aria-pressed="${s.dots}" type="button"><span class="dot"></span></button>
-    </div>
-    <div class="set-row">
-      <span><span class="set-label">Gånger och delat med</span><br><span class="set-hint">Ett eget spår som öppnas efter Mästarprovet</span></span>
-      <button class="toggle" data-toggle="ganger" aria-pressed="${s.ganger !== false}" type="button"><span class="dot"></span></button>
-    </div>
-    <div class="set-row">
-      <span><span class="set-label">Klockan</span><br><span class="set-hint">Hel och halv timme – ett eget spår som öppnas efter Blandat till 20</span></span>
-      <button class="toggle" data-toggle="klocka" aria-pressed="${s.klocka !== false}" type="button"><span class="dot"></span></button>
-    </div>
-    <div class="set-row">
       <span><span class="set-label">Egna utrop</span><br><span class="set-hint">${utropKlipp.size ? `${utropKlipp.size} inspelade klipp ropas ut i vagnen` : "Läs in hållplatserna med din egen röst"}</span></span>
       <button class="toggle" data-toggle="egnaUtrop" aria-pressed="${s.egnaUtrop !== false}" type="button"><span class="dot"></span></button>
     </div>
     <div class="set-row" style="display:block;padding-top:4px">
       <button class="btn" data-action="utrop" type="button" style="width:100%;background:#FFE3E3">Spela in utrop</button>
+    </div>
+`)}
+    ${setGrupp("spelaren", "Spelaren", "namn, kompis, rörelse, så går det", `
+    <div class="set-row">
+      <span><span class="set-label">Namn</span><br><span class="set-hint">${escapeHtml(p.name)} · det som rösten säger och som står på kartan</span></span>
+      <button class="btn" data-action="namn" type="button" style="padding:8px 14px;font-size:var(--t-sm);background:var(--sky-hi);white-space:nowrap">Byt namn</button>
     </div>
     <div class="set-row" style="flex-wrap:wrap;gap:8px">
       <span><span class="set-label">Byt kompis</span><br><span class="set-hint">Figuren som följer med</span></span>
@@ -5789,20 +5998,39 @@ function openSettings(){
       </div>
     </div>
     <div class="set-row" style="display:block">
+      <span class="set-label">Rörelse</span><br><span class="set-hint">Vagnen som rullar, kompisen som hoppar, mynten som flyger. Automatiskt följer plattans <i>Minska rörelse</i>, som just nu är ${plattanMinskar() ? "på – då står allt still" : "av"}.</span>
+      <div class="seg" style="margin-top:8px">
+        ${[["auto", "Automatiskt"], ["pa", "På"], ["av", "Av"]].map(([v, t]) => `<button type="button" data-rorelse="${v}" aria-pressed="${rorelseVal(p) === v}">${t}</button>`).join("")}
+      </div>
+    </div>
+    <div class="set-row" style="display:block;padding-top:4px">
+      <button class="btn" data-action="stat" type="button" style="width:100%;background:#FFF3CF">Så går det för ${escapeHtml(p.name)}</button>
+    </div>
+`)}
+    ${setGrupp("vuxna", "För vuxna", "säkerhetskopia, bilderna, byt eller ta bort spelare", `
+    <div class="set-row" style="display:block">
       <span class="set-label">Säkerhetskopia</span><br><span class="set-hint">Alla spelare med stjärnor, mynt, märken, kort och inställningar i en fil. Utropen ingår inte.${store("kopia") ? ` Senast sparad ${kopiaDatum(store("kopia"))}.` : ""}</span>
       <div class="kopia-knappar">
         <button class="btn" data-action="kopia-spara" type="button" style="background:var(--sun)">Spara kopia</button>
         <button class="btn" data-action="kopia-las" type="button" style="background:var(--paper-2)">Läs in kopia</button>
       </div>
     </div>
-    <div style="display:grid;gap:8px;margin-top:14px">
-      <button class="btn" data-action="stat" type="button" style="background:#FFF3CF">Så går det för ${escapeHtml(p.name)}</button>
+    <div style="display:grid;gap:8px;margin:10px 0 12px">
       <button class="btn" data-action="foton" type="button" style="background:var(--paper-2)">Bilderna och fotograferna</button>
       <button class="btn" data-action="switch" type="button" style="background:var(--sky-hi)">Byt spelare</button>
       <button class="btn danger" data-action="erase" type="button">Ta bort ${escapeHtml(p.name)}</button>
-    </div>`);
+    </div>
+`)}`);
 }
 
+
+
+
+/* Grupperna i inställningarna minns om de var utfällda */
+sheet.addEventListener("toggle", (e) => {
+  const d = e.target;
+  if(d && d.classList && d.classList.contains("set-grupp")) setOppna[d.dataset.grupp] = d.open;
+}, true);
 sheet.addEventListener("click", (e) => {
   const p = P();
   const close = e.target.closest('[data-action="close"]');
@@ -5894,6 +6122,23 @@ sheet.addEventListener("click", (e) => {
     SFX.ensure(); closeSheet(); stigPa(ref, Number(rikt), pos); return;
   }
 
+  const nv = e.target.closest("[data-niva]");
+  if(nv){
+    const v = nv.dataset.niva;
+    if(v === "topp") nivaFranToppen(p);
+    else if(v === "stjarnor") nivaEfterStjarnor(p);
+    else nivaJustera(p, Number(v));
+    saveProfiles(); SFX.tap(); g.recent = [];
+    const { nu, bana } = nivaLage(p);
+    /* Den stora mätaren står överst i Vilka tal, den lilla under kugghjulet */
+    const fran = !!sheet.querySelector('[data-action="installningar"]');
+    openTramLevelSheet(fran);
+    renderHeader();
+    if(el("screen-map").classList.contains("is-active")) renderMap();
+    if(el("screen-trip").classList.contains("is-active") && p.resa) renderTrip(false);
+    speak(`Bana ${nu}. ${bana.name}.`, true);
+    return;
+  }
   const tl = e.target.closest("[data-tramlevel]");
   if(tl){
     p.tramLevel = Number(tl.dataset.tramlevel); saveProfiles(); SFX.tap();
@@ -6006,22 +6251,9 @@ sheet.addEventListener("click", (e) => {
   if(e.target.closest('[data-action="switch"]')){
     SFX.tap(); closeSheet(); renderProfiles(); show("profiles"); return;
   }
-  if(e.target.closest('[data-action="erase"]')){
-    openSheet(`
-      <div class="sheet-head"><div><h2>Ta bort ${escapeHtml(p.name)}?</h2>
-      <p class="sheet-sub">Alla stjärnor, mynt och märken försvinner. Det går inte att ångra.</p></div>${CLOSE_BTN}</div>
-      <div style="display:grid;gap:8px">
-        <button class="btn danger" data-action="erase-yes" type="button">Ja, ta bort</button>
-        <button class="btn" data-action="close" type="button" style="background:var(--paper-2)">Nej, behåll</button>
-      </div>`);
-    return;
-  }
-  if(e.target.closest('[data-action="erase-yes"]')){
-    profiles = profiles.filter(x => x.id !== p.id);
-    activeId = profiles.length ? profiles[0].id : null;
-    saveProfiles(); closeSheet(); renderProfiles(); show("profiles");
-    return;
-  }
+  if(e.target.closest('[data-action="erase"]')){ SFX.tap(); openTaBort(p.id, 1); return; }
+  if(e.target.closest('[data-action="tabort-2"]')){ SFX.tap(); openTaBort(tabortId, 2); return; }
+  if(e.target.closest('[data-action="tabort-ja"]')){ const b = el("tabortJa"); if(b && b.disabled) return; taBortSpelare(tabortId); return; }
 });
 
 el("settingsBtn").addEventListener("click", () => { SFX.tap(); openSettings(); });
@@ -6687,6 +6919,8 @@ function startRound(niva, mode, tramRef){
   const L = typeof niva === "object" ? niva : levelById(niva);
   g.level = L; g.mode = mode; g.tram = tramRef || null;
   g.len = g.tram ? TRAM_LEN : L.quiz ? 6 : ROUND_LEN;
+  /* Var Stigande stod när omgången började – det avgör om hållplatsen får öppna en bana */
+  g.stigandeNiva = g.tram && L.id === -1 ? Math.round(skillNu(P())) : null;
   spelStart = Date.now();
   /* På spårvagnen är varje omgång bara fem uppgifter, så vi minns de senaste
      hållplatsernas tal och undviker dem – annars känns frågorna likadana. */
@@ -7529,16 +7763,20 @@ addEventListener("keydown", (e) => {
 /* ═══════════════════════════════════════════
    Resultat, upplåsning och nya märken
    ═══════════════════════════════════════════ */
+/* En bana som redan har tre stjärnor ger halva mynten: omspel av Räkna till
+   5 ska inte löna sig lika bra som en ny bana. Rekordet räknas på hela poängen. */
+const myntForBana = (score, prevStars) => prevStars >= 3 ? Math.round(score / 2) : score;
 function finishRound(){
   const p = P(), L = g.level;
   const perfect = g.firstTry;
-  p.coins += g.score;
   p.bestStreak = Math.max(p.bestStreak || 0, g.bestStreak);
-  if(g.tram) return finishTramStop(p, perfect);
-  if(L.quiz) return finishQuiz(p, perfect);
+  if(g.tram){ p.coins += g.score; return finishTramStop(p, perfect); }
+  if(L.quiz){ p.coins += g.score; return finishQuiz(p, perfect); }
   const stars = perfect >= 9 ? 3 : perfect >= 7 ? 2 : perfect >= 4 ? 1 : 0;
 
   const prevStars = (p.stars || {})[L.id] || 0;
+  const mynt = myntForBana(g.score, prevStars), halva = mynt < g.score;
+  p.coins += mynt;
   const bestKey = L.id + ":" + g.mode;
   const prevBest = p.best[bestKey] || 0;
   const isBest = g.score > prevBest;
@@ -7563,15 +7801,16 @@ function finishRound(){
   el("resultSub").textContent = `${perfect} av ${ROUND_LEN} rätt direkt · ${L.name}`;
   el("resultScore").innerHTML =
     `<div class="reward-row" style="grid-column:1/-1;width:100%">
-       <span class="reward ny">${COIN_SVG}<span><span class="r-num">+${g.score}</span><span class="r-txt">nya mynt</span></span></span>
+       <span class="reward ny">${COIN_SVG}<span><span class="r-num">+${mynt}</span><span class="r-txt">${halva ? "nya mynt · halva" : "nya mynt"}</span></span></span>
        <span class="reward">${KISTA_SVG}<span><span class="r-num">${p.coins}</span><span class="r-txt">i skattkistan</span></span></span>
      </div>
      <span class="score-chip">Rekord <b>${p.best[bestKey]}</b></span>
      <span class="score-chip">Stjärnor <b>${totalStars(p)}/${MAX_STARS}</b></span>` +
     (isBest && prevBest > 0 ? `<span class="new-best">Nytt rekord!</span>` : "");
-  el("resultUnlock").innerHTML = unlocked
+  el("resultUnlock").innerHTML = (unlocked
     ? `<span class="unlock-note">${NYCKEL_SVG} Ny bana öppen: ${unlocked.name}!</span>`
-    : (stars === 0 ? `<span class="unlock-note" style="background:#FFF3CF;border-color:var(--sun-deep)">Ta minst 4 rätt direkt så öppnas nästa bana.</span>` : "");
+    : (stars === 0 ? `<span class="unlock-note" style="background:#FFF3CF;border-color:var(--sun-deep)">Ta minst 4 rätt direkt så öppnas nästa bana.</span>` : ""))
+    + (halva ? `<span class="unlock-note" style="background:var(--paper-2);border-color:var(--ink-2)">Halva mynten – banan hade redan tre stjärnor. Nya banor ger fulla mynt.</span>` : "");
 
   show("result");
   SFX.win();
@@ -7581,7 +7820,7 @@ function finishRound(){
   }
   /* Stjärnorna poppar en och en (se .stars .st i stilen) – här får de sina toner */
   for(let i = 0; i < stars; i++) later(() => SFX.stjarna(i), 260 + i * 180);
-  myntregn(p.coins - g.score, g.score);
+  myntregn(p.coins - mynt, mynt);
   const namn = p.name;
   let spoken = stars === 3 ? `Helt fantastiskt, ${namn}! Tre stjärnor!`
     : stars ? `Fint jobbat, ${namn}! Du fick ${stars === 1 ? "en stjärna" : stars + " stjärnor"}!`
@@ -7640,7 +7879,7 @@ function finishTramStop(p, perfect){
   /* Fyra av fem räcker. Ett enda feltryck ska inte stoppa en fyraåring.
      Stigande och Blandat för huvudspåret framåt; en vald bana för sitt spår. */
   if(perfect >= g.len - 1){
-    const spelad = p.tramLevel > 0 ? levelById(p.tramLevel) : levelById(p.unlocked);
+    const spelad = banaSomOppnar(p, p.tramLevel, g.stigandeNiva);
     if(spelad) nyBana = oppnaEfter(p, spelad);
     if(!nyBana && spelad) nyBana = sidosparEfter(p, spelad);
   }

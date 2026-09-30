@@ -9,7 +9,7 @@ import { REGIONS, LEVELS, SHOWN, buildRound, makeOptions, distraktorer, varforFe
          justeraSkill, nivaForSkill, buildStigandeRound,
          HUVUD_MAX, SIDO_START, SIDO_MAX, GANGER_START, GANGER_MAX, TALRAD_START, TALRAD_MAX, huvudspar, arLast, oppnaEfter, sidoOppen, gangerOppen, talradOppen, sidosparEfter, datumNyckel, statSvar, statTid, MAKE, SMASPEL, SPELMOTOR, spelKopt, LEK_W, LEK_H, synligaBanor, maxStars, nastaBana, blandatLevel, levelById,
          SPAR, sparOppen, linjeOppen, klockaOppen, LINJE_START, LINJE_MAX, KLOCKA_START, KLOCKA_MAX, timme12, tidKod, tidOrd, kodTid, vantetidOrd, svarText,
-         hallFraga, tavlaHar, avgangar, VAGNAR, vagnFragaFor, rostPoang, rostNamn, rostKvalitet, rostEtikett, bastaRost, valjRost, sparradKant, valjSparr, FOTOQUIZ, fotoFraga, granskaKopia, UTROP_FRASER, utropAlla, utropDelar, wavBlob, linjerVid, VAGNTYPER, VAGNNAMN, vagntypFor, vagnkortFor, VAGNKORT_ALLA, vagnTypAv, vagnNummerFinns, stegaVagnNummer, slumpaVagnNummer, VAGNSAKER, standardVagn, vagnAv, baraRutorPa, lageFor, sparaLage, omradesStjarnor, kompisRepliker, kompisReplik, lineByRef, skillGolv, skillNu } from "./hamta.mjs";
+         hallFraga, tavlaHar, avgangar, VAGNAR, vagnFragaFor, rostPoang, rostNamn, rostKvalitet, rostEtikett, bastaRost, valjRost, sparradKant, valjSparr, FOTOQUIZ, fotoFraga, granskaKopia, UTROP_FRASER, utropAlla, utropDelar, wavBlob, linjerVid, VAGNTYPER, VAGNNAMN, vagntypFor, vagnkortFor, VAGNKORT_ALLA, vagnTypAv, vagnNummerFinns, stegaVagnNummer, slumpaVagnNummer, VAGNSAKER, standardVagn, vagnAv, baraRutorPa, lageFor, sparaLage, omradesStjarnor, kompisRepliker, kompisReplik, lineByRef, skillGolv, skillNu, stjarnGolv, nivaJustera, nivaFranToppen, nivaEfterStjarnor, banaSomOppnar, myntForBana } from "./hamta.mjs";
 
 const rot = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -1142,4 +1142,46 @@ test("stigande sjunker aldrig under det barnet visat på kartan", () => {
   assert.equal(q.skill, 12.5);
   for(let i = 0; i < 5; i++) justeraSkill(q, "ratt");
   assert.ok(Math.abs(q.skill - 13.75) < 1e-9, "fem rätt är 1,25 steg");
+});
+
+test("spårvagnen öppnar bara nästa bana när Stigande stod på toppen", () => {
+  const p = { unlocked: 16, skill: 5, stars: {} };
+  assert.equal(banaSomOppnar(p, -1, 5), null, "lätta tal öppnar inget");
+  assert.equal(banaSomOppnar(p, -1, 15), null, "nästan på toppen räcker inte");
+  assert.equal(banaSomOppnar(p, -1, 16).id, 16, "på toppen: banan vars efterföljare öppnas");
+  assert.equal(banaSomOppnar(p, 0, null).id, 16, "Blandat räknas som toppen");
+  assert.equal(banaSomOppnar(p, 9, null).id, 9, "en vald bana är sig själv");
+  assert.equal(banaSomOppnar({ unlocked: 40 }, -1, 27).id, 27, "taket är huvudspårets sista bana");
+});
+
+test("nivåmätaren: minus, plus, börja om och sätt efter stjärnorna", () => {
+  const stars = {}; for(let i = 1; i <= 12; i++) stars[i] = 2;   /* stjärngolvet är 10 */
+  const p = { unlocked: 16, skill: 12, stars, tramLevel: -1 };
+  assert.equal(stjarnGolv(p), 10);
+  assert.equal(nivaJustera(p, -1), 11);
+  assert.equal(nivaJustera(p, -1), 10);
+  assert.equal(nivaJustera(p, -1), 9, "en förälder får gå under stjärngolvet");
+  assert.equal(p.golv, 9);
+  assert.equal(skillNu(p), 9, "och golvet följer med ner");
+  for(let i = 0; i < 3; i++) nivaJustera(p, 1);
+  assert.equal(skillNu(p), 12);
+  assert.equal(p.golv, undefined, "ovanför stjärngolvet släpper det manuella golvet");
+  for(let i = 0; i < 4; i++) nivaJustera(p, 1);
+  assert.equal(skillNu(p), 16); assert.equal(p.unlocked, 16, "upp till taket utan att öppna något");
+  assert.equal(nivaJustera(p, 1), 17); assert.equal(p.unlocked, 17, "plus på taket öppnar nästa bana");
+  assert.equal(nivaFranToppen(p), 17); assert.equal(p.skill, null);
+  p.unlocked = 27; for(let i = 0; i < 20; i++) nivaJustera(p, 1);
+  assert.equal(p.unlocked, 27, "aldrig förbi sista banan"); assert.equal(skillNu(p), 27);
+  assert.equal(nivaEfterStjarnor(p), 13, "stjärnor till och med bana 12 ger taket 13");
+  assert.equal(skillNu(p), 13); assert.equal(p.skill, null);
+  const q = { unlocked: 20, skill: 3, stars: {}, tramLevel: 18 };
+  assert.equal(nivaEfterStjarnor(q), 1, "utan stjärnor är bara första banan öppen");
+  assert.equal(q.tramLevel, -1, "en vald bana ovanför taket blir Stigande");
+});
+
+test("halva mynten på en bana som redan har tre stjärnor", () => {
+  assert.equal(myntForBana(90, 3), 45);
+  assert.equal(myntForBana(90, 2), 90);
+  assert.equal(myntForBana(85, 3), 43);
+  assert.equal(myntForBana(0, 3), 0);
 });

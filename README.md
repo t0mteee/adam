@@ -195,7 +195,9 @@ inställningarna för den som vill vänta med klockan.
 ### Poäng, stjärnor och märken
 
 Rätt på första försöket ger 10 guldmynt; tre rätt i rad dubblar och sex rätt i
-rad tredubblar. Rätt efter ett feltryck ger 5 mynt – aldrig minuspoäng. Efter
+rad tredubblar. Rätt efter ett feltryck ger 5 mynt – aldrig minuspoäng. En bana som redan har
+tre stjärnor ger halva mynten, så nya banor lönar sig bäst; rekordet räknas på
+hela poängen. Efter
 varje omgång delas upp till tre stjärnor ut (4 rätt direkt ger en, 7 ger två, 9
 ger tre), och minst en stjärna öppnar nästa bana. Totalt finns 156 stjärnor (138 med gånger och delat avstängt, 141 med klockan avstängd) och 41
 märken att samla, från *Första stjärnan* och *Ändstation* till *Hela landet*,
@@ -258,7 +260,7 @@ planen är Kör när vagnen står stilla och Bromsa i farten. Stannar vagnens fr
 *Perfekt!* och 100 poäng, sedan 80, 60, 40 och 20 ju längre ifrån, och kör
 man förbi blir det noll. Fem stopp och sedan slut; 400 poäng ger märket
 *Spårvagnsförare*. Från Lekstugan körs en slumpad linje; på resan finns
-knappen *Kör vagnen själv* under *Åk till nästa hållplats*, och då är det
+knappen *Kör vagnen själv* bredvid *Byt vagn eller riktning*, och då är det
 just de hållplatser som kommer härnäst på linjen man kör. Rösten säger
 vart man ska, så det går utan att läsa.
 
@@ -280,15 +282,16 @@ kvar i webbläsaren precis som resten av sparfilen.
 
 Andra världen i spelet – ett eget äventyr i Göteborgs spårvagnsnät. Barnet
 väljer var resan ska börja (ändstationerna först, alla 132 hållplatser eller en
-linjes hållplatser, som bildkort med foto och linjenummer), går ut på perrongen
+linjes hållplatser, som bildkort med foto och linjenummer – hopfällt under
+*Börja någon annanstans* så länge en resa pågår), går ut på perrongen
 och väljer vagn och riktning bland dem som går därifrån – varje avgång visas
 som en vagnsfront i linjens färg med skylten *mot Angered* och nästa hållplats.
 Sedan åker man en hållplats i taget och kan vid varje hållplats byta vagn,
 vända eller hoppa av och börja någon annanstans. Vid en ändstation frågar
 spelet vilken vagn man tar nu. Målet är nätet: att ha stått vid alla 132
-hållplatser. Pillen i topplisten räknar dem, startskärmen har en mätare för
-hela nätet och under den *Mina linjer* med hur stor del av varje linje som är
-åkt. Märken delas ut vid 33, 66 och 132 hållplatser, och för hela linjer. Varje hållplats
+hållplatser. Pillen i topplisten räknar dem, under *Mina resor* på startskärmen finns en
+mätare för hela nätet, *Mina linjer* med hur stor del av varje linje som är
+åkt, och kartan till väggen. Märken delas ut vid 33, 66 och 132 hållplatser, och för hela linjer. Varje hållplats
 kostar fem uppgifter, och när de är klara rullar vagnen fram till nästa
 hållplats på linjekartan medan rösten ropar ut namnet. Utropet föregås av två
 mjuka toner, och läses lugnare och i lägre tonläge än matteuppgifterna så att det
@@ -337,10 +340,16 @@ låter som ett utrop och inte som en lekkamrat.
   och ibland en svårare. Nivån sjunker aldrig under det barnet redan visat på
   kartan: den högsta banan med två stjärnor, minus två, är golvet – så en dålig
   dag i spårvagnen, eller ett syskon som tryckt på måfå, skickar ingen tillbaka
-  till 1 + 1. Under kugghjulet, raden *Tal i spårvagnen*, står vilken bana
-  Stigande ligger på just nu, till exempel *Stigande · Plus till 10*, och där
-  går det också att välja **Blandat** (allt från de två senaste områdena) eller
-  en bestämd bana.
+  till 1 + 1. Under kugghjulet, raden *Nivå i spårvagnen*, står vilken bana
+  Stigande ligger på just nu med en **nivåmätare**: huvudspårets 27 banor som
+  en rad i områdenas färger, de öppnade fyllda och nivån markerad. *Ändra*
+  öppnar den stora mätaren med knappar: minus går ett steg ner (även under
+  stjärngolvet, om en förälder vill), plus går ett steg upp och öppnar nästa
+  bana på kartan när nivån redan står på taket, *Börja om från toppen* glömmer
+  allt och ställer nivån på den svåraste öppnade banan, och *Sätt efter
+  stjärnorna* låser om kartan till banan efter den sista med en stjärna – för
+  den som fått banor öppnade av lätta tal innan det felet rättades. Där väljs
+  också **Blandat** (allt från de två senaste områdena) eller en bestämd bana.
 - **Andra lägen finns kvar.** **Blandat** drar ur de två senaste områdena barnet
   öppnat på huvudspåret, så en van spelare slipper 1 + 1. Man kan också välja en
   enskild bana: listan är grupperad per område, med det senaste uppfällt och
@@ -349,7 +358,10 @@ låter som ett utrop och inte som en lekkamrat.
   egen färg som fylls hållplats för hållplats, och blir grön när hela linjen är
   åkt.
 - **Spårvagnen för spelaren framåt.** Fyra rätt av fem på en hållplats öppnar
-  nästa bana i det spår man spelade: Stigande och Blandat för huvudspåret framåt,
+  nästa bana i det spår man spelade: Blandat för huvudspåret framåt, Stigande
+  bara när nivån stod på den svåraste öppnade banan när hållplatsen började
+  (annars öppnade lätta tal i vagnen svårare banor på kartan medan talen
+  förblev lätta),
   en vald räknebana för sidospåret. Samma banor som i Räknelandet. Man kan alltså börja med spårvagnen och aldrig röra kartan; ett
   barn som bara åker linje 10 går från *Räkna till 5* till *Plus och minus till
   10* på fem hållplatser.
@@ -569,11 +581,12 @@ kopian senast sparades.
 
 ## För vuxna
 
-Kugghjulet uppe till höger: värld, tal i spårvagnen, byt namn, rörelse
-(automatiskt, på eller av), ljud,
-uppläsning, rösthastighet, vilken röst, räknehjälp, gånger och delat med (av
-eller på), klockan (av eller på), egna utrop (av eller på) och *Spela in
-utrop*, byt kompisfigur, byt spelare och ta bort spelare. Namnet är det rösten
+Kugghjulet uppe till höger har fyra hopfällbara grupper, med *Spelet* öppen
+från början: *Spelet* (världen, nivån i spårvagnen med mätaren, räknehjälp,
+gånger och delat med, klockan), *Ljud och röst* (ljud, uppläsning,
+rösthastighet, vilken röst, egna utrop och *Spela in utrop*), *Spelaren* (byt
+namn, byt kompisfigur, rörelse, *Så går det*) och *För vuxna* (säkerhetskopia,
+bilderna och fotograferna, byt spelare, ta bort spelare). Namnet är det rösten
 säger och det som står på väggkartan; en spelare som skapats utan namn heter
 *Kompis* tills någon byter. Inställningarna hör till spelaren, så syskon kan ha
 olika. Kompisfiguren hejar på spelskärmen: på en stående platta står den uppe
@@ -584,6 +597,10 @@ siffra, något om spårvagnarna – och aldrig samma sak två gånger i rad.
 
 Flera spelare får plats. Allt sparas lokalt i webbläsaren (`localStorage`) –
 ingenting skickas någonstans. Rensas webbläsardata försvinner även framstegen.
+Ta bort en spelare går från spelarlistan (*Ändra spelare*, sedan spelaren)
+eller från kugghjulet, alltid i två rutor: den andra räknar upp vad som
+försvinner och har knappen låst i tre sekunder, så att ett barn som trycker
+snabbt två gånger inte kommer igenom.
 
 ## Figurerna
 
@@ -624,7 +641,7 @@ hack i nätet släcker inte resten av resan.
 
 ## Tester
 
-`node --test` kör fyrtiotre tester som plockar ut spelets rena funktioner direkt
+`node --test` kör fyrtiosju tester som plockar ut spelets rena funktioner direkt
 ur `index.html`, så att de aldrig testar en kopia som glidit isär från källan. De
 täcker att uppgifterna håller sig inom banans tal och aldrig blir negativa, att
 rätt svar alltid finns bland alternativen och att varje felsvar har en
