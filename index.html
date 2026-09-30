@@ -1574,7 +1574,7 @@ const pick = (arr) => arr[rnd(arr.length)];
 const INK = "#2E1A66";
 /* Syns under Inställningar, så man kan se vilken version telefonen kör.
    Höjs tillsammans med VERSION i sw.js. */
-const SPELVERSION = "29";
+const SPELVERSION = "30";
 function shuffle(a){ for(let i = a.length - 1; i > 0; i--){ const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
 function store(key, val){
@@ -3319,9 +3319,27 @@ const SFX = {
     try{
       if(!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
       if(utropKlipp.size) utropLasUpp();
-      if(this.ctx.state === "suspended") this.ctx.resume();
+      /* Safari lämnar motorn i "interrupted" efter ett samtal, Siri eller ett
+         appbyte – inte "suspended" – och då hörs inget förrän någon väcker den */
+      if(this.ctx.state !== "running") this.ctx.resume();
+      this.lasUppIos();
       return this.ctx;
     }catch(e){ return null; }
+  },
+  /* iPhone: ljudknappen på sidan tystar Web Audio och uppläsningen så länge
+     sidan bara "spelar med i bakgrunden". En tyst ljudfil som spelas en gång i
+     det första trycket gör sidan till en riktig ljudkälla, och sedan hörs
+     spelet även med knappen på tyst – som andra spel. Utanför ett tryck nekas
+     spelningen, och då försöker nästa tryck igen. */
+  iosUpplast: false,
+  lasUppIos(){
+    if(this.iosUpplast || !APPLE || typeof Audio === "undefined") return;
+    this.iosUpplast = true;
+    try{
+      if(!this.iosLjud){ this.iosLjud = new Audio(TYST_WAV); this.iosLjud.setAttribute("playsinline", ""); }
+      const pr = this.iosLjud.play();
+      if(pr && pr.catch) pr.catch(() => { this.iosUpplast = false; });
+    }catch(e){ this.iosUpplast = false; }
   },
   tone(freq, at, dur, type, vol){
     const c = this.ensure(); if(!c) return;
@@ -3512,6 +3530,7 @@ function speakUtrop(text){
   if(!window.speechSynthesis) return;
   try{
     tystna();
+    SFX.lasUppIos();
     if(speechSynthesis.paused) speechSynthesis.resume();
     const u = nyUtsaga(p, text);
     u.rate = Math.max(0.55, RATES[p.settings.rate != null ? p.settings.rate : 1].v - 0.12);
@@ -3525,6 +3544,7 @@ function speak(text, force){
   if(!force && (!p || !p.settings.voice)) return;
   try{
     tystna();
+    SFX.lasUppIos();
     /* iOS kan lämna talsyntesen pausad efter ett avbrott – då säger den
        ingenting mer förrän någon väcker den */
     if(speechSynthesis.paused) speechSynthesis.resume();

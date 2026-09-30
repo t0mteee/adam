@@ -671,7 +671,11 @@ API – spårvagnsklockan som en slagen klocka med fem deltoner och ett kort bru
 i anslaget, dörrsignalen som tre pip – uppläsningen sker med webbläsarens
 `SpeechSynthesis`, konfettin ritas på en canvas och figurerna är handritad SVG.
 Ligger `ljud/klocka.mp3` eller `ljud/dorr.mp3` bredvid `index.html` spelas de i
-stället för syntesen. Typsnitten hämtas från Google Fonts med
+stället för syntesen. På iPhone tystar ljudknappen på sidan både Web Audio och
+uppläsningen så länge sidan bara spelar med i bakgrunden; därför spelar spelet
+en tyst ljudfil en gång i det första trycket, så att sidan blir en riktig
+ljudkälla och hörs även med knappen på tyst, som andra spel. Ljudmotorn väcks
+också ur Safaris läge *interrupted* efter ett samtal eller ett appbyte. Typsnitten hämtas från Google Fonts med
 rundade systemtypsnitt som reserv om sidan är offline.
 
 Uppläsningen använder enhetens svenska röster. Finns flera väljer spelet den
