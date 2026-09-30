@@ -9,7 +9,7 @@ import { REGIONS, LEVELS, SHOWN, buildRound, makeOptions, distraktorer, varforFe
          justeraSkill, nivaForSkill, buildStigandeRound,
          HUVUD_MAX, SIDO_START, SIDO_MAX, GANGER_START, GANGER_MAX, TALRAD_START, TALRAD_MAX, huvudspar, arLast, oppnaEfter, sidoOppen, gangerOppen, talradOppen, sidosparEfter, datumNyckel, statSvar, statTid, MAKE, SMASPEL, SPELMOTOR, spelKopt, LEK_W, LEK_H, synligaBanor, maxStars, nastaBana, blandatLevel, levelById,
          SPAR, sparOppen, linjeOppen, klockaOppen, LINJE_START, LINJE_MAX, KLOCKA_START, KLOCKA_MAX, timme12, tidKod, tidOrd, kodTid, vantetidOrd, svarText,
-         hallFraga, tavlaHar, avgangar, VAGNAR, vagnFragaFor, rostPoang, rostNamn, rostKvalitet, rostEtikett, bastaRost, valjRost, sparradKant, valjSparr, FOTOQUIZ, fotoFraga, granskaKopia, UTROP_FRASER, utropAlla, utropDelar, wavBlob, linjerVid, VAGNTYPER, VAGNNAMN, vagntypFor, vagnkortFor, VAGNKORT_ALLA, vagnTypAv, vagnNummerFinns, stegaVagnNummer, slumpaVagnNummer, VAGNSAKER, standardVagn, vagnAv, baraRutorPa, lageFor, sparaLage, omradesStjarnor, kompisRepliker, kompisReplik, lineByRef, skillGolv, skillNu, stjarnGolv, nivaJustera, nivaFranToppen, nivaEfterStjarnor, banaSomOppnar, myntForBana, PA_OM_TOMT, sortPa, sparPa } from "./hamta.mjs";
+         hallFraga, tavlaHar, avgangar, VAGNAR, vagnFragaFor, rostPoang, rostNamn, rostKvalitet, rostEtikett, bastaRost, valjRost, sparradKant, valjSparr, FOTOQUIZ, fotoFraga, granskaKopia, UTROP_FRASER, utropAlla, utropDelar, wavBlob, linjerVid, VAGNTYPER, VAGNNAMN, vagntypFor, vagnkortFor, VAGNKORT_ALLA, vagnTypAv, vagnNummerFinns, stegaVagnNummer, slumpaVagnNummer, VAGNSAKER, standardVagn, vagnAv, baraRutorPa, lageFor, sparaLage, omradesStjarnor, kompisRepliker, kompisReplik, lineByRef, skillGolv, skillNu, stjarnGolv, nivaJustera, nivaFranToppen, nivaEfterStjarnor, banaSomOppnar, myntForBana, PA_OM_TOMT, sortPa, sparPa, ljudSession } from "./hamta.mjs";
 
 const rot = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -1204,4 +1204,11 @@ test("alla sidospår och frågesorter går att stänga av", () => {
     assert.equal(sortPa({ settings: {} }, key), true);
     assert.equal(sortPa({ settings: { [key]: false } }, key), false);
   }
+});
+
+test("ljudsessionen på iPhone följer ljudknappen om inte Spela även på tyst läge är på", () => {
+  assert.equal(ljudSession(null), "auto");
+  assert.equal(ljudSession({ settings: {} }), "auto");
+  assert.equal(ljudSession({ settings: { spelaPaTyst: false } }), "auto");
+  assert.equal(ljudSession({ settings: { spelaPaTyst: true } }), "playback");
 });

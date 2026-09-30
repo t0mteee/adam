@@ -1575,7 +1575,7 @@ const pick = (arr) => arr[rnd(arr.length)];
 const INK = "#2E1A66";
 /* Syns under Inställningar, så man kan se vilken version telefonen kör.
    Höjs tillsammans med VERSION i sw.js. */
-const SPELVERSION = "33";
+const SPELVERSION = "34";
 function shuffle(a){ for(let i = a.length - 1; i > 0; i--){ const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
 function store(key, val){
@@ -3330,18 +3330,19 @@ const SFX = {
       return this.ctx;
     }catch(e){ return null; }
   },
-  /* iPhone: ljudknappen på sidan tystar Web Audio och uppläsningen så länge
-     sidan bara "spelar med i bakgrunden". En tyst ljudfil som spelas en gång i
-     det första trycket gör sidan till en riktig ljudkälla, och sedan hörs
-     spelet även med knappen på tyst – som andra spel. Utanför ett tryck nekas
-     spelningen, och då försöker nästa tryck igen. */
+  /* iPhone: ljudknappen på sidan tystar Web Audio så länge sidan bara "spelar
+     med i bakgrunden". Med "Spela även på tyst läge" på ber spelet om en riktig
+     spelsession, och då hörs plingen även med knappen på tyst – som andra
+     spel. Annars följer allt knappen. Rösten i en hemskärmsapp har en egen
+     ljudsession som spelet inte rår på. Utanför ett tryck nekas den tysta
+     filen på äldre iOS, och då försöker nästa tryck igen. */
   iosSpelat: 0,
   lasUppIos(){
     if(!APPLE) return;
-    /* Safari 16.4 och senare: be om en riktig uppspelningssession, då tystar
-       ljudknappen på sidan varken Web Audio eller talsyntesen */
-    try{ if(navigator.audioSession && navigator.audioSession.type !== "playback") navigator.audioSession.type = "playback"; }catch(e){}
-    if(navigator.audioSession || typeof Audio === "undefined") return;
+    const vill = ljudSession(P());
+    /* Safari 16.4 och senare: ljudsessionen sätts direkt, utan att spela något */
+    try{ if(navigator.audioSession && navigator.audioSession.type !== vill) navigator.audioSession.type = vill; }catch(e){}
+    if(navigator.audioSession || typeof Audio === "undefined" || vill !== "playback") return;
     /* Äldre iOS: en kort tyst fil i trycket gör samma sak, högst var halvminut */
     const nu = performance.now();
     if(this.iosSpelat && nu - this.iosSpelat < 30000) return;
@@ -3440,8 +3441,10 @@ const SFX = {
   }
 };
 SFX.provaFiler();
-/* Ljudsessionen kan begäras redan vid start – det kräver inget tryck */
-try{ if(APPLE && navigator.audioSession) navigator.audioSession.type = "playback"; }catch(e){}
+/* Ljudsessionen på iPhone och iPad: "playback" gör spelet till en riktig
+   ljudkälla som hörs även med ljudknappen på tyst, "auto" låter allt följa
+   knappen. Sätts i det första trycket och när inställningen byts. */
+function ljudSession(p){ return p && p.settings && p.settings.spelaPaTyst ? "playback" : "auto"; }
 
 /* ── Rösten ─────────────────────────────────────────────────────────────
    Plattan kan ha flera svenska röster. På iPad följer en liten "Alva" med,
@@ -3534,6 +3537,15 @@ let avbrutetVid = 0;
    någon tryckt – hälsningen vid start får vänta på iPhone och iPad. */
 let harTryckt = false;
 for(const h of ["click", "touchend", "keydown"]) document.addEventListener(h, () => { harTryckt = true; }, true);
+/* Läggs appen i bakgrunden mitt i en mening kan talsyntesen bli stående som
+   "talande" för alltid. Så tystnad när sidan göms, och en rensning om den ändå
+   står som talande när sidan kommer tillbaka. */
+document.addEventListener("visibilitychange", () => {
+  try{
+    if(document.hidden) tystna();
+    else if(speechSynthesis.speaking || speechSynthesis.pending){ speechSynthesis.cancel(); avbrutetVid = performance.now(); }
+  }catch(e){}
+});
 function tystna(){
   utropStopp();
   try{
@@ -5810,6 +5822,7 @@ el("goBtn").addEventListener("click", () => {
 function enterWorld(halsa, isNew){
   const p = P(); if(!p) return;
   uppdateraRorelse();
+  SFX.lasUppIos();
   if(p.world === "tram"){
     renderStart(); show("lines");
   }else{
@@ -5942,43 +5955,76 @@ function rostTipsHTML(p){
     roster.map(v => `<div>${escapeHtml(v.name || "?")} · ${escapeHtml(v.lang || "?")} · ${escapeHtml(v.voiceURI || "?")}${v.localService === false ? " · nät" : ""}${v.default ? " · standard" : ""}</div>`).join("");
   return tips + `<div class="kopia-knappar" style="margin-top:8px">
       <button class="btn" data-action="rost-test" type="button" style="background:var(--sun)">Testa rösten</button>
-      <button class="btn" data-action="rost-test-utpekad" type="button" style="background:var(--paper-2)">Testa med utpekad röst</button>
     </div>
-    <pre class="rost-logg" id="rostLogg">Tryck på en knapp: rösten ska säga "Hej! Ett, två, tre", och här står vad telefonen gör – även när inget hörs.</pre>
+    <pre class="rost-logg" id="rostLogg">Tryck: rösten ska säga "Ett, två, tre" upp till tre gånger i olika lägen, och här står vad telefonen gör – även när inget hörs. Det tar en halv minut.</pre>
     <details class="set-detaljer"><summary>Vad plattan säger om rösterna</summary>${rader}${roster.length ? "" : "<div>Inga svenska röster i listan just nu.</div>"}
     <button class="btn" data-action="rost-igen" type="button" style="margin-top:8px;padding:7px 14px;font-size:var(--t-xs);background:var(--paper-2)">Leta igen</button></details>`;
 }
-/* Rösttestet: talar i själva trycket och skriver på skärmen vad telefonen gör –
-   start, slut, fel, och hur talsyntesen mår före och efter. Så syns det om talet
-   alls går iväg, även när det inte hörs. "Utpekad röst" prövar med den bästa
-   svenska rösten satt på utsagan i stället för att låta plattan välja. */
-let rostTestTimer = null;
-function rostTest(utpekad){
+/* Rösttestet provar upp till tre lägen i rad och skriver på skärmen vad
+   telefonen gör – start, slut, fel och tid – så att det syns om talet går iväg
+   och tar slut, även när inget hörs. Först spelets eget ljudläge, sedan det
+   andra (spelsession av eller på), sist en utpekad röst med ljudmotorn pausad.
+   Går talet igenom bara i det andra ljudläget byter spelet till det. Går det
+   igenom i spelets läge utan att höras är det telefonen som tystar rösten. */
+let rostTestKor = 0;
+function rostTest(){
   const p = P(), logg = el("rostLogg"); if(!p || !logg) return;
-  const rader = [], t0 = performance.now();
-  const skriv = (t) => { rader.push(`${((performance.now() - t0) / 1000).toFixed(1)} s · ${t}`); logg.textContent = rader.join("\n"); };
   const ss = window.speechSynthesis;
+  const rader = [], t0 = performance.now(), kor = ++rostTestKor;
+  const skriv = (t) => { rader.push(`${((performance.now() - t0) / 1000).toFixed(1)} s · ${t}`); logg.textContent = rader.join("\n"); };
   if(!ss){ skriv("Ingen talsyntes i den här webbläsaren."); return; }
-  const roster = svenskaRoster();
-  const v = utpekad ? bastaRost(roster) : valdRost(p);
-  skriv(`hemskärmsapp ${navigator.standalone ? "ja" : "nej"} · ljudsession ${navigator.audioSession ? navigator.audioSession.type : "saknas"} · svenska röster ${roster.length} · tryckt ${harTryckt ? "ja" : "nej"}`);
+  const roster = svenskaRoster(), eget = ljudSession(p), andra = eget === "playback" ? "auto" : "playback";
+  const os = ((navigator.userAgent || "").match(/OS (\d+[._]\d+)/) || [])[1];
+  const sess = () => navigator.audioSession ? navigator.audioSession.type : "saknas";
+  const lage = (typ) => typ === "playback" ? "spelsession på" : "spelsession av";
+  const sattSession = (typ) => { try{ if(navigator.audioSession && navigator.audioSession.type !== typ) navigator.audioSession.type = typ; }catch(e){} };
+  skriv(`${navigator.standalone ? "hemskärmsapp" : "webbläsare"}${os ? " · iOS " + os.replace("_", ".") : ""} · ljudsession ${sess()} · svenska röster ${roster.length} · ljudmotor ${SFX.ctx ? SFX.ctx.state : "ej startad"}`);
   skriv(`före: speaking ${ss.speaking} · pending ${ss.pending} · paused ${ss.paused}`);
-  if(tystna()) skriv("avbröt pågående tal – väntar 150 ms");
-  const u = new SpeechSynthesisUtterance("Hej! Ett, två, tre.");
-  u.lang = "sv-SE"; if(v){ u.voice = v; if(v.lang) u.lang = v.lang; }
-  u.rate = RATES[p.settings.rate != null ? p.settings.rate : 1].v;
-  u.onstart = () => skriv("start – talet går iväg");
-  u.onend = () => skriv("slut");
-  u.onerror = (e) => skriv("fel: " + ((e && e.error) || "okänt"));
-  u.onboundary = (e) => { if(e && e.charIndex === 0) skriv("första ordet"); };
-  skriv(`speak() med ${v ? rostEtikett(v) + " (" + (v.voiceURI || "?") + ")" : "plattans val – ingen utpekad röst, lang sv-SE"}`);
-  try{ sagUtsaga(u); }catch(e){ skriv("speak kastade: " + e.message); }
-  clearTimeout(rostTestTimer);
-  rostTestTimer = setTimeout(() => {
-    skriv(`efter 3 s: speaking ${ss.speaking} · pending ${ss.pending} · paused ${ss.paused}`);
-    if(!rader.some(r => /start –/.test(r))) skriv("ingen start-händelse: talet gick aldrig iväg");
-    else if(!rader.some(r => /slut/.test(r))) skriv("start men inget slut: talet är kvar i kön eller stannade");
-  }, 3000);
+  const steg = [{ namn: `spelets läge, ${lage(eget)}`, gor: () => sattSession(eget), rost: valdRost(p) }];
+  if(navigator.audioSession) steg.push({ namn: `andra läget, ${lage(andra)}`, gor: () => sattSession(andra), rost: valdRost(p) });
+  steg.push({ namn: `${bastaRost(roster) ? "utpekad röst" : "plattans val"}, ljudmotorn pausad`, gor: () => { sattSession(eget); try{ if(SFX.ctx) SFX.ctx.suspend(); }catch(e){} }, rost: bastaRost(roster) });
+  const utfall = [];
+  const klart = () => {
+    try{ if(SFX.ctx && SFX.ctx.state !== "running") SFX.ctx.resume(); }catch(e){}
+    const forsta = utfall[0], annat = navigator.audioSession ? utfall[1] : null, sista = utfall[utfall.length - 1];
+    if(forsta === "ok") skriv("→ Talet går igenom i spelets läge – hördes det är allt som det ska. Hördes det inte är det telefonen som tystar rösten: kolla ljudknappen på sidan (orange = tyst) eller Tyst läge i Kontrollcenter, och pröva samma test i Safari. Plingen kan höras ändå – rösten i hemskärmsappen följer knappen.");
+    else if(annat === "ok"){ p.settings.spelaPaTyst = andra === "playback"; saveProfiles(); skriv(`→ Talet går igenom bara med ${lage(andra)}. Spelet byter till det läget för ${p.name} nu – tryck Testa rösten igen, så ska första raden gå igenom.`); }
+    else if(sista === "ok") skriv("→ Talet går igenom bara med ljudmotorn pausad. Stäng av Ljud här ovanför, så borde rösten höras – och skriv gärna det till den som byggt spelet.");
+    else if(utfall.every(r => r === "ingen start")) skriv("→ Talet går aldrig iväg. Stäng appen helt (svep bort den) och öppna igen, eller starta om telefonen.");
+    else skriv(`→ Talet fastnar i alla lägen här. Stäng appen helt (svep bort den) och öppna igen; hjälper inte det, öppna spelet i Safari på ${location.href.replace(/[?#].*$/, "")} – där brukar rösten gå.`);
+    /* Tillbaka till spelets läge – det nya, om testet just bytte */
+    SFX.lasUppIos();
+  };
+  const korSteg = (i) => {
+    if(kor !== rostTestKor) return;
+    if(i >= steg.length){ klart(); return; }
+    const s = steg[i];
+    let vanta = 0;
+    if(tystna()){ skriv("avbröt pågående tal"); vanta = 300; }
+    setTimeout(() => {
+      if(kor !== rostTestKor) return;
+      const fore = sess(); s.gor();
+      setTimeout(() => {
+        if(kor !== rostTestKor) return;
+        const u = new SpeechSynthesisUtterance("Ett, två, tre.");
+        u.lang = "sv-SE"; if(s.rost){ u.voice = s.rost; if(s.rost.lang) u.lang = s.rost.lang; }
+        u.rate = RATES[p.settings.rate != null ? p.settings.rate : 1].v;
+        const tStart = performance.now();
+        let startat = false, klar = false, timer = null;
+        const vidare = (r) => { if(klar || kor !== rostTestKor) return; klar = true; clearTimeout(timer); utfall[i] = r; setTimeout(() => korSteg(i + 1), 400); };
+        u.onstart = () => { startat = true; skriv(`${s.namn}: start`); };
+        u.onend = () => { skriv(`${s.namn}: slut efter ${((performance.now() - tStart) / 1000).toFixed(1)} s`); vidare("ok"); };
+        u.onerror = (e) => { skriv(`${s.namn}: fel – ${(e && e.error) || "okänt"}`); vidare("fel"); };
+        timer = setTimeout(() => {
+          skriv(`${s.namn}: ${startat ? "start men inget slut på 6 s – talet fastnade" : "ingen start på 6 s – talet gick aldrig iväg"} · speaking ${ss.speaking}`);
+          vidare(startat ? "fastnade" : "ingen start");
+        }, 6000);
+        skriv(`speak() ${s.namn} · ${s.rost ? rostEtikett(s.rost) : "plattans val, lang sv-SE"} · ljudsession ${sess()}`);
+        try{ ss.speak(u); }catch(e){ skriv("speak kastade: " + e.message); vidare("fel"); }
+      }, sess() !== fore || i === steg.length - 1 ? 400 : 0);
+    }, vanta);
+  };
+  korSteg(0);
 }
 /* Byt namn på spelaren: samma namnruta som när spelaren skapades */
 function openBytNamn(){
@@ -6069,8 +6115,12 @@ ${toggleRad(s, "klocka", "Klockan", "Hel och halv timme, urtavlor och avgångsta
       <span><span class="set-label">Ljud</span><br><span class="set-hint">Plingen när man svarar</span></span>
       <button class="toggle" data-toggle="sound" aria-pressed="${s.sound}" type="button"><span class="dot"></span></button>
     </div>
+    ${APPLE ? `<div class="set-row">
+      <span><span class="set-label">Spela även på tyst läge</span><br><span class="set-hint">På: plingen hörs fast ljudknappen på sidan står på tyst. Av: hela spelet följer knappen. Rösten i hemskärmsappen kan tystas av knappen ändå</span></span>
+      <button class="toggle" data-toggle="spelaPaTyst" aria-pressed="${!!s.spelaPaTyst}" type="button"><span class="dot"></span></button>
+    </div>` : ""}
     <div class="set-row">
-      <span><span class="set-label">Läs upp frågan</span><br><span class="set-hint">Rösten läser varje uppgift${APPLE && /iPhone/.test(navigator.userAgent) ? ". På iPhone följer rösten ljudknappen på sidan: står den på tyst är rösten tyst, även om plingen hörs" : ""}</span></span>
+      <span><span class="set-label">Läs upp frågan</span><br><span class="set-hint">Rösten läser varje uppgift${APPLE && /iPhone/.test(navigator.userAgent) ? ". På iPhone kan ljudknappen på sidan tysta rösten fast plingen hörs – Testa rösten längre ner visar vad som händer" : ""}</span></span>
       <button class="toggle" data-toggle="voice" aria-pressed="${s.voice}" type="button"><span class="dot"></span></button>
     </div>
     <div class="set-row" style="flex-wrap:wrap">
@@ -6170,6 +6220,7 @@ sheet.addEventListener("click", (e) => {
     saveProfiles();
     if(key === "sound" && p.settings[key]) SFX.tap();
     if(key === "voice" && p.settings[key]) speak("Nu läser jag frågorna igen!");
+    if(key === "spelaPaTyst"){ SFX.lasUppIos(); if(p.settings[key]) SFX.tap(); }
     const spar = Object.keys(SPAR).find(k => SPAR[k].installning === key);
     if(spar){
       /* Ett avstängt spår ska inte ligga kvar som valt tal i spårvagnen */
@@ -6181,8 +6232,7 @@ sheet.addEventListener("click", (e) => {
     return;
   }
 
-  if(e.target.closest('[data-action="rost-test"]')){ SFX.ensure(); rostTest(false); return; }
-  if(e.target.closest('[data-action="rost-test-utpekad"]')){ SFX.ensure(); rostTest(true); return; }
+  if(e.target.closest('[data-action="rost-test"]')){ SFX.ensure(); rostTest(); return; }
   if(e.target.closest('[data-action="rost-igen"]')){
     SFX.tap();
     /* En tom utsaga får iPad att läsa in röstlistan på nytt */

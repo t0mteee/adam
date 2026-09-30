@@ -555,7 +555,7 @@ tonläget – höjs det låter varje röst som en robot – och avbryter bara
 pågående tal när det finns något att avbryta, eftersom iPad annars tappar den
 valda rösten.
 
-Tre saker värda att veta:
+Fyra saker värda att veta:
 
 - **Lägg till på hemskärmen först, spela sedan.** iOS ger hemskärmsappen ett eget
   minne, skilt från Safari. Stjärnor och mynt som samlats i Safari följer inte med
@@ -567,6 +567,11 @@ Tre saker värda att veta:
   under *Inställningar*, så man kan se vilken version en telefon kör. När en
   nyare hämtats i bakgrunden visar appen en knapp för att ladda om. Hemskärmsappen hämtar den nya versionen först när
   den stängts och öppnats igen.
+- **Hörs plingen men inte rösten på iPhone?** Titta på ljudknappen på sidan:
+  syns en orange rand står telefonen på tyst, och i hemskärmsappen tystar det
+  rösten. Under *Ljud och röst* finns *Testa rösten*, som visar på skärmen vad
+  telefonen gör med talet, och *Spela även på tyst läge*, som låter plingen
+  höras fast telefonen står på tyst.
 
 **Säkerhetskopia.** Under kugghjulet, *Säkerhetskopia*, sparar *Spara kopia*
 alla spelare – stjärnor, mynt, märken, vagnkort och inställningar – som en
@@ -646,7 +651,7 @@ hack i nätet släcker inte resten av resan.
 
 ## Tester
 
-`node --test` kör fyrtioåtta tester som plockar ut spelets rena funktioner direkt
+`node --test` kör fyrtionio tester som plockar ut spelets rena funktioner direkt
 ur `index.html`, så att de aldrig testar en kopia som glidit isär från källan. De
 täcker att uppgifterna håller sig inom banans tal och aldrig blir negativa, att
 rätt svar alltid finns bland alternativen och att varje felsvar har en
@@ -676,20 +681,27 @@ API – spårvagnsklockan som en slagen klocka med fem deltoner och ett kort bru
 i anslaget, dörrsignalen som tre pip – uppläsningen sker med webbläsarens
 `SpeechSynthesis`, konfettin ritas på en canvas och figurerna är handritad SVG.
 Ligger `ljud/klocka.mp3` eller `ljud/dorr.mp3` bredvid `index.html` spelas de i
-stället för syntesen. På iPhone tystar ljudknappen på sidan både Web Audio och
-uppläsningen så länge sidan bara spelar med i bakgrunden; därför spelar spelet
-en tyst ljudfil en gång i det första trycket, så att sidan blir en riktig
-ljudkälla och hörs även med knappen på tyst, som andra spel. Sedan Safari
-16.4 begär spelet dessutom en riktig uppspelningssession (`navigator.audioSession`),
-som gör att varken plingen eller uppläsningen tystas av knappen; på äldre iOS
-spelas i stället en kvarts sekund tystnad i trycket. Två saker till som iPhone
-kräver: tal får bara startas efter ett tryck, och `cancel()` följt av `speak()`
-i samma varv ger tystnad – spelet väntar därför en liten stund efter varje
-avbrott innan nästa utsaga. Hörs plingen men inte rösten finns knappen *Testa rösten* under *Vilken
-röst*: den talar i själva trycket och skriver på skärmen vad telefonen gör –
-om talet går iväg, om det tar slut, om det blir fel – och *Testa med utpekad
-röst* prövar med den bästa svenska rösten satt på utsagan. Listan under *Vad
-plattan säger om rösterna* visar vilka röster telefonen rapporterar. På
+stället för syntesen. På iPhone tystar ljudknappen på sidan Web Audio så länge
+sidan bara spelar med i bakgrunden. Med *Spela även på tyst läge* (under *Ljud
+och röst*, bara på iPhone och iPad) begär spelet en riktig spelsession
+(`navigator.audioSession.type = "playback"`, Safari 16.4 och senare; på äldre
+iOS spelas i stället en kvarts sekund tystnad i det första trycket), och då
+hörs plingen även med knappen på tyst, som andra spel. Avstängt följer allt
+knappen, och så står spelet från början: en hemskärmsapp kör uppläsningen i
+en egen ljudsession som spelet inte rår på, så rösten kan tystas av knappen
+fast plingen hörs – då är det tydligare att allt tystnar. Två saker till som
+iPhone kräver: tal får bara startas efter ett tryck, och `cancel()` följt av
+`speak()` i samma varv ger tystnad – spelet väntar därför en liten stund efter
+varje avbrott innan nästa utsaga. Läggs appen i bakgrunden mitt i en mening
+tystas talet, och står talsyntesen ändå som talande när appen kommer tillbaka
+rensas den. Hörs plingen men inte rösten finns knappen *Testa rösten* under
+*Vilken röst*: den säger "Ett, två, tre" i upp till tre lägen i rad – spelets
+eget ljudläge, det andra ljudläget och en utpekad röst med ljudmotorn pausad –
+och skriver på skärmen vad telefonen gör: om talet går iväg, när det tar slut,
+om det fastnar eller blir fel. Går talet igenom i spelets läge utan att höras
+är det telefonen som tystar rösten (ljudknappen eller Tyst läge); går det
+igenom bara i det andra läget byter spelet till det. Listan under *Vad plattan
+säger om rösterna* visar vilka röster telefonen rapporterar. På
 Apple-enheter talar spelet inte förrän någon tryckt på skärmen, eftersom iPhone
 tappar tal som startas före det första trycket. Ljudmotorn väcks
 också ur Safaris läge *interrupted* efter ett samtal eller ett appbyte. Typsnitten hämtas från Google Fonts med
