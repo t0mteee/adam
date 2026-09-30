@@ -685,9 +685,13 @@ som gör att varken plingen eller uppläsningen tystas av knappen; på äldre iO
 spelas i stället en kvarts sekund tystnad i trycket. Två saker till som iPhone
 kräver: tal får bara startas efter ett tryck, och `cancel()` följt av `speak()`
 i samma varv ger tystnad – spelet väntar därför en liten stund efter varje
-avbrott innan nästa utsaga. Hörs plingen men inte rösten står oftast ljudknappen
-på tyst på en äldre iPhone, eller så saknar telefonen en svensk röst; listan
-under *Vilken röst* visar vad telefonen rapporterar. Ljudmotorn väcks
+avbrott innan nästa utsaga. Hörs plingen men inte rösten finns knappen *Testa rösten* under *Vilken
+röst*: den talar i själva trycket och skriver på skärmen vad telefonen gör –
+om talet går iväg, om det tar slut, om det blir fel – och *Testa med utpekad
+röst* prövar med den bästa svenska rösten satt på utsagan. Listan under *Vad
+plattan säger om rösterna* visar vilka röster telefonen rapporterar. På
+Apple-enheter talar spelet inte förrän någon tryckt på skärmen, eftersom iPhone
+tappar tal som startas före det första trycket. Ljudmotorn väcks
 också ur Safaris läge *interrupted* efter ett samtal eller ett appbyte. Typsnitten hämtas från Google Fonts med
 rundade systemtypsnitt som reserv om sidan är offline.
 

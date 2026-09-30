@@ -448,6 +448,7 @@ h1, h2, h3{ font-family: "Baloo 2", "Baloo 2 Fallback", system-ui, sans-serif; f
 .set-grupp[open] summary::after{ content: "▾"; }
 .set-grupp[open] summary{ border-bottom: 2px dashed rgba(46,26,102,.25); }
 .set-grupp .set-row:last-child{ border-bottom: none; }
+.rost-logg{ white-space: pre-wrap; word-break: break-word; font: 700 var(--t-xs)/1.45 ui-monospace, Menlo, monospace; background: var(--paper-2); border: 2px solid var(--ink); border-radius: 12px; padding: 8px 10px; margin: 8px 0 4px; color: var(--ink-2); }
 .set-row{
   display: flex; align-items: center; justify-content: space-between; gap: 10px;
   padding: 9px 0; border-bottom: 2px dashed rgba(46,26,102,.16);
@@ -1574,7 +1575,7 @@ const pick = (arr) => arr[rnd(arr.length)];
 const INK = "#2E1A66";
 /* Syns under Inställningar, så man kan se vilken version telefonen kör.
    Höjs tillsammans med VERSION i sw.js. */
-const SPELVERSION = "32";
+const SPELVERSION = "33";
 function shuffle(a){ for(let i = a.length - 1; i > 0; i--){ const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
 function store(key, val){
@@ -3528,6 +3529,11 @@ function nyUtsaga(p, text){
 /* Avbryter pågående tal och minns när. På iPhone ger cancel() och speak() i
    samma varv tystnad, så nästa utsaga får vänta en liten stund efter ett avbrott. */
 let avbrutetVid = 0;
+/* iPhone tappar tal som startas innan sidan fått ett tryck, och en tappad
+   utsaga kan lämna talsyntesen "talande" för alltid. Så inget tal förrän
+   någon tryckt – hälsningen vid start får vänta på iPhone och iPad. */
+let harTryckt = false;
+for(const h of ["click", "touchend", "keydown"]) document.addEventListener(h, () => { harTryckt = true; }, true);
 function tystna(){
   utropStopp();
   try{
@@ -3545,6 +3551,7 @@ function sagUtsaga(u){
 function speakUtrop(text){
   const p = P();
   if(!text || !p || !p.settings.voice) return;
+  if(APPLE && !harTryckt) return;
   /* Egna utrop först: finns alla bitarna inspelade spelas de */
   if(p.settings.egnaUtrop !== false && utropKlipp.size){
     const delar = utropDelar(text);
@@ -3565,6 +3572,7 @@ function speak(text, force){
   const p = P();
   if(!window.speechSynthesis || !text) return;
   if(!force && (!p || !p.settings.voice)) return;
+  if(APPLE && !harTryckt) return;
   try{
     tystna();
     SFX.lasUppIos();
@@ -5932,8 +5940,45 @@ function rostTipsHTML(p){
   const nu = valdRost(p);
   const rader = `<div><b>Spelet talar nu med:</b> ${nu ? escapeHtml(rostEtikett(nu)) : "plattans egen svenska röst – ingen utpekad"}</div>` +
     roster.map(v => `<div>${escapeHtml(v.name || "?")} · ${escapeHtml(v.lang || "?")} · ${escapeHtml(v.voiceURI || "?")}${v.localService === false ? " · nät" : ""}${v.default ? " · standard" : ""}</div>`).join("");
-  return tips + `<details class="set-detaljer"><summary>Vad plattan säger om rösterna</summary>${rader}${roster.length ? "" : "<div>Inga svenska röster i listan just nu.</div>"}
+  return tips + `<div class="kopia-knappar" style="margin-top:8px">
+      <button class="btn" data-action="rost-test" type="button" style="background:var(--sun)">Testa rösten</button>
+      <button class="btn" data-action="rost-test-utpekad" type="button" style="background:var(--paper-2)">Testa med utpekad röst</button>
+    </div>
+    <pre class="rost-logg" id="rostLogg">Tryck på en knapp: rösten ska säga "Hej! Ett, två, tre", och här står vad telefonen gör – även när inget hörs.</pre>
+    <details class="set-detaljer"><summary>Vad plattan säger om rösterna</summary>${rader}${roster.length ? "" : "<div>Inga svenska röster i listan just nu.</div>"}
     <button class="btn" data-action="rost-igen" type="button" style="margin-top:8px;padding:7px 14px;font-size:var(--t-xs);background:var(--paper-2)">Leta igen</button></details>`;
+}
+/* Rösttestet: talar i själva trycket och skriver på skärmen vad telefonen gör –
+   start, slut, fel, och hur talsyntesen mår före och efter. Så syns det om talet
+   alls går iväg, även när det inte hörs. "Utpekad röst" prövar med den bästa
+   svenska rösten satt på utsagan i stället för att låta plattan välja. */
+let rostTestTimer = null;
+function rostTest(utpekad){
+  const p = P(), logg = el("rostLogg"); if(!p || !logg) return;
+  const rader = [], t0 = performance.now();
+  const skriv = (t) => { rader.push(`${((performance.now() - t0) / 1000).toFixed(1)} s · ${t}`); logg.textContent = rader.join("\n"); };
+  const ss = window.speechSynthesis;
+  if(!ss){ skriv("Ingen talsyntes i den här webbläsaren."); return; }
+  const roster = svenskaRoster();
+  const v = utpekad ? bastaRost(roster) : valdRost(p);
+  skriv(`hemskärmsapp ${navigator.standalone ? "ja" : "nej"} · ljudsession ${navigator.audioSession ? navigator.audioSession.type : "saknas"} · svenska röster ${roster.length} · tryckt ${harTryckt ? "ja" : "nej"}`);
+  skriv(`före: speaking ${ss.speaking} · pending ${ss.pending} · paused ${ss.paused}`);
+  if(tystna()) skriv("avbröt pågående tal – väntar 150 ms");
+  const u = new SpeechSynthesisUtterance("Hej! Ett, två, tre.");
+  u.lang = "sv-SE"; if(v){ u.voice = v; if(v.lang) u.lang = v.lang; }
+  u.rate = RATES[p.settings.rate != null ? p.settings.rate : 1].v;
+  u.onstart = () => skriv("start – talet går iväg");
+  u.onend = () => skriv("slut");
+  u.onerror = (e) => skriv("fel: " + ((e && e.error) || "okänt"));
+  u.onboundary = (e) => { if(e && e.charIndex === 0) skriv("första ordet"); };
+  skriv(`speak() med ${v ? rostEtikett(v) + " (" + (v.voiceURI || "?") + ")" : "plattans val – ingen utpekad röst, lang sv-SE"}`);
+  try{ sagUtsaga(u); }catch(e){ skriv("speak kastade: " + e.message); }
+  clearTimeout(rostTestTimer);
+  rostTestTimer = setTimeout(() => {
+    skriv(`efter 3 s: speaking ${ss.speaking} · pending ${ss.pending} · paused ${ss.paused}`);
+    if(!rader.some(r => /start –/.test(r))) skriv("ingen start-händelse: talet gick aldrig iväg");
+    else if(!rader.some(r => /slut/.test(r))) skriv("start men inget slut: talet är kvar i kön eller stannade");
+  }, 3000);
 }
 /* Byt namn på spelaren: samma namnruta som när spelaren skapades */
 function openBytNamn(){
@@ -6136,6 +6181,8 @@ sheet.addEventListener("click", (e) => {
     return;
   }
 
+  if(e.target.closest('[data-action="rost-test"]')){ SFX.ensure(); rostTest(false); return; }
+  if(e.target.closest('[data-action="rost-test-utpekad"]')){ SFX.ensure(); rostTest(true); return; }
   if(e.target.closest('[data-action="rost-igen"]')){
     SFX.tap();
     /* En tom utsaga får iPad att läsa in röstlistan på nytt */
