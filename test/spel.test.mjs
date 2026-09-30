@@ -9,7 +9,7 @@ import { REGIONS, LEVELS, SHOWN, buildRound, makeOptions, distraktorer, varforFe
          justeraSkill, nivaForSkill, buildStigandeRound,
          HUVUD_MAX, SIDO_START, SIDO_MAX, GANGER_START, GANGER_MAX, TALRAD_START, TALRAD_MAX, huvudspar, arLast, oppnaEfter, sidoOppen, gangerOppen, talradOppen, sidosparEfter, datumNyckel, statSvar, statTid, MAKE, SMASPEL, SPELMOTOR, spelKopt, LEK_W, LEK_H, synligaBanor, maxStars, nastaBana, blandatLevel, levelById,
          SPAR, sparOppen, linjeOppen, klockaOppen, LINJE_START, LINJE_MAX, KLOCKA_START, KLOCKA_MAX, timme12, tidKod, tidOrd, kodTid, vantetidOrd, svarText,
-         hallFraga, tavlaHar, avgangar, VAGNAR, vagnFragaFor, rostPoang, rostNamn, rostKvalitet, rostEtikett, bastaRost, valjRost, sparradKant, valjSparr, FOTOQUIZ, fotoFraga, granskaKopia, UTROP_FRASER, utropAlla, utropDelar, wavBlob, linjerVid, VAGNTYPER, VAGNNAMN, vagntypFor, vagnkortFor, VAGNKORT_ALLA, vagnTypAv, vagnNummerFinns, stegaVagnNummer, slumpaVagnNummer, VAGNSAKER, standardVagn, vagnAv, baraRutorPa, lageFor, sparaLage, omradesStjarnor, kompisRepliker, kompisReplik, lineByRef, skillGolv, skillNu, stjarnGolv, nivaJustera, nivaFranToppen, nivaEfterStjarnor, banaSomOppnar, myntForBana } from "./hamta.mjs";
+         hallFraga, tavlaHar, avgangar, VAGNAR, vagnFragaFor, rostPoang, rostNamn, rostKvalitet, rostEtikett, bastaRost, valjRost, sparradKant, valjSparr, FOTOQUIZ, fotoFraga, granskaKopia, UTROP_FRASER, utropAlla, utropDelar, wavBlob, linjerVid, VAGNTYPER, VAGNNAMN, vagntypFor, vagnkortFor, VAGNKORT_ALLA, vagnTypAv, vagnNummerFinns, stegaVagnNummer, slumpaVagnNummer, VAGNSAKER, standardVagn, vagnAv, baraRutorPa, lageFor, sparaLage, omradesStjarnor, kompisRepliker, kompisReplik, lineByRef, skillGolv, skillNu, stjarnGolv, nivaJustera, nivaFranToppen, nivaEfterStjarnor, banaSomOppnar, myntForBana, PA_OM_TOMT, sortPa, sparPa } from "./hamta.mjs";
 
 const rot = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -1184,4 +1184,24 @@ test("halva mynten på en bana som redan har tre stjärnor", () => {
   assert.equal(myntForBana(90, 2), 90);
   assert.equal(myntForBana(85, 3), 43);
   assert.equal(myntForBana(0, 3), 0);
+});
+
+test("alla sidospår och frågesorter går att stänga av", () => {
+  for(const spar of Object.keys(SPAR)){
+    assert.ok(SPAR[spar].installning, spar + " saknar strömbrytare");
+    assert.ok(PA_OM_TOMT.has(SPAR[spar].installning), spar + " ska vara på när fältet saknas");
+    assert.equal(sparPa({ settings: {} }, spar), true);
+    assert.equal(sparPa({ settings: { [SPAR[spar].installning]: false } }, spar), false);
+  }
+  assert.equal(sparPa({ settings: { stjarnor: false } }, "huvud"), true, "huvudspåret går inte att stänga");
+  const av = { settings: { stjarnor: false, talrad: false, linje: false, ganger: false, klocka: false } };
+  assert.deepEqual(synligaBanor(av).map(L => L.id), LEVELS.filter(huvudspar).map(L => L.id), "utan sidospår är bara huvudspåret kvar");
+  assert.equal(maxStars(av), 27 * 3);
+  assert.equal(maxStars({ settings: {} }), LEVELS.length * 3);
+  assert.equal(synligaBanor({ settings: { talrad: false } }).some(L => L.id >= TALRAD_START && L.id <= TALRAD_MAX), false);
+  for(const key of ["sagor", "kluringar", "hallplatser", "tavla", "foton", "vagnsnummer"]){
+    assert.ok(PA_OM_TOMT.has(key));
+    assert.equal(sortPa({ settings: {} }, key), true);
+    assert.equal(sortPa({ settings: { [key]: false } }, key), false);
+  }
 });

@@ -1574,7 +1574,7 @@ const pick = (arr) => arr[rnd(arr.length)];
 const INK = "#2E1A66";
 /* Syns under Inställningar, så man kan se vilken version telefonen kör.
    Höjs tillsammans med VERSION i sw.js. */
-const SPELVERSION = "30";
+const SPELVERSION = "31";
 function shuffle(a){ for(let i = a.length - 1; i > 0; i--){ const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
 function store(key, val){
@@ -1919,10 +1919,13 @@ const LEVELS = [
    Talraden 38–42, Tallinjen 43–47 och Klockan 48–52 */
 const HUVUD_MAX = 27, SIDO_START = 28, SIDO_MAX = 31, GANGER_START = 32, GANGER_MAX = 37, TALRAD_START = 38, TALRAD_MAX = 42, LINJE_START = 43, LINJE_MAX = 47, KLOCKA_START = 48, KLOCKA_MAX = 52;
 const huvudspar = (L) => L.id < SIDO_START;
+/* Inställningar som är på när fältet saknas: frågesorterna och sidospåren */
+const PA_OM_TOMT = new Set(["ganger", "klocka", "stjarnor", "talrad", "linje", "egnaUtrop", "sagor", "kluringar", "hallplatser", "tavla", "foton", "vagnsnummer"]);
 const gangerPa = (p) => !p || !p.settings || p.settings.ganger !== false;
 const klockaPa = (p) => !p || !p.settings || p.settings.klocka !== false;
 /* Banorna som finns på kartan för den här spelaren */
-const synligaBanor = (p) => LEVELS.filter(L => (L.spar !== "ganger" || gangerPa(p)) && (L.spar !== "klocka" || klockaPa(p)));
+/* Varje sidospår har en egen strömbrytare under kugghjulet (SPAR[…].installning) */
+const synligaBanor = (p) => LEVELS.filter(L => huvudspar(L) || sparPa(p, sparAv(L)));
 const maxStars = (p) => synligaBanor(p).length * 3;
 /* Provbanorna ärver sorter och tak från banorna de drar ur, så att allt som
    tittar på en bana kan behandla dem som vilka banor som helst. */
@@ -3824,17 +3827,18 @@ function newProfile(name, char){
    och, för de spår som går att stänga av, sitt reglage (pa). */
 const SPAR = {
   rakna:  { start:SIDO_START,   max:SIDO_MAX,   efter:12, falt:"sidoUpp",   namn:"Stjärnhimlen",     efterNamn:"Berget",         oppet:"räkna när du vill",
-            last:"Sidospåret öppnas när Berget är klart!" },
+            last:"Sidospåret öppnas när Berget är klart!", installning:"stjarnor" },
   ganger: { start:GANGER_START, max:GANGER_MAX, efter:15, falt:"gangerUpp", namn:"Gånger och delat", efterNamn:"Mästarprovet",   oppet:"gånger och delat med",
-            last:"Gånger och delat öppnas när Mästarprovet är klart!", pa:gangerPa },
+            last:"Gånger och delat öppnas när Mästarprovet är klart!", installning:"ganger" },
   talrad: { start:TALRAD_START, max:TALRAD_MAX, efter:6,  falt:"talradUpp", namn:"Talraden",         efterNamn:"Skogen",         oppet:"talens ordning",
-            last:"Talraden öppnas när Skogen är klar!" },
+            last:"Talraden öppnas när Skogen är klar!", installning:"talrad" },
   linje:  { start:LINJE_START,  max:LINJE_MAX,  efter:9,  falt:"linjeUpp",  namn:"Tallinjen",        efterNamn:"Grottan",        oppet:"hopp på tallinjen",
-            last:"Tallinjen öppnas när Grottan är klar!" },
+            last:"Tallinjen öppnas när Grottan är klar!", installning:"linje" },
   klocka: { start:KLOCKA_START, max:KLOCKA_MAX, efter:14, falt:"klockaUpp", namn:"Klockan",          efterNamn:"Blandat till 20", oppet:"hel och halv timme",
-            last:"Klockan öppnas när Blandat till 20 är klar!", pa:klockaPa }
+            last:"Klockan öppnas när Blandat till 20 är klar!", installning:"klocka" }
 };
-const sparPa = (p, spar) => !SPAR[spar].pa || SPAR[spar].pa(p);
+/* Ett spår är på om dess strömbrytare inte är av. Huvudspåret går inte att stänga. */
+const sparPa = (p, spar) => spar === "huvud" || !p || !p.settings || p.settings[SPAR[spar].installning] !== false;
 /* Hur långt spelaren kommit på ett sidospår: 0 om det är stängt, annars den
    senast öppnade banan. Spåret öppnas första gången någon tittar efter att
    banan som öppnar det fått en stjärna. */
@@ -5744,9 +5748,10 @@ function resaScen(p, nasta, l, sedan){
   box.hidden = false;
   box.classList.remove("kor", "stilla", "framme"); void box.offsetWidth; box.classList.add(stilla ? "stilla" : "kor");
   SFX.klocka();
+  /* Utropet börjar i själva trycket på Åk – iPhone tystar ibland tal som startas ur en timer */
+  speakUtrop("Nästa hållplats " + nasta);
   const timers = [];
   const om = (fn, ms) => timers.push(setTimeout(() => { if(tok === resaToken) fn(); }, ms));
-  om(() => speakUtrop("Nästa hållplats " + nasta), 500);
   const fortsatt = () => {
     if(tok !== resaToken) return;
     resaToken++;
@@ -5932,7 +5937,12 @@ function sparaNamn(){
 }
 /* Inställningarna i fyra grupper. Spelet står öppet från början; det man
    fällt ut ligger kvar utfällt medan kugghjulet är öppet. */
-let setOppna = { spelet: true, ljud: false, spelaren: false, vuxna: false };
+let setOppna = { spelet: true, fragor: false, spar: false, ljud: false, spelaren: false, vuxna: false };
+const toggleRad = (s, key, rubrik, hint) => `
+    <div class="set-row">
+      <span><span class="set-label">${rubrik}</span><br><span class="set-hint">${hint}</span></span>
+      <button class="toggle" data-toggle="${key}" aria-pressed="${s[key] !== false}" type="button"><span class="dot"></span></button>
+    </div>`;
 const setGrupp = (id, rubrik, hint, inre) => `
     <details class="set-grupp" data-grupp="${id}" ${setOppna[id] ? "open" : ""}>
       <summary><span>${rubrik}</span><small>${hint}</small></summary>
@@ -5947,7 +5957,7 @@ function openSettings(){
       <div><h2>Inställningar</h2><p class="sheet-sub">Gäller för ${escapeHtml(p.name)} · version ${SPELVERSION}</p></div>
       ${CLOSE_BTN}
     </div>
-    ${setGrupp("spelet", "Spelet", "värld, nivå, räknehjälp, spåren", `
+    ${setGrupp("spelet", "Spelet", "värld, nivå, räknehjälp, sagor, kluringar", `
     <div class="set-row" style="display:block">
       <span class="set-label">Värld</span><br><span class="set-hint">Vad ${escapeHtml(p.name)} spelar just nu</span>
       <div class="seg" style="margin-top:8px">
@@ -5969,14 +5979,22 @@ function openSettings(){
       <span><span class="set-label">Räknehjälp på de lätta banorna</span><br><span class="set-hint">Talen som saker att räkna, till och med Grottan</span></span>
       <button class="toggle" data-toggle="dots" aria-pressed="${s.dots}" type="button"><span class="dot"></span></button>
     </div>
-    <div class="set-row">
-      <span><span class="set-label">Gånger och delat med</span><br><span class="set-hint">Ett eget spår som öppnas efter Mästarprovet</span></span>
-      <button class="toggle" data-toggle="ganger" aria-pressed="${s.ganger !== false}" type="button"><span class="dot"></span></button>
-    </div>
-    <div class="set-row">
-      <span><span class="set-label">Klockan</span><br><span class="set-hint">Hel och halv timme – ett eget spår som öppnas efter Blandat till 20</span></span>
-      <button class="toggle" data-toggle="klocka" aria-pressed="${s.klocka !== false}" type="button"><span class="dot"></span></button>
-    </div>
+${toggleRad(s, "sagor", "Räknesagor", "Tal i ord: <i>Fem väntar vid Chalmers, tre kliver på – hur många är det nu?</i> Oftast en per hållplats i spårvagnen.")}
+${toggleRad(s, "kluringar", "Kluringar", "Tal som gick fel kommer tillbaka en gång till, ungefär varannan omgång, tills de sitter.")}
+`)}
+    ${setGrupp("fragor", "Frågor i spårvagnen", "hållplatser, avgångstavlan, var är vi, vagnsnummer", `
+${toggleRad(s, "hallplatser", "Hållplatsfrågor", "<i>Vi står vid Chalmers, vagnen åker tre hållplatser till – var är vi då?</i> Kommer när Tallinjen är öppen.")}
+${toggleRad(s, "tavla", "Avgångstavlan", "<i>Hur länge får vi vänta? Vilken vagn går först?</i> Kommer när Klockan är öppen.")}
+${toggleRad(s, "foton", "Var är vi?", "En bild från resan – vilken hållplats är det? Fotoquizen på startskärmen finns kvar ändå.")}
+${toggleRad(s, "vagnsnummer", "Vagnsnummer", "<i>Vilket nummer har vagnen på fotot?</i> Så samlar man vagnkort.")}
+`)}
+    ${setGrupp("spar", "Sidospår på kartan", "stjärnhimlen, gånger, talraden, tallinjen, klockan", `
+${toggleRad(s, "stjarnor", "Stjärnhimlen", "Räkna till 100 med tioramar – öppnas efter Berget")}
+${toggleRad(s, "ganger", "Gånger och delat med", "Tabellerna – öppnas efter Mästarprovet")}
+${toggleRad(s, "talrad", "Talraden", "Störst och minst, vad fattas, baklänges – öppnas efter Skogen")}
+${toggleRad(s, "linje", "Tallinjen", "Hopp framåt och bakåt på linjen – öppnas efter Grottan")}
+${toggleRad(s, "klocka", "Klockan", "Hel och halv timme, urtavlor och avgångstavlan – öppnas efter Blandat till 20")}
+    <p class="sheet-sub" style="margin:8px 0 10px">Ett avstängt spår försvinner från kartan och räknas inte i stjärnorna, men det som redan är klarat finns kvar när det slås på igen.</p>
 `)}
     ${setGrupp("ljud", "Ljud och röst", "ljud, uppläsning, rösten, egna utrop", `
     <div class="set-row">
@@ -5984,7 +6002,7 @@ function openSettings(){
       <button class="toggle" data-toggle="sound" aria-pressed="${s.sound}" type="button"><span class="dot"></span></button>
     </div>
     <div class="set-row">
-      <span><span class="set-label">Läs upp frågan</span><br><span class="set-hint">Rösten läser varje uppgift</span></span>
+      <span><span class="set-label">Läs upp frågan</span><br><span class="set-hint">Rösten läser varje uppgift${APPLE && /iPhone/.test(navigator.userAgent) ? ". På iPhone följer rösten ljudknappen på sidan: står den på tyst är rösten tyst, även om plingen hörs" : ""}</span></span>
       <button class="toggle" data-toggle="voice" aria-pressed="${s.voice}" type="button"><span class="dot"></span></button>
     </div>
     <div class="set-row" style="flex-wrap:wrap">
@@ -6078,15 +6096,17 @@ sheet.addEventListener("click", (e) => {
   const tgl = e.target.closest("[data-toggle]");
   if(tgl){
     const key = tgl.dataset.toggle;
-    p.settings[key] = !p.settings[key];
+    /* Sorterna och spåren är på tills någon stänger dem – ett fält som saknas betyder på */
+    p.settings[key] = PA_OM_TOMT.has(key) ? p.settings[key] === false : !p.settings[key];
     tgl.setAttribute("aria-pressed", String(p.settings[key]));
     saveProfiles();
     if(key === "sound" && p.settings[key]) SFX.tap();
     if(key === "voice" && p.settings[key]) speak("Nu läser jag frågorna igen!");
-    if(key === "ganger" || key === "klocka"){
+    const spar = Object.keys(SPAR).find(k => SPAR[k].installning === key);
+    if(spar){
       /* Ett avstängt spår ska inte ligga kvar som valt tal i spårvagnen */
       const vald = levelById(p.tramLevel);
-      if(!p.settings[key] && vald && vald.spar === key){ p.tramLevel = -1; saveProfiles(); }
+      if(!p.settings[key] && vald && sparAv(vald) === spar){ p.tramLevel = -1; saveProfiles(); }
       if(el("screen-map").classList.contains("is-active")) renderMap();
       renderHeader();
     }
@@ -6948,9 +6968,9 @@ function startRound(niva, mode, tramRef){
     ? buildStigandeRound(P(), g.len, new Set(g.recent))
     : buildRound(L, g.len, g.tram ? new Set(g.recent) : null);
   if(g.tram && P().resa) blandaInResan(P(), L, g.queue);
-  g.queue = blandaInKluring(P(), L, g.queue);
+  if(sortPa(P(), "kluringar")) g.queue = blandaInKluring(P(), L, g.queue);
   /* På spårvagnen handlar en av uppgifterna oftast om resan */
-  if(g.tram && P().resa && Math.random() < 0.7){
+  if(g.tram && P().resa && sortPa(P(), "sagor") && Math.random() < 0.7){
     const { l, mot, nasta } = resLage(P());
     blandaInSaga(P(), L, g.queue, { stopp: nasta || P().resa.pos, ref: l.ref, mot });
   }
@@ -6979,9 +6999,12 @@ function vagnFraga(p, stopp){
   if((p.vagnar || []).includes(foto.f) && Math.random() > 0.35) return null;
   return q;
 }
+/* Varje sort har en strömbrytare under kugghjulet: vagnsnummer, hållplatsfrågor,
+   avgångstavlan och Var är vi? – den som vill ha rena räknetal stänger dem. */
+const sortPa = (p, key) => !p || !p.settings || p.settings[key] !== false;
 function blandaInResan(p, L, queue){
   const { ordn, k } = resLage(p);
-  const vagn = vagnFraga(p, p.resa.pos);
+  const vagn = sortPa(p, "vagnsnummer") ? vagnFraga(p, p.resa.pos) : null;
   if(vagn) queue[0] = vagn;
   const spar = sparAv(L);
   const lediga = () => shuffle(queue.map((q, i) => q.fast ? -1 : i).filter(i => i >= 0));
@@ -6989,17 +7012,17 @@ function blandaInResan(p, L, queue){
     ? (L.rikt === -1 ? ["bak"] : L.rikt === 1 ? ["hall"] : ["hall", "bak", "kvar"])
     : ["kvar"];
   if(spar === "linje"){
-    lediga().slice(0, 3).forEach(i => { queue[i] = Object.assign(hallFraga(pick(sorter), ordn, k), { niva: L.id, utanHjalp: !!L.utanHjalp }); });
+    if(sortPa(p, "hallplatser")) lediga().slice(0, 3).forEach(i => { queue[i] = Object.assign(hallFraga(pick(sorter), ordn, k), { niva: L.id, utanHjalp: !!L.utanHjalp }); });
   }else if(spar === "klocka"){
     queue.forEach(q => { if(q.kind === "vanta" || q.kind === "forst") tavlaHar(q, p.resa.pos); });
-  }else if(Math.random() < 0.3){
+  }else if(sortPa(p, "foton") && Math.random() < 0.3){
     /* Var är vi? – en bild från resan */
     const plats = lediga().find(i => i > 0);
     if(plats != null) queue[plats] = fotoFraga(p, rnd(5) < 3 ? "bild" : "namn");
   }else if(Math.random() < 0.6){
     const val = [];
-    if(linjeOppen(p)) val.push("hall");
-    if(klockaOppen(p)) val.push("tavla");
+    if(linjeOppen(p) && sortPa(p, "hallplatser")) val.push("hall");
+    if(klockaOppen(p) && sortPa(p, "tavla")) val.push("tavla");
     const plats = lediga().find(i => i > 0);
     if(val.length && plats != null){
       queue[plats] = pick(val) === "hall"
@@ -8122,7 +8145,8 @@ function flyttaTillTvaSpar(p){
     p.kluriga = p.kluriga || [];
     p.uppdragKlara = p.uppdragKlara || 0;
     p.spel = p.spel || []; p.rekord = p.rekord || {};
-    p.settings = Object.assign({ sound:true, voice:true, dots:true, rate:1, ganger:true, klocka:true, egnaUtrop:true }, p.settings || {});
+    p.settings = Object.assign({ sound:true, voice:true, dots:true, rate:1, ganger:true, klocka:true, egnaUtrop:true,
+      stjarnor:true, talrad:true, linje:true, sagor:true, kluringar:true, hallplatser:true, tavla:true, foton:true, vagnsnummer:true }, p.settings || {});
     flyttaTillTvaSpar(p);
     /* Förr åkte man en linje från ände till ände och läget var ett index per
        linje. Nu är resan fri: åkta hållplatser per linje, och var man står. */

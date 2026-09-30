@@ -581,12 +581,17 @@ kopian senast sparades.
 
 ## För vuxna
 
-Kugghjulet uppe till höger har fyra hopfällbara grupper, med *Spelet* öppen
+Kugghjulet uppe till höger har sex hopfällbara grupper, med *Spelet* öppen
 från början: *Spelet* (världen, nivån i spårvagnen med mätaren, räknehjälp,
-gånger och delat med, klockan), *Ljud och röst* (ljud, uppläsning,
-rösthastighet, vilken röst, egna utrop och *Spela in utrop*), *Spelaren* (byt
-namn, byt kompisfigur, rörelse, *Så går det*) och *För vuxna* (säkerhetskopia,
-bilderna och fotograferna, byt spelare, ta bort spelare). Namnet är det rösten
+räknesagor, kluringar), *Frågor i spårvagnen* (hållplatsfrågor,
+avgångstavlan, *Var är vi?*, vagnsnummer – var och en med en egen
+strömbrytare, för den som vill ha rena räknetal), *Sidospår på kartan*
+(Stjärnhimlen, gånger och delat med, Talraden, Tallinjen, Klockan – ett
+avstängt spår försvinner från kartan och räknas inte i stjärnorna, men det
+som är klarat finns kvar när det slås på igen), *Ljud och röst* (ljud,
+uppläsning, rösthastighet, vilken röst, egna utrop och *Spela in utrop*),
+*Spelaren* (byt namn, byt kompisfigur, rörelse, *Så går det*) och *För vuxna*
+(säkerhetskopia, bilderna och fotograferna, byt spelare, ta bort spelare). Namnet är det rösten
 säger och det som står på väggkartan; en spelare som skapats utan namn heter
 *Kompis* tills någon byter. Inställningarna hör till spelaren, så syskon kan ha
 olika. Kompisfiguren hejar på spelskärmen: på en stående platta står den uppe
@@ -641,7 +646,7 @@ hack i nätet släcker inte resten av resan.
 
 ## Tester
 
-`node --test` kör fyrtiosju tester som plockar ut spelets rena funktioner direkt
+`node --test` kör fyrtioåtta tester som plockar ut spelets rena funktioner direkt
 ur `index.html`, så att de aldrig testar en kopia som glidit isär från källan. De
 täcker att uppgifterna håller sig inom banans tal och aldrig blir negativa, att
 rätt svar alltid finns bland alternativen och att varje felsvar har en
@@ -674,7 +679,10 @@ Ligger `ljud/klocka.mp3` eller `ljud/dorr.mp3` bredvid `index.html` spelas de i
 stället för syntesen. På iPhone tystar ljudknappen på sidan både Web Audio och
 uppläsningen så länge sidan bara spelar med i bakgrunden; därför spelar spelet
 en tyst ljudfil en gång i det första trycket, så att sidan blir en riktig
-ljudkälla och hörs även med knappen på tyst, som andra spel. Ljudmotorn väcks
+ljudkälla och hörs även med knappen på tyst, som andra spel. Uppläsningen
+går däremot genom iPhones egen talsyntes, som följer ljudknappen och inte går
+att låsa upp från en webbsida: står knappen på tyst är rösten tyst även när
+plingen hörs. Inställningarna säger det under *Läs upp frågan* på en iPhone. Ljudmotorn väcks
 också ur Safaris läge *interrupted* efter ett samtal eller ett appbyte. Typsnitten hämtas från Google Fonts med
 rundade systemtypsnitt som reserv om sidan är offline.
 
