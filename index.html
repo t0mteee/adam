@@ -1575,7 +1575,7 @@ const pick = (arr) => arr[rnd(arr.length)];
 const INK = "#2E1A66";
 /* Syns under Inställningar, så man kan se vilken version telefonen kör.
    Höjs tillsammans med VERSION i sw.js. */
-const SPELVERSION = "34";
+const SPELVERSION = "35";
 function shuffle(a){ for(let i = a.length - 1; i > 0; i--){ const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
 function store(key, val){
@@ -1921,7 +1921,7 @@ const LEVELS = [
 const HUVUD_MAX = 27, SIDO_START = 28, SIDO_MAX = 31, GANGER_START = 32, GANGER_MAX = 37, TALRAD_START = 38, TALRAD_MAX = 42, LINJE_START = 43, LINJE_MAX = 47, KLOCKA_START = 48, KLOCKA_MAX = 52;
 const huvudspar = (L) => L.id < SIDO_START;
 /* Inställningar som är på när fältet saknas: frågesorterna och sidospåren */
-const PA_OM_TOMT = new Set(["ganger", "klocka", "stjarnor", "talrad", "linje", "egnaUtrop", "sagor", "kluringar", "hallplatser", "tavla", "foton", "vagnsnummer"]);
+const PA_OM_TOMT = new Set(["ganger", "klocka", "stjarnor", "talrad", "linje", "egnaUtrop", "sagor", "kluringar", "hallplatser", "tavla", "foton", "vagnsnummer", "klipprost"]);
 const gangerPa = (p) => !p || !p.settings || p.settings.ganger !== false;
 const klockaPa = (p) => !p || !p.settings || p.settings.klocka !== false;
 /* Banorna som finns på kartan för den här spelaren */
@@ -3336,6 +3336,14 @@ const SFX = {
      spel. Annars följer allt knappen. Rösten i en hemskärmsapp har en egen
      ljudsession som spelet inte rår på. Utanför ett tryck nekas den tysta
      filen på äldre iOS, och då försöker nästa tryck igen. */
+  /* Ljudmotorn utan hänsyn till Ljud-inställningen – klipprösten behöver den även när plingen är av */
+  motor(){
+    try{
+      if(!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      if(this.ctx.state !== "running") this.ctx.resume();
+      return this.ctx;
+    }catch(e){ return null; }
+  },
   iosSpelat: 0,
   lasUppIos(){
     if(!APPLE) return;
@@ -3446,6 +3454,138 @@ SFX.provaFiler();
    knappen. Sätts i det första trycket och när inställningen byts. */
 function ljudSession(p){ return p && p.settings && p.settings.spelaPaTyst ? "playback" : "auto"; }
 
+/* ── Klipprösten ────────────────────────────────────────────────────────
+   Spelets röst kan ligga som ljudfiler i ljud/rost/, inlästa på en Mac med
+   Alva Premium (verktyg/gor-rost.sh). Då spelas det som sägs som media
+   genom spelets egen ljudmotor: det hörs på tyst läge när "Spela även på
+   tyst läge" är på, och låter likadant på iPad och iPhone. Varje mening
+   sätts ihop av klipp – hela meningar där de är fasta, annars bitar och
+   tal – och saknas något klipp läser plattans egen röst meningen. */
+const KLIPP = { bas: "ljud/rost/", finns: null, rost: "", format: "m4a", takt: 0, buffrar: new Map(), laddar: new Map(), kor: 0, noder: [] };
+/* Texten som den jämförs: små bokstäver, tankstreck som komma, bara bokstäver, siffror och skiljetecken */
+const klippNorm = (t) => String(t == null ? "" : t).toLowerCase().replace(/[–—]/g, ",").replace(/[^a-z0-9åäöéü\s.,!?:]/g, "").replace(/\s+/g, " ").trim();
+/* Filnamnet för en fras: å ä ö blir aa ae oe, mellanrum bindestreck, och riktigt långa fraser kortas med ett hashvärde */
+function klippId(text){
+  const s = klippNorm(text).replace(/[.,!?:]/g, "").replace(/å/g, "aa").replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/é/g, "e").replace(/ü/g, "u").trim().replace(/\s+/g, "-");
+  if(s.length <= 80) return s;
+  let h = 5381; for(let i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0;
+  return s.slice(0, 60).replace(/-$/, "") + "-" + h.toString(16);
+}
+/* Ett tal som klipp: 0–100 finns som egna, större sätts ihop – 318 blir "300" och "18", 1234 blir "1000", "200" och "34" */
+function talDelar(n){
+  n = Number(n);
+  if(!Number.isInteger(n) || n < 0 || n > 9999) return null;
+  if(n <= 100) return [String(n)];
+  const ut = [];
+  if(n >= 1000){ ut.push(String(Math.floor(n / 1000) * 1000)); n %= 1000; }
+  if(n >= 100){ ut.push(String(Math.floor(n / 100) * 100)); n %= 100; }
+  if(n > 0) ut.push(String(n));
+  return ut;
+}
+/* Delar upp en mening i klipp: den längsta fras som finns tas först, tal blir
+   talklipp, skiljetecken blir pauser, och spelarens namn hoppas över när det
+   inte är inläst. Saknas något annat blir det null, och då läser rösten. */
+function klippDelar(text, finns, namn){
+  if(!finns || !finns.size) return null;
+  const ord = klippNorm(text).replace(/([.,!?:])/g, " $1 ").split(/\s+/).filter(Boolean);
+  const tecken = (t) => /^[.,!?:]$/.test(t);
+  const namnN = klippNorm(namn || "");
+  const ut = [];
+  let i = 0, paus = 0;
+  const lagg = (d) => { if(paus && ut.length) ut.push({ paus }); paus = 0; ut.push(...d); };
+  while(i < ord.length){
+    const t = ord[i];
+    if(tecken(t)){ paus = Math.max(paus, /[.!?]/.test(t) ? 260 : 130); i++; continue; }
+    /* Orden framåt, över skiljetecken – en hel mening som klipp har dem själv */
+    const idx = [];
+    for(let j = i; j < ord.length && idx.length < 60; j++) if(!tecken(ord[j])) idx.push(j);
+    let traff = null;
+    for(let n = idx.length; n >= 1 && !traff; n--){
+      const id = klippId(idx.slice(0, n).map(j => ord[j]).join(" "));
+      if(finns.has(id)) traff = { id, slut: idx[n - 1] };
+    }
+    if(traff){ lagg([traff.id]); i = traff.slut + 1; continue; }
+    if(/^\d+$/.test(t)){
+      const d = talDelar(t);
+      if(!d || !d.every(x => finns.has(x))) return null;
+      lagg(d); i++; continue;
+    }
+    if(namnN && t === namnN){ i++; continue; }
+    return null;
+  }
+  return ut.length ? ut : null;
+}
+/* Finns klippen? Listan hämtas en gång vid start, över http(s) */
+function klippProva(){
+  if(!/^https?:$/.test(location.protocol) || typeof fetch !== "function") return;
+  fetch(KLIPP.bas + "index.json", { cache: "no-cache" }).then(r => r.ok ? r.json() : null).then(j => {
+    if(!j || !Array.isArray(j.klipp) || !j.klipp.length) return;
+    KLIPP.finns = new Set(j.klipp); KLIPP.rost = String(j.rost || ""); KLIPP.format = String(j.format || "m4a"); KLIPP.takt = Number(j.takt) || 0;
+  }).catch(() => {});
+}
+const klippPa = (p) => !!(KLIPP.finns && KLIPP.finns.size && sortPa(p, "klipprost"));
+/* Klippen går i sin egen takt; Långsam och Snabb skruvar bara lite, annars låter rösten konstig */
+const klippTakt = (p) => [0.92, 1, 1.08][p && p.settings && p.settings.rate != null ? p.settings.rate : 1] || 1;
+/* Var ljudet börjar och slutar i ett klipp, så att tystnaden i kanterna hoppas över */
+function klippKanter(buf){
+  const d = buf.getChannelData(0), n = d.length, sr = buf.sampleRate, grans = 0.012;
+  let a = 0, b = n - 1;
+  while(a < n && Math.abs(d[a]) < grans) a++;
+  while(b > a && Math.abs(d[b]) < grans) b--;
+  if(a >= b) return { start: 0, slut: buf.duration };
+  return { start: Math.max(0, a - sr * 0.02) / sr, slut: Math.min(n, b + sr * 0.05) / sr };
+}
+/* Hämtar och avkodar ett klipp, en gång; de senaste 250 hålls i minnet */
+function klippHamta(id){
+  if(KLIPP.buffrar.has(id)) return Promise.resolve(KLIPP.buffrar.get(id));
+  if(KLIPP.laddar.has(id)) return KLIPP.laddar.get(id);
+  const c = SFX.motor();
+  if(!c) return Promise.reject(new Error("ingen ljudmotor"));
+  const pr = fetch(KLIPP.bas + id + "." + KLIPP.format).then(r => r.ok ? r.arrayBuffer() : Promise.reject(new Error(id)))
+    .then(ab => avkoda(c, ab))
+    .then(buf => {
+      const k = { buf, kant: klippKanter(buf) };
+      KLIPP.laddar.delete(id); KLIPP.buffrar.set(id, k);
+      while(KLIPP.buffrar.size > 250) KLIPP.buffrar.delete(KLIPP.buffrar.keys().next().value);
+      return k;
+    }).catch(e => { KLIPP.laddar.delete(id); throw e; });
+  KLIPP.laddar.set(id, pr);
+  return pr;
+}
+function klippStopp(){ KLIPP.kor++; for(const n of KLIPP.noder){ try{ n.stop(); }catch(e){} } KLIPP.noder = []; }
+/* Spelar klippen i följd med små pauser emellan. Går de inte att hämta, eller
+   är ljudmotorn inte igång, körs "annars" – plattans egen röst. */
+function spelaKlipp(delar, takt, annars){
+  const c = SFX.motor();
+  if(!c){ if(annars) annars(); return; }
+  SFX.lasUppIos();
+  const kor = ++KLIPP.kor;
+  const ids = delar.filter(d => typeof d === "string");
+  Promise.all(ids.map(klippHamta).concat([c.state === "running" ? null : c.resume()])).then(() => {
+    if(kor !== KLIPP.kor) return;
+    if(c.state !== "running"){ if(annars) annars(); return; }
+    let t = c.currentTime + 0.03;
+    for(const d of delar){
+      if(typeof d !== "string"){ t += (d.paus || 0) / 1000; continue; }
+      const k = KLIPP.buffrar.get(d); if(!k) continue;
+      const src = c.createBufferSource();
+      src.buffer = k.buf; src.playbackRate.value = takt; src.connect(c.destination);
+      const langd = k.kant.slut - k.kant.start;
+      src.onended = () => { const i = KLIPP.noder.indexOf(src); if(i >= 0) KLIPP.noder.splice(i, 1); };
+      src.start(t, k.kant.start, langd);
+      KLIPP.noder.push(src);
+      t += langd / takt + 0.05;
+    }
+  }).catch(() => { if(kor === KLIPP.kor && annars) annars(); });
+}
+/* Hämtar klippen till en mening i förväg, så att de finns när den ska sägas */
+function klippForbered(text){
+  const p = P(); if(!klippPa(p)) return;
+  const delar = klippDelar(text, KLIPP.finns, p ? p.name : "");
+  if(delar) delar.forEach(d => { if(typeof d === "string") klippHamta(d).catch(() => {}); });
+}
+klippProva();
+
 /* ── Rösten ─────────────────────────────────────────────────────────────
    Plattan kan ha flera svenska röster. På iPad följer en liten "Alva" med,
    och under Inställningar → Hjälpmedel → Uppläst innehåll → Röster → Svenska
@@ -3536,7 +3676,7 @@ let avbrutetVid = 0;
    utsaga kan lämna talsyntesen "talande" för alltid. Så inget tal förrän
    någon tryckt – hälsningen vid start får vänta på iPhone och iPad. */
 let harTryckt = false;
-for(const h of ["click", "touchend", "keydown"]) document.addEventListener(h, () => { harTryckt = true; }, true);
+for(const h of ["click", "touchend", "keydown"]) document.addEventListener(h, () => { harTryckt = true; if(KLIPP.finns) SFX.motor(); }, true);
 /* Läggs appen i bakgrunden mitt i en mening kan talsyntesen bli stående som
    "talande" för alltid. Så tystnad när sidan göms, och en rensning om den ändå
    står som talande när sidan kommer tillbaka. */
@@ -3547,7 +3687,7 @@ document.addEventListener("visibilitychange", () => {
   }catch(e){}
 });
 function tystna(){
-  utropStopp();
+  utropStopp(); klippStopp();
   try{
     if(speechSynthesis.speaking || speechSynthesis.pending){ speechSynthesis.cancel(); avbrutetVid = performance.now(); return true; }
   }catch(e){}
@@ -3569,21 +3709,27 @@ function speakUtrop(text){
     const delar = utropDelar(text);
     if(delar && delar.every(d => utropKlipp.has(d))){ tystna(); spelaUtrop(delar); return; }
   }
-  if(!window.speechSynthesis) return;
-  try{
-    tystna();
-    SFX.lasUppIos();
-    if(speechSynthesis.paused) speechSynthesis.resume();
-    const u = nyUtsaga(p, text);
-    u.rate = Math.max(0.55, RATES[p.settings.rate != null ? p.settings.rate : 1].v - 0.12);
-    sagUtsaga(u);
-  }catch(e){}
+  /* Sedan klipprösten, och sist plattans egen röst */
+  if(klippPa(p)){
+    const delar = klippDelar(text, KLIPP.finns, p.name);
+    if(delar){ tystna(); spelaKlipp(delar, klippTakt(p), () => speakSyntes(p, text, true)); return; }
+  }
+  speakSyntes(p, text, true);
 }
 
 function speak(text, force){
   const p = P();
-  if(!window.speechSynthesis || !text) return;
+  if(!text) return;
   if(!force && (!p || !p.settings.voice)) return;
+  if(klippPa(p)){
+    const delar = klippDelar(text, KLIPP.finns, p ? p.name : "");
+    if(delar){ tystna(); spelaKlipp(delar, klippTakt(p), () => speakSyntes(p, text, false)); return; }
+  }
+  speakSyntes(p, text, false);
+}
+/* Plattans egen röst. Utropen läses lite lugnare än uppgifterna. */
+function speakSyntes(p, text, utrop){
+  if(!window.speechSynthesis || !text) return;
   if(APPLE && !harTryckt) return;
   try{
     tystna();
@@ -3592,7 +3738,8 @@ function speak(text, force){
        ingenting mer förrän någon väcker den */
     if(speechSynthesis.paused) speechSynthesis.resume();
     const u = nyUtsaga(p, text);
-    u.rate = RATES[(p && p.settings.rate) != null ? p.settings.rate : 1].v;
+    const takt = RATES[(p && p.settings && p.settings.rate) != null ? p.settings.rate : 1].v;
+    u.rate = utrop ? Math.max(0.55, takt - 0.12) : takt;
     sagUtsaga(u);
   }catch(e){}
 }
@@ -5953,7 +6100,8 @@ function rostTipsHTML(p){
   const nu = valdRost(p);
   const rader = `<div><b>Spelet talar nu med:</b> ${nu ? escapeHtml(rostEtikett(nu)) : "plattans egen svenska röst – ingen utpekad"}</div>` +
     roster.map(v => `<div>${escapeHtml(v.name || "?")} · ${escapeHtml(v.lang || "?")} · ${escapeHtml(v.voiceURI || "?")}${v.localService === false ? " · nät" : ""}${v.default ? " · standard" : ""}</div>`).join("");
-  return tips + `<div class="kopia-knappar" style="margin-top:8px">
+  const klipptips = KLIPP.finns ? "" : `<p class="set-tips">Med en Mac kan rösten göras till ljudfiler med <b>Alva Premium</b>: de hörs på tyst läge och låter lika bra på iPad och iPhone. Se <b>Klippröst</b> i README.</p>`;
+  return tips + klipptips + `<div class="kopia-knappar" style="margin-top:8px">
       <button class="btn" data-action="rost-test" type="button" style="background:var(--sun)">Testa rösten</button>
     </div>
     <pre class="rost-logg" id="rostLogg">Tryck: rösten ska säga "Ett, två, tre" upp till tre gånger i olika lägen, och här står vad telefonen gör – även när inget hörs. Det tar en halv minut.</pre>
@@ -5980,6 +6128,16 @@ function rostTest(){
   const sattSession = (typ) => { try{ if(navigator.audioSession && navigator.audioSession.type !== typ) navigator.audioSession.type = typ; }catch(e){} };
   skriv(`${navigator.standalone ? "hemskärmsapp" : "webbläsare"}${os ? " · iOS " + os.replace("_", ".") : ""} · ljudsession ${sess()} · svenska röster ${roster.length} · ljudmotor ${SFX.ctx ? SFX.ctx.state : "ej startad"}`);
   skriv(`före: speaking ${ss.speaking} · pending ${ss.pending} · paused ${ss.paused}`);
+  /* Klipprösten först, som media genom ljudmotorn. Hörs den men inte rösten
+     nedan är det talsyntesen som tystas. En tom utsaga i trycket låser upp
+     talsyntesen, så att stegen får gå iväg efter klippen. */
+  let forsening = 0;
+  if(klippPa(p)){
+    skriv(`klippröst: ${KLIPP.finns.size} klipp · ${KLIPP.rost || "inläst röst"} · spelar "Ett, två, tre" som media`);
+    try{ ss.speak(new SpeechSynthesisUtterance("")); }catch(e){}
+    spelaKlipp(["1", "2", "3"], 1, () => skriv("klippröst: klippen gick inte att spela"));
+    forsening = 2500;
+  }
   const steg = [{ namn: `spelets läge, ${lage(eget)}`, gor: () => sattSession(eget), rost: valdRost(p) }];
   if(navigator.audioSession) steg.push({ namn: `andra läget, ${lage(andra)}`, gor: () => sattSession(andra), rost: valdRost(p) });
   steg.push({ namn: `${bastaRost(roster) ? "utpekad röst" : "plattans val"}, ljudmotorn pausad`, gor: () => { sattSession(eget); try{ if(SFX.ctx) SFX.ctx.suspend(); }catch(e){} }, rost: bastaRost(roster) });
@@ -6024,7 +6182,7 @@ function rostTest(){
       }, sess() !== fore || i === steg.length - 1 ? 400 : 0);
     }, vanta);
   };
-  korSteg(0);
+  if(forsening) setTimeout(() => korSteg(0), forsening); else korSteg(0);
 }
 /* Byt namn på spelaren: samma namnruta som när spelaren skapades */
 function openBytNamn(){
@@ -6129,6 +6287,10 @@ ${toggleRad(s, "klocka", "Klockan", "Hel och halv timme, urtavlor och avgångsta
         ${RATES.map((r, i) => `<button type="button" data-rate="${i}" aria-pressed="${s.rate === i}">${r.name}</button>`).join("")}
       </div>
     </div>
+    ${KLIPP.finns && KLIPP.finns.size ? `<div class="set-row">
+      <span><span class="set-label">Klippröst</span><br><span class="set-hint">${escapeHtml(KLIPP.rost || "Inläst röst")} · ${KLIPP.finns.size} klipp från datorn. Spelas som media: hörs på tyst läge med Spela även på tyst läge, och låter likadant på iPad och iPhone. Det som inte finns som klipp läser rösten nedan</span></span>
+      <button class="toggle" data-toggle="klipprost" aria-pressed="${s.klipprost !== false}" type="button"><span class="dot"></span></button>
+    </div>` : ""}
     <div class="set-row" style="display:block">
       <span class="set-label">Vilken röst</span><br><span class="set-hint">${rostHint()}</span>
       <div class="seg" data-seg="rost" style="flex-wrap:wrap;margin-top:8px">${rostKnapparHTML(p)}</div>
@@ -6221,6 +6383,7 @@ sheet.addEventListener("click", (e) => {
     if(key === "sound" && p.settings[key]) SFX.tap();
     if(key === "voice" && p.settings[key]) speak("Nu läser jag frågorna igen!");
     if(key === "spelaPaTyst"){ SFX.lasUppIos(); if(p.settings[key]) SFX.tap(); }
+    if(key === "klipprost") speak(p.settings[key] ? "Nu talar jag med klippen!" : "Nu talar jag med plattans röst.", true);
     const spar = Object.keys(SPAR).find(k => SPAR[k].installning === key);
     if(spar){
       /* Ett avstängt spår ska inte ligga kvar som valt tal i spårvagnen */
@@ -7098,6 +7261,8 @@ function startRound(niva, mode, tramRef){
     g.queue.forEach(q => g.recent.push(qNyckel(q)));
     g.recent = g.recent.slice(-24);
   }
+  /* Klippen till omgångens frågor hämtas nu, så att de finns när frågan läses */
+  if(klippPa(P())) g.queue.forEach(q => klippForbered((q.kluring ? "Kluring! " : "") + speechFor(q)));
   g.qIndex = 0; g.score = 0; g.streak = 0; g.bestStreak = 0;
   g.firstTry = 0; g.results = []; g.locked = false; g.nyaKort = [];
   coinCount.textContent = "0";

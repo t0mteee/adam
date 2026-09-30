@@ -1,6 +1,6 @@
 /* Räknelandets servicearbetare — gör att spelet fungerar utan nätverk.
    Höj versionen när spelet ändras, så hämtas det nya vid nästa start. */
-const VERSION = "raknelandet-v34";
+const VERSION = "raknelandet-v35";
 const SKAL = [
   "./", "./index.html", "./manifest.webmanifest",
   "./apple-touch-icon.png", "./ikon-192.png", "./ikon-512.png"
@@ -29,14 +29,17 @@ self.addEventListener("fetch", (e) => {
   const typsnitt = /fonts\.(googleapis|gstatic)\.com$/.test(url.hostname);
 
   /* Själva spelet hämtas helst färskt, så en ny version slår igenom direkt,
-     men faller tillbaka på det sparade när nätet saknas. */
-  if(req.mode === "navigate" || (url.origin === location.origin && url.pathname.endsWith(".html"))){
+     men faller tillbaka på det sparade när nätet saknas. Klipprösten lista
+     likaså, så nya klipp syns utan ny version av spelet. */
+  const sida = req.mode === "navigate" || (url.origin === location.origin && url.pathname.endsWith(".html"));
+  const klipplista = url.origin === location.origin && /\/ljud\/rost\/index\.json$/.test(url.pathname);
+  if(sida || klipplista){
     e.respondWith(
       fetch(req.url, { cache: "no-cache", credentials: "same-origin" }).then(svar => {
         const kopia = svar.clone();
         caches.open(VERSION).then(c => c.put(req, kopia));
         return svar;
-      }).catch(() => caches.match(req).then(t => t || caches.match("./index.html")))
+      }).catch(() => caches.match(req).then(t => t || (sida ? caches.match("./index.html") : Response.error())))
     );
     return;
   }

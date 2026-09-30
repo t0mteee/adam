@@ -651,7 +651,7 @@ hack i nätet släcker inte resten av resan.
 
 ## Tester
 
-`node --test` kör fyrtionio tester som plockar ut spelets rena funktioner direkt
+`node --test` kör femtioen tester som plockar ut spelets rena funktioner direkt
 ur `index.html`, så att de aldrig testar en kopia som glidit isär från källan. De
 täcker att uppgifterna håller sig inom banans tal och aldrig blir negativa, att
 rätt svar alltid finns bland alternativen och att varje felsvar har en
@@ -673,6 +673,54 @@ tipsen går runt), fotoquizen, vagnkorten (nummerserierna överlappar inte och
 varje foto-vagn har en typ), Förarhytten (nära märket ger poäng, förbi ger
 inget) och de egna utropen (utropen delas i inspelade bitar och klippen blir
 riktiga WAV-filer).
+
+## Klippröst: rösten som ljudfiler
+
+Uppläsningen sker annars med plattans egen talsyntes, och den har två svagheter
+på Apple-enheter: i en hemskärmsapp tystas den av ljudknappen på sidan fast
+plingen hörs, och Safari lämnar aldrig ut den nedladdade rösten *Alva
+(Premium)*. Klipprösten löser båda. På en Mac läser kommandot `say` in allt
+spelet kan säga med Alva Premium, som korta ljudfiler, och spelet spelar dem
+som media genom sin egen ljudmotor: de hörs på tyst läge när *Spela även på
+tyst läge* är på, och låter likadant på iPad, iPhone och dator.
+
+Så här görs klippen, på en Mac med Alva Premium nedladdad (*Systeminställningar
+→ Hjälpmedel → Uppläst innehåll → Systemröst → Hantera röster → Svenska →
+Alva (Premium)*):
+
+```
+git clone https://github.com/t0mteee/adam.git
+cd adam
+git checkout claude/math-game-kids-qp3rnj
+./verktyg/gor-rost.sh --namn Adam
+git add ljud/rost
+git commit -m "Klippröst med Alva Premium"
+git push
+```
+
+Skriptet läser `verktyg/rost-fraser.txt` – en rad per klipp, med filnamnet och
+texten – och skriver `ljud/rost/<namn>.m4a` för varje rad, drygt sexhundra
+små filer på några megabyte, samt `ljud/rost/index.json` med listan över vad
+som finns. `--namn` läser in spelarens namn så att hälsningarna får med det;
+utan det hoppar rösten över namnet. `--takt 150` ger ett lugnare tempo än de
+165 ord i minuten som är förvalt, `--rost "Alva (Förbättrad)"` väljer en annan
+röst och `--wav` skriver okomprimerade filer. Egna fraser går att lägga i
+`verktyg/rost-egna.txt`, en per rad. När spelet fått nya repliker skapar
+`node verktyg/rost-fraser.mjs` om fraslistan, och testet *klipprösten täcker
+allt spelet säger* kontrollerar att listan räcker till varje fråga, saga,
+utrop och replik spelet kan komma på.
+
+I spelet sätts varje mening ihop av klipp: hela meningar där de är fasta,
+annars bitar med talen och hållplatserna instoppade – *Vad blir*, *tre*,
+*plus*, *fyra* – med små pauser vid skiljetecknen. Talen 0 till 100,
+hundratalen och tusentalen är egna klipp, så 318 blir *trehundra* och
+*arton*. Saknas något klipp för en mening läser plattans egen röst den i
+stället, och *Egna utrop* med förälderns röst går alltid före. Under *Ljud och
+röst* står vilken röst klippen har och hur många de är, med en strömbrytare,
+och *Testa rösten* spelar först *Ett, två, tre* som klipp – hörs de men inte
+resten är det talsyntesen som tystas. Klippen hämtas när omgångens frågor
+görs, så att de finns när frågan läses, och sparas av servicearbetaren så att
+de fungerar utan nät efter första gången.
 
 ## Teknik
 

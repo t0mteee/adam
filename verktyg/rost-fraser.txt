@@ -1,0 +1,728 @@
+# Räknelandets klippröst: fraser att läsa in. Skapad av verktyg/rost-fraser.mjs, ändra inte för hand.
+# filnamn<tabb>text
+
+# Tal
+0	0
+1	1
+2	2
+3	3
+4	4
+5	5
+6	6
+7	7
+8	8
+9	9
+10	10
+11	11
+12	12
+13	13
+14	14
+15	15
+16	16
+17	17
+18	18
+19	19
+20	20
+21	21
+22	22
+23	23
+24	24
+25	25
+26	26
+27	27
+28	28
+29	29
+30	30
+31	31
+32	32
+33	33
+34	34
+35	35
+36	36
+37	37
+38	38
+39	39
+40	40
+41	41
+42	42
+43	43
+44	44
+45	45
+46	46
+47	47
+48	48
+49	49
+50	50
+51	51
+52	52
+53	53
+54	54
+55	55
+56	56
+57	57
+58	58
+59	59
+60	60
+61	61
+62	62
+63	63
+64	64
+65	65
+66	66
+67	67
+68	68
+69	69
+70	70
+71	71
+72	72
+73	73
+74	74
+75	75
+76	76
+77	77
+78	78
+79	79
+80	80
+81	81
+82	82
+83	83
+84	84
+85	85
+86	86
+87	87
+88	88
+89	89
+90	90
+91	91
+92	92
+93	93
+94	94
+95	95
+96	96
+97	97
+98	98
+99	99
+100	100
+200	200
+300	300
+400	400
+500	500
+600	600
+700	700
+800	800
+900	900
+1000	1000
+2000	2000
+3000	3000
+4000	4000
+5000	5000
+6000	6000
+7000	7000
+8000	8000
+9000	9000
+00	noll noll
+
+# Frågorna
+hur-maanga-ser-du	Hur många ser du?
+vad-aer-klockan	Vad är klockan?
+vilken-vagn-gaar-foerst	Vilken vagn går först?
+titta-paa-vagnen-vilket-nummer-har-den	Titta på vagnen! Vilket nummer har den?
+var-aer-vi-titta-paa-bilden	Var är vi? Titta på bilden!
+var-aer-vi	Var är vi?
+kluring	Kluring!
+hmm	hm
+vilket-tal-aer-stoerst	Vilket tal är störst?
+vilket-tal-aer-minst	Vilket tal är minst?
+vilket-tal-fattas	Vilket tal fattas?
+vilket-tal-kommer-sen	Vilket tal kommer sen?
+vad-blir	Vad blir
+plus	plus
+minus	minus
+plus-vad-blir	plus vad blir
+gaanger	gånger
+delat-med	delat med
+vad-aer-haelften-av	Vad är hälften av
+hur-maanga-aer	Hur många är
+tior-och	tior och
+ental	ental?
+tior	tior?
+vagnen-staar-paa	Vagnen står på
+och-hoppar	och hoppar
+framaat	framåt.
+bakaat	bakåt.
+var-stannar-den	Var stannar den?
+hur-maanga-hopp-aer-det-fraan	Hur många hopp är det från
+till	till
+vi-staar-vid	Vi står vid
+vagnen-aaker	Vagnen åker
+haallplatser-till	hållplatser till.
+var-aer-vi-daa	Var är vi då?
+foer	För
+haallplatser-sedan-var-var-vi-daa	hållplatser sedan, var var vi då?
+hur-maanga-haallplatser-aer-det-kvar-till	Hur många hållplatser är det kvar till
+vilken-klocka-visar	Vilken klocka visar
+halv	halv
+klockan-visar	Klockan visar
+hur-mycket-aer-klockan	Hur mycket är klockan?
+klockan-aer	Klockan är
+mot	mot
+gaar	går
+hur-laenge-faar-vi-vaenta	Hur länge får vi vänta?
+vilken-bild-aer	Vilken bild är
+
+# Svaren och felen
+svaret-aer	Svaret är
+en-halvtimme	en halvtimme
+en-timme	en timme
+en-och-en-halv-timme	en och en halv timme
+tvaa-timmar	två timmar
+minuter	minuter
+linje	linje
+lite-foer-mycket	Lite för mycket!
+lite-foer-lite	Lite för lite!
+foer-mycket	För mycket!
+foer-lite	För lite!
+ett-foer-mycket	Ett för mycket!
+ett-foer-lite	Ett för lite!
+en-tia-foer-mycket	En tia för mycket!
+en-tia-foer-lite	En tia för lite!
+det-blev-minus-inte-plus	Det blev minus, inte plus!
+tvaa-tior-foer-mycket	Två tior för mycket!
+tvaa-tior-foer-lite	Två tior för lite!
+laegg-ihop-baada-talen	Lägg ihop båda talen!
+det-blev-plus-inte-minus	Det blev plus, inte minus!
+det-aer-talet-vi-tog-bort	Det är talet vi tog bort!
+det-aer-hela-talet	Det är hela talet!
+det-talet-har-vi-redan	Det talet har vi redan!
+det-blev-plus-vad-fattas	Det blev plus. Vad fattas?
+ett-tal-gloemdes-bort	Ett tal glömdes bort!
+sista-talet-gloemdes-bort	Sista talet glömdes bort!
+raekna-alla-talen	Räkna alla talen!
+ett-tal-raeknades-tvaa-gaanger	Ett tal räknades två gånger!
+naestan-raekna-en-gaang-till	Nästan! Räkna en gång till.
+en-hel-ram-foer-mycket	En hel ram för mycket!
+en-hel-ram-foer-lite	En hel ram för lite!
+tvaertom-tiorna-foerst	Tvärtom! Tiorna först.
+tior-aer-tio-var	Tior är tio var!
+ett-ental-foer-mycket	Ett ental för mycket!
+ett-ental-foer-lite	Ett ental för lite!
+det-blev-plus-inte-gaanger	Det blev plus, inte gånger!
+en-hoeg-foer-mycket	En hög för mycket!
+en-hoeg-foer-lite	En hög för lite!
+en-foer-mycket-i-varje-hoeg	En för mycket i varje hög!
+en-foer-lite-i-varje-hoeg	En för lite i varje hög!
+det-blev-minus-inte-delat	Det blev minus, inte delat!
+det-aer-antalet-hoegar	Det är antalet högar!
+dubbelt-foer-maanga	Dubbelt för många!
+det-aer-alla-sakerna	Det är alla sakerna!
+mer-aen-hela-talet	Mer än hela talet!
+ett-hopp-foer-laangt	Ett hopp för långt!
+ett-hopp-foer-kort	Ett hopp för kort!
+tvaa-hopp-foer-laangt	Två hopp för långt!
+tvaa-hopp-foer-kort	Två hopp för kort!
+det-talet-staar-redan-daer	Det talet står redan där!
+aat-andra-haallet	Åt andra hållet!
+vagnen-maaste-hoppa	Vagnen måste hoppa!
+det-aer-antalet-hopp-inte-var-vagnen-stannar	Det är antalet hopp, inte var vagnen stannar!
+raekna-hoppen-inte-prickarna	Räkna hoppen, inte prickarna!
+ett-hopp-foer-lite	Ett hopp för lite!
+det-aer-daer-vagnen-stannar-inte-antalet-hopp	Det är där vagnen stannar, inte antalet hopp!
+det-aer-daer-vagnen-staar	Det är där vagnen står!
+det-blev-plus-men-vi-ska-raekna-hoppen	Det blev plus, men vi ska räkna hoppen!
+tvaa-hopp-foer-mycket	Två hopp för mycket!
+tvaa-hopp-foer-lite	Två hopp för lite!
+en-haallplats-foer-laangt	En hållplats för långt!
+en-haallplats-foer-kort	En hållplats för kort!
+det-aer-daer-vi-staar	Det är där vi står!
+tvaa-haallplatser-foer-laangt	Två hållplatser för långt!
+tvaa-haallplatser-foer-kort	Två hållplatser för kort!
+raekna-stegen-mellan-haallplatserna-inte-prickarna	Räkna stegen mellan hållplatserna, inte prickarna!
+en-haallplats-foer-lite	En hållplats för lite!
+tvaa-foer-mycket	Två för mycket!
+tvaa-foer-lite	Två för lite!
+den-laanga-visaren-visar-minuterna	Den långa visaren visar minuterna!
+den-korta-visaren-pekar-rakt-paa-timmen	Den korta visaren pekar rakt på timmen!
+titta-paa-den-korta-visaren	Titta på den korta visaren!
+titta-paa-den-laanga-visaren	Titta på den långa visaren!
+det-staar-30-minuter-ocksaa-daa-aer-det-halv	Det står 30 minuter också – då är det halv!
+det-staar-00-daa-aer-det-hel-timme	Det står 00 – då är det hel timme!
+titta-paa-timmen-igen	Titta på timmen igen!
+det-staar-00-hel-timme-inte-halv	Det står 00 – hel timme, inte halv!
+det-aer-foer-laenge-raekna-halvtimmarna-paa-klockan	Det är för länge! Räkna halvtimmarna på klockan.
+det-aer-foer-kort-raekna-halvtimmarna-paa-klockan	Det är för kort! Räkna halvtimmarna på klockan.
+tvaertom-laes-siffrorna-fraan-vaenster	Tvärtom! Läs siffrorna från vänster.
+siffrorna-i-fel-ordning	Siffrorna i fel ordning!
+sista-siffran	Sista siffran!
+foersta-siffran	Första siffran!
+siffran-i-mitten	Siffran i mitten!
+hoppen-aer	Hoppen är
+i-taget	i taget!
+aer-mindre-aen	är mindre än
+aer-stoerre-aen	är större än
+visaren-har-gaatt-foerbi	Visaren har gått förbi
+betyder-paa-vaeg-till	betyder på väg till
+visaren-har-inte-kommit-fram-till	Visaren har inte kommit fram till
+aen	än!
+aer-paa-vaeg-mot	är på väg mot
+inte	inte
+det-aer-halv	Det är halv
+vilken-tid-kommer-foerst	Vilken tid kommer först?
+det-aer	Det är
+
+# Omgången
+raett-i-rad	rätt i rad!
+helt-fantastiskt	Helt fantastiskt!
+tre-stjaernor	Tre stjärnor!
+fint-jobbat	Fint jobbat!
+du-fick	Du fick
+en-stjaerna	en stjärna!
+stjaernor	stjärnor!
+bra-kaempat	Bra kämpat!
+vi-provar-igen	Vi provar igen.
+nu-aer-en-ny-bana-oeppen	Nu är en ny bana öppen!
+alla-raett	Alla rätt!
+du-kan-din-stad	Du kan din stad!
+bra-kikat	Bra kikat!
+raett-av	rätt av
+uppdrag-klart	Uppdrag klart!
+du-kom-till	Du kom till
+mynt-extra	mynt extra!
+bra-aakt	Bra åkt!
+ny-bana-oeppen	Ny bana öppen:
+mynt	mynt.
+nytt-maerke	Nytt märke!
+nytt-rekord	Nytt rekord!
+passagerare	passagerare!
+poaeng	poäng!
+
+# Kompisen
+hej	Hej!
+hej-igen	Hej igen!
+vaelkommen-till-raeknelandet	Välkommen till Räknelandet!
+kul-att-du-aer-tillbaka	Kul att du är tillbaka!
+ska-vi-raekna	Ska vi räkna?
+ska-vi-raekna-ett-tvaa-tre	Ska vi räkna? Ett, två, tre!
+du-har	Du har
+stjaernor-wow	stjärnor. Wow!
+vi-tar-en-stjaerna-tillsammans	Vi tar en stjärna tillsammans!
+naesta-bana-aer	Nästa bana är
+du-har-klarat-hela-kartan	Du har klarat hela kartan!
+visste-du-att-spaarvagn-318-heter-bebben	Visste du att spårvagn 318 heter Bebben?
+linje-6-aer-laengst-i-goeteborg-46-haallplatser	Linje 6 är längst i Göteborg. 46 hållplatser!
+m34-aer-45-meter-laang-laengst-i-hela-stan	M34 är 45 meter lång. Längst i hela stan!
+tio-tior-aer-hundra	Tio tior är hundra!
+dubbelt-saa-mycket-som-fem-aer-tio	Dubbelt så mycket som fem är tio!
+tut-tut-haer-kommer-spaarvagnen	Tut tut! Här kommer spårvagnen!
+mynt-i-skattkistan	mynt i skattkistan!
+mynten-hamnar-i-skattkistan	Mynten hamnar i skattkistan!
+jag-gillar-siffran	Jag gillar siffran
+du-aer-baest	Du är bäst!
+sju-plus-tre-aer-tio-tiokompisar	Sju plus tre är tio. Tiokompisar!
+
+# Kartan och inställningarna
+den-haer-banan-aer-laast-klara-banan-innan-saa-oeppnas-den	Den här banan är låst. Klara banan innan så öppnas den!
+sidospaaret-oeppnas-naer-berget-aer-klart	Sidospåret öppnas när Berget är klart!
+gaanger-och-delat-oeppnas-naer-maestarprovet-aer-klart	Gånger och delat öppnas när Mästarprovet är klart!
+talraden-oeppnas-naer-skogen-aer-klar	Talraden öppnas när Skogen är klar!
+tallinjen-oeppnas-naer-grottan-aer-klar	Tallinjen öppnas när Grottan är klar!
+klockan-oeppnas-naer-blandat-till-20-aer-klar	Klockan öppnas när Blandat till 20 är klar!
+bana	Bana
+stigande	Stigande
+blandat	Blandat
+spaarvagn	Spårvagn
+raeknelandet	Räknelandet
+skriv-siffran	Skriv siffran!
+vaelj-bland-rutorna	Välj bland rutorna!
+nu-laeser-jag-fraagorna-igen	Nu läser jag frågorna igen!
+nu-staar-allt-still	Nu står allt still.
+nu-roer-sig-allt-igen	Nu rör sig allt igen!
+saa-haer-fort-pratar-jag-nu	Så här fort pratar jag nu.
+nu-talar-jag-med-klippen	Nu talar jag med klippen!
+nu-talar-jag-med-plattans-roest	Nu talar jag med plattans röst.
+du-koepte	Du köpte
+tryck-paa-spela	Tryck på Spela.
+snyggt	Snyggt!
+titta-paa-din-vagn-under-spaarvagn	Titta på din vagn under Spårvagn.
+den-staar-bredvid-dig-naer-du-raeknar	Den står bredvid dig när du räknar.
+du-behoever	Du behöver
+mynt-till	mynt till.
+din-vagn	Din vagn
+gaar-paa	går på
+nytt-vagnkort	Nytt vagnkort!
+vagn	Vagn
+en-museivagn	En museivagn!
+spaarvagnsracet	Spårvagnsracet
+bilracet	Bilracet
+bergochdalbanan	Bergochdalbanan
+foerarhytten	Förarhytten
+tryck-paa-spaaret-du-vill-aaka-paa-eller-paa-pilarna-plocka-6f6e1b77	Tryck på spåret du vill åka på, eller på pilarna. Plocka upp passagerarna, men akta stoppskyltarna!
+vaenta-paa-groent-ljus-och-tryck-saa-fort-du-kan-fem-starter-mot-den-blaa-bilen	Vänta på grönt ljus och tryck så fort du kan! Fem starter mot den blå bilen.
+tryck-saa-hoppar-vagnen-faanga-saa-maanga-stjaernor-du-kan	Tryck så hoppar vagnen. Fånga så många stjärnor du kan!
+koer-vagnen-och-raekna-haallplatserna-skylten-saeger-var-du-ea51f96e	Kör vagnen och räkna hållplatserna! Skylten säger var du ska stanna. Tryck Kör så rullar vagnen, och Bromsa lagom tidigt så den stannar precis vid märket – ju närmare, desto fler poäng.
+en-spaarvagn	en spårvagn
+en-katt	en katt
+en-glass	en glass
+en-raket	en raket
+ett-hjaerta	ett hjärta
+en-maane	en måne
+en-keps	en keps
+en-foerarmoessa	en förarmössa
+en-krona	en krona
+en-partyhatt	en partyhatt
+en-rosett	en rosett
+ett-stjaernpannband	ett stjärnpannband
+flaggor-till-vagnen	flaggor till vagnen
+julbelysning-till-vagnen	julbelysning till vagnen
+m28	M28
+m29	M29
+m31	M31
+m31b	M31B
+m32	M32
+m33	M33
+m34	M34
+boggivagnen	Boggivagnen
+ledvagnen	Ledvagnen
+nya-ledvagnen	Nya ledvagnen
+sirio	Sirio
+flexity	Flexity
+laanga-flexity	Långa Flexity
+den-gamla-korta-vagnen-med-runda-hoern-gick-i-trafik-aenda-t-3a91c59e	Den gamla korta vagnen med runda hörn. Gick i trafik ända till 2021 – två av dem, 755 och 770, finns kvar som museivagnar hos Ringlinien i Gårda.
+naestan-likadan-som-m28-tjugo-av-dem-rullar-till-2027-oftast-f47ab62	Nästan likadan som M28. Tjugo av dem rullar till 2027, oftast två ihopkopplade efter varandra – sedan skänks många av dem till Mykolajiv i Ukraina.
+tre-delar-med-laagt-golv-i-mitten-saa-barnvagnar-rullar-rakt-e7bf469a	Tre delar med lågt golv i mitten, så barnvagnar rullar rakt in. Byggdes om från de gamla M21-vagnarna. Numren går från 300 till 380, men 306 finns inte.
+en-m31-som-faatt-nytt-liv-hos-koda-nya-saeten-nya-bromsar-oc-67d527c0	En M31 som fått nytt liv hos Škoda: nya säten, nya bromsar och dörrar, tystare, och ett svart band runt fönstren så den liknar M33 och M34. Den första gick i trafik i december 2025, och till 2030 ska alla 79 vara ombyggda.
+italienaren-fem-delar-och-laagt-golv-hela-vaegen-vagnen-hete-ea9c991c	Italienaren! Fem delar och lågt golv hela vägen. Vagnen heter Sirio, som stjärnan Sirius.
+blaa-med-ett-svart-band-runt-foenstren-och-stora-rutor-tio-a-bbed30d9	Blå med ett svart band runt fönstren och stora rutor. Tio av dem, 490 till 499, har förarhytt i båda ändar och kan köra åt båda håll.
+goeteborgs-laengsta-spaarvagn-45-meter-naestan-lika-laang-so-abc10580	Göteborgs längsta spårvagn: 45 meter, nästan lika lång som fyra bussar. Första turen gick 19 januari 2025 på linje 11 mot Bergsjön.
+bebben	Bebben
+gunnar-gren	Gunnar Gren
+gunnar-bergdahl	Gunnar Bergdahl
+claes-hylinger	Claes Hylinger
+lena-brogren	Lena Brogren
+galenskaparna-och-after-shave	Galenskaparna och After Shave
+per-andersson	Per Andersson
+kapten-boelja	Kapten Bölja
+marianne-moerck	Marianne Mörck
+helge-haerneman	Helge Härneman
+ronny-joensson	Ronny Jönsson
+lasse-dahlquist	Lasse Dahlquist
+ester-i-brunnsparken	Ester i Brunnsparken
+ninnan-santesson	Ninnan Santesson
+hulda-skoeldberg	Hulda Sköldberg
+raekna-till-5	Räkna till 5
+raekna-till-10	Räkna till 10
+plus-till-5	Plus till 5
+plus-till-10	Plus till 10
+minus-till-5	Minus till 5
+plus-och-minus-till-10	Plus och minus till 10
+dubbelt	Dubbelt
+tiokompisar	Tiokompisar
+vad-fattas	Vad fattas?
+plus-till-20	Plus till 20
+minus-till-20	Minus till 20
+plus-och-minus-till-20	Plus och minus till 20
+tre-smaa-tal	Tre små tal
+blandat-till-20	Blandat till 20
+maestarprovet	Mästarprovet
+plus-oever-tian	Plus över tian
+minus-oever-tian	Minus över tian
+hela-tiotal	Hela tiotal
+tiotal-och-ental	Tiotal och ental
+vaexla-och-laana	Växla och låna
+talfoeljder	Talföljder
+dubbelt-och-haelften	Dubbelt och hälften
+vagnhallens-prov	Vagnhallens prov
+allt-till-100	Allt till 100
+allt-till-200	Allt till 200
+tre-tal-i-rad	Tre tal i rad
+fyra-tal-i-rad	Fyra tal i rad
+raekna-till-25	Räkna till 25
+raekna-till-50	Räkna till 50
+raekna-till-75	Räkna till 75
+raekna-till-100	Räkna till 100
+tvaa-gaanger	Två gånger
+fem-och-tio-gaanger	Fem och tio gånger
+delat-med-tvaa	Delat med två
+delat-med-fem-och-tio	Delat med fem och tio
+tre-och-fyra-gaanger	Tre och fyra gånger
+tabellprovet	Tabellprovet
+stoerst-eller-minst	Störst eller minst
+vad-fattas-i-raden	Vad fattas i raden
+baklaenges	Baklänges
+stoerst-och-minst-till-100	Störst och minst till 100
+talradens-prov	Talradens prov
+hoppa-framaat	Hoppa framåt
+hoppa-bakaat	Hoppa bakåt
+hur-maanga-hopp	Hur många hopp?
+fram-och-tillbaka	Fram och tillbaka
+tallinjens-prov	Tallinjens prov
+hela-timmar	Hela timmar
+halva-timmar	Halva timmar
+vilken-klocka	Vilken klocka?
+digitalt	Digitalt
+avgaangstavlan	Avgångstavlan
+aengen	Ängen
+skogen	Skogen
+grottan	Grottan
+berget	Berget
+molnen	Molnen
+vagnhallen	Vagnhallen
+aendstationen	Ändstationen
+stjaernhimlen	Stjärnhimlen
+gaanger-och-delat	Gånger och delat
+talraden	Talraden
+tallinjen	Tallinjen
+klockan	Klockan
+foersta-stjaernan	Första stjärnan
+tio-stjaernor	Tio stjärnor
+25-stjaernor	25 stjärnor
+aengen-klar	Ängen klar
+skogen-klar	Skogen klar
+grottan-klar	Grottan klar
+berget-klart	Berget klart
+molnen-klara	Molnen klara
+vagnhallen-klar	Vagnhallen klar
+stjaernhimlen-klar	Stjärnhimlen klar
+tabellerna-klara	Tabellerna klara
+talraden-klar	Talraden klar
+tallinjen-klar	Tallinjen klar
+klockan-klar	Klockan klar
+vagnkaennare	Vagnkännare
+felfritt	Felfritt
+tio-i-rad	Tio i rad
+300-mynt	300 mynt
+1000-mynt	1000 mynt
+hela-landet	Hela landet
+foersta-resan	Första resan
+25-haallplatser	25 hållplatser
+aendstation	Ändstation
+tre-linjer	Tre linjer
+felfri-haallplats	Felfri hållplats
+en-fjaerdedel	En fjärdedel
+halva-naetet	Halva nätet
+hela-naetet	Hela nätet
+klurig	Klurig
+foersta-uppdraget	Första uppdraget
+tio-uppdrag	Tio uppdrag
+omvaegen	Omvägen
+stadskaennare	Stadskännare
+kortsamlare	Kortsamlare
+egen-vagn	Egen vagn
+hela-vagnhallen	Hela vagnhallen
+lekstugan	Lekstugan
+spaarvagnsfoerare	Spårvagnsförare
+rekordjaegare	Rekordjägare
+
+# Spårvagnen
+naesta-haallplats	Nästa hållplats
+linje-1	Linje 1
+linje-2	Linje 2
+linje-3	Linje 3
+linje-4	Linje 4
+linje-5	Linje 5
+linje-6	Linje 6
+linje-7	Linje 7
+linje-8	Linje 8
+linje-9	Linje 9
+linje-10	Linje 10
+linje-11	Linje 11
+linje-12	Linje 12
+allhelgonakyrkan	Allhelgonakyrkan
+almedal	Almedal
+angered	Angered
+angered-centrum	Angered Centrum
+aprilgatan	Aprilgatan
+axel-dahlstroems-torg	Axel Dahlströms Torg
+bellevue	Bellevue
+bergsjoen	Bergsjön
+berzeliigatan	Berzeliigatan
+bevaeringsgatan	Beväringsgatan
+biskopsgaarden	Biskopsgården
+bokekullsgatan	Bokekullsgatan
+botaniska-traedgaarden	Botaniska Trädgården
+briljantgatan	Briljantgatan
+brunnsgatan	Brunnsgatan
+brunnsparken	Brunnsparken
+boegatan	Bögatan
+chalmers	Chalmers
+chapmans-torg	Chapmans Torg
+domkyrkan	Domkyrkan
+dr-fries-torg	Dr. Fries Torg
+dr-sydows-gata	Dr. Sydows Gata
+drottningtorget	Drottningtorget
+ejdergatan	Ejdergatan
+ekedal	Ekedal
+eketraegatan	Eketrägatan
+ekmanska	Ekmanska
+elisedal	Elisedal
+fjaellgatan	Fjällgatan
+frihamnen	Frihamnen
+friskvaederstorget	Friskväderstorget
+froelunda	Frölunda
+froelunda-torg	Frölunda Torg
+galileis-gata	Galileis Gata
+gamlestads-torg	Gamlestads Torg
+godhemsgatan	Godhemsgatan
+gropegaardsgatan	Gropegårdsgatan
+groensakstorget	Grönsakstorget
+guldheden	Guldheden
+hagakyrkan	Hagakyrkan
+hagen	Hagen
+hammarkullen	Hammarkullen
+handelshoegskolan	Handelshögskolan
+hinsholmen	Hinsholmen
+hjalmar-brantingsplatsen	Hjalmar Brantingsplatsen
+hjaellbo	Hjällbo
+haerlanda	Härlanda
+hoegsbogatan	Högsbogatan
+hoegsbotorp	Högsbotorp
+jaegerdorffsplatsen	Jaegerdorffsplatsen
+januarigatan	Januarigatan
+jubileumsparken	Jubileumsparken
+jaerntorget	Järntorget
+kaggeledstorget	Kaggeledstorget
+kapellplatsen	Kapellplatsen
+kaptensgatan	Kaptensgatan
+klintens-vaeg	Klintens Väg
+komettorget	Komettorget
+korsvaegen	Korsvägen
+kortedala	Kortedala
+kortedala-torg	Kortedala Torg
+krokslaetts-fabriker	Krokslätts Fabriker
+krokslaetts-torg	Krokslätts torg
+kungsportsplatsen	Kungsportsplatsen
+kungssten	Kungssten
+kviberg	Kviberg
+kaalltorp	Kålltorp
+kaeringberget	Käringberget
+lackarebaeck	Lackarebäck
+lana	Lana
+lantmilsgatan	Lantmilsgatan
+lilla-bommen	Lilla Bommen
+lindholmen	Lindholmen
+linneplatsen	Linnéplatsen
+liseberg-station	Liseberg Station
+liseberg-soedra	Liseberg Södra
+laangedrag	Långedrag
+laensmansgaarden	Länsmansgården
+majvallen	Majvallen
+mariaplan	Mariaplan
+marklandsgatan	Marklandsgatan
+masthuggstorget	Masthuggstorget
+medicinaregatan	Medicinaregatan
+mildvaedersgatan	Mildvädersgatan
+munkebaeckstorget	Munkebäckstorget
+musikvaegen	Musikvägen
+moelndal	Mölndal
+moelndals-innerstad	Mölndals Innerstad
+moelndals-sjukhus	Mölndals sjukhus
+nils-ericsonsplatsen	Nils Ericsonsplatsen
+nya-varvsallen	Nya Varvsallén
+nymilsgatan	Nymilsgatan
+nymaanegatan	Nymånegatan
+olivedalsgatan	Olivedalsgatan
+olskrokstorget	Olskrokstorget
+opaltorget	Opaltorget
+ostindiegatan	Ostindiegatan
+positivgatan	Positivgatan
+prinsgatan	Prinsgatan
+pumpgatan	Pumpgatan
+rambergsvallen	Rambergsvallen
+redbergsplatsen	Redbergsplatsen
+runstavsgatan	Runstavsgatan
+rymdtorget	Rymdtorget
+sahlgrenska-huvudentre	Sahlgrenska Huvudentré
+saltholmen	Saltholmen
+sandarna	Sandarna
+sankt-sigfrids-plan	Sankt Sigfrids Plan
+sannaplan	Sannaplan
+scandinavium	Scandinavium
+seminariegatan	Seminariegatan
+skf	SKF
+smaragdgatan	Smaragdgatan
+solrosgatan	Solrosgatan
+stenpiren	Stenpiren
+stigbergstorget	Stigbergstorget
+stockholmsgatan	Stockholmsgatan
+storaas	Storås
+svingeln	Svingeln
+saeloefjordsgatan	Sälöfjordsgatan
+teleskopgatan	Teleskopgatan
+temperaturgatan	Temperaturgatan
+tingvallsvaegen	Tingvallsvägen
+tranered	Tranered
+tynnered	Tynnered
+toepelsgatan	Töpelsgatan
+ullevi-norra	Ullevi Norra
+ullevi-soedra	Ullevi Södra
+vagnhallen-majorna	Vagnhallen Majorna
+valand	Valand
+varbergsgatan	Varbergsgatan
+varmfrontsgatan	Varmfrontsgatan
+vasa-viktoriagatan	Vasa Viktoriagatan
+vasaplatsen	Vasaplatsen
+virginsgatan	Virginsgatan
+vaagmaestareplatsen	Vågmästareplatsen
+vaarvaederstorget	Vårväderstorget
+vaederilsgatan	Väderilsgatan
+wavrinskys-plats	Wavrinskys Plats
+welandergatan	Welandergatan
+wieselgrensplatsen	Wieselgrensplatsen
+oenskevaedersgatan	Önskevädersgatan
+oestra-sjukhuset	Östra Sjukhuset
+spaararbete-den-vagnen-gaar-inte-haerifraan	Spårarbete! Den vagnen går inte härifrån.
+nytt-uppdrag	Nytt uppdrag!
+ta-dig-till	Ta dig till
+men-det-aer-spaararbete-mellan	Men det är spårarbete mellan
+och	och
+saa-du-maaste-hitta-en-annan-vaeg	så du måste hitta en annan väg.
+haallplats	Hållplats
+stanna-vid	Stanna vid
+det-aer-naesta-haallplats	Det är nästa hållplats.
+haallplatser-bort	hållplatser bort.
+perfekt-stopp	Perfekt stopp!
+bra-stopp	Bra stopp!
+naestan	Nästan!
+det-haer-aer	Det här är
+oj-du-koerde-foerbi	Oj, du körde förbi
+
+# Räknesagorna
+paa-vagnen-sitter	På vagnen sitter
+barn	barn.
+vid	Vid
+kliver	kliver
+paa	på.
+hur-maanga-barn-aaker-nu	Hur många barn åker nu?
+har	har
+kommer	kommer
+hur-maanga-aer-de-nu	Hur många är de nu?
+i-vagnhallen-staar	I Vagnhallen står
+spaarvagnar	spårvagnar.
+koer-in	kör in.
+hur-maanga-staar-daer-nu	Hur många står där nu?
+barn-vaentar-vid	barn väntar vid
+barn-kommer-springande	barn kommer springande.
+hur-maanga-vaentar-nu	Hur många väntar nu?
+av	av.
+hur-maanga-aer-kvar	Hur många är kvar?
+hoppar	hoppar
+hur-maanga-aaker-vidare	Hur många åker vidare?
+vagnen-har	Vagnen har
+lediga-platser	lediga platser.
+saetter-sig	sätter sig
+hur-maanga-platser-aer-lediga-nu	Hur många platser är lediga nu?
+vi-aaker	Vi åker
+av-dem	av dem.
+hur-maanga-aer-kvar-sedan	Hur många är kvar sedan?
+vagnar-kommer-till	vagnar kommer till
+i-varje-sitter	I varje sitter
+hur-maanga-barn-aer-det	Hur många barn är det?
+staar	står
+baenkar	bänkar.
+paa-varje-sitter	På varje sitter
+barn-aaker-fraan	barn åker från
+i	i
+vagnar-lika-maanga-i-varje	vagnar, lika många i varje.
+hur-maanga-i-varje-vagn	Hur många i varje vagn?
+biljetter-delas-lika-mellan	biljetter delas lika mellan
+barn-vid	barn vid
+hur-maanga-faar-var-och-en	Hur många får var och en?

@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { REGIONS, LEVELS, SHOWN, buildRound, makeOptions, distraktorer, varforFel, laggKluring, kluringUtfall, kluringarFor, blandaInKluring,
@@ -9,7 +9,7 @@ import { REGIONS, LEVELS, SHOWN, buildRound, makeOptions, distraktorer, varforFe
          justeraSkill, nivaForSkill, buildStigandeRound,
          HUVUD_MAX, SIDO_START, SIDO_MAX, GANGER_START, GANGER_MAX, TALRAD_START, TALRAD_MAX, huvudspar, arLast, oppnaEfter, sidoOppen, gangerOppen, talradOppen, sidosparEfter, datumNyckel, statSvar, statTid, MAKE, SMASPEL, SPELMOTOR, spelKopt, LEK_W, LEK_H, synligaBanor, maxStars, nastaBana, blandatLevel, levelById,
          SPAR, sparOppen, linjeOppen, klockaOppen, LINJE_START, LINJE_MAX, KLOCKA_START, KLOCKA_MAX, timme12, tidKod, tidOrd, kodTid, vantetidOrd, svarText,
-         hallFraga, tavlaHar, avgangar, VAGNAR, vagnFragaFor, rostPoang, rostNamn, rostKvalitet, rostEtikett, bastaRost, valjRost, sparradKant, valjSparr, FOTOQUIZ, fotoFraga, granskaKopia, UTROP_FRASER, utropAlla, utropDelar, wavBlob, linjerVid, VAGNTYPER, VAGNNAMN, vagntypFor, vagnkortFor, VAGNKORT_ALLA, vagnTypAv, vagnNummerFinns, stegaVagnNummer, slumpaVagnNummer, VAGNSAKER, standardVagn, vagnAv, baraRutorPa, lageFor, sparaLage, omradesStjarnor, kompisRepliker, kompisReplik, lineByRef, skillGolv, skillNu, stjarnGolv, nivaJustera, nivaFranToppen, nivaEfterStjarnor, banaSomOppnar, myntForBana, PA_OM_TOMT, sortPa, sparPa, ljudSession } from "./hamta.mjs";
+         hallFraga, tavlaHar, avgangar, VAGNAR, vagnFragaFor, rostPoang, rostNamn, rostKvalitet, rostEtikett, bastaRost, valjRost, sparradKant, valjSparr, FOTOQUIZ, fotoFraga, granskaKopia, UTROP_FRASER, utropAlla, utropDelar, wavBlob, linjerVid, VAGNTYPER, VAGNNAMN, vagntypFor, vagnkortFor, VAGNKORT_ALLA, vagnTypAv, vagnNummerFinns, stegaVagnNummer, slumpaVagnNummer, VAGNSAKER, standardVagn, vagnAv, baraRutorPa, lageFor, sparaLage, omradesStjarnor, kompisRepliker, kompisReplik, lineByRef, skillGolv, skillNu, stjarnGolv, nivaJustera, nivaFranToppen, nivaEfterStjarnor, banaSomOppnar, myntForBana, PA_OM_TOMT, sortPa, sparPa, ljudSession, klippId, talDelar, klippDelar, speechFor, BADGES } from "./hamta.mjs";
 
 const rot = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -1204,6 +1204,73 @@ test("alla sidospår och frågesorter går att stänga av", () => {
     assert.equal(sortPa({ settings: {} }, key), true);
     assert.equal(sortPa({ settings: { [key]: false } }, key), false);
   }
+});
+
+test("klipprösten: filnamn, tal, bitar, pauser och spelarens namn", () => {
+  assert.equal(klippId("Nästa hållplats: Chalmers!"), "naesta-haallplats-chalmers");
+  assert.equal(klippId("Räkna till 5"), "raekna-till-5");
+  assert.equal(klippId("  Vad blir  "), "vad-blir");
+  assert.equal(klippId("Linje 6 – mot Kortedala"), "linje-6-mot-kortedala");
+  const lang = klippId("a".repeat(30) + " " + "b".repeat(30) + " " + "c".repeat(30));
+  assert.ok(lang.length < 80 && /-[0-9a-f]+$/.test(lang), "en lång fras kortas med hashvärde");
+  assert.deepEqual(talDelar(0), ["0"]);
+  assert.deepEqual(talDelar(23), ["23"]);
+  assert.deepEqual(talDelar(100), ["100"]);
+  assert.deepEqual(talDelar(318), ["300", "18"]);
+  assert.deepEqual(talDelar(1000), ["1000"]);
+  assert.deepEqual(talDelar(1234), ["1000", "200", "34"]);
+  assert.deepEqual(talDelar(2005), ["2000", "5"]);
+  assert.equal(talDelar(12345), null);
+  assert.equal(talDelar(-1), null);
+  const finns = new Set(["vad-blir", "plus", "hej", "raekna-till-5", "raekna-till", "svaret-aer", "halv", "stjaernor", "du-fick", "fint-jobbat", "3", "4", "5", "7", "300", "18", "bebben"]);
+  assert.deepEqual(klippDelar("Vad blir 3 plus 4?", finns, "Adam"), ["vad-blir", "3", "plus", "4"]);
+  assert.deepEqual(klippDelar("Räkna till 5", finns, "Adam"), ["raekna-till-5"], "hela frasen före bitarna");
+  assert.deepEqual(klippDelar("Fint jobbat, Adam! Du fick 3 stjärnor!", finns, "Adam"), ["fint-jobbat", { paus: 260 }, "du-fick", "3", "stjaernor"], "namnet hoppas över, skiljetecknen blir pauser");
+  assert.deepEqual(klippDelar("Svaret är halv 4", finns, "Adam"), ["svaret-aer", "halv", "4"]);
+  assert.deepEqual(klippDelar("318, Bebben!", finns, "Adam"), ["300", "18", { paus: 130 }, "bebben"], "stora tal sätts ihop");
+  assert.equal(klippDelar("Vad blir 3 gånger 4?", finns, "Adam"), null, "saknas ett klipp blir det null");
+  assert.equal(klippDelar("Vad blir 3 plus 40000?", finns, "Adam"), null);
+  assert.equal(klippDelar("Hej Adam!", null, "Adam"), null);
+  assert.deepEqual(klippDelar("Hej Adam!", finns, "Adam"), ["hej"]);
+});
+
+test("klipprösten täcker allt spelet säger på banorna, i sagorna, på resan och hos kompisen", () => {
+  const rader = readFileSync(join(rot, "verktyg", "rost-fraser.txt"), "utf8").split("\n").filter(r => r && !r.startsWith("#"));
+  const finns = new Set(rader.map(r => r.split("\t")[0]));
+  assert.ok(finns.size > 500, "frasfilen har " + finns.size + " klipp");
+  for(const r of rader) assert.equal(klippId(r.split("\t")[1]).length > 0, true);
+  const saknas = new Map();
+  const koll = (text) => { if(!klippDelar(text, finns, "Adam") && !saknas.has(text)) saknas.set(text, true); };
+  for(const L of LEVELS.filter(L => !L.quiz)) for(let v = 0; v < 8; v++) for(const q of buildRound(L, 6, null)){
+    koll(speechFor(q)); koll("Kluring! " + speechFor(q));
+    for(const { varfor } of distraktorer(q)) koll(varfor + " Svaret är " + svarText(q));
+    koll(varforFel(q, q.answer + 2) + " Svaret är " + svarText(q));
+  }
+  const plats = { stopp: "Chalmers", ref: "6", mot: "Kortedala" };
+  for(const L of LEVELS.filter(L => L.kinds && !L.quiz)) for(let v = 0; v < 12; v++) koll(gorSaga(L, plats).text);
+  const namn = TRAM_LINES[0].stops;
+  for(const sort of ["hall", "bak", "kvar"]) for(let k = 0; k < namn.length; k++) koll(speechFor(hallFraga(sort, namn, k)));
+  for(const s of ALLA_STOPP){ koll("Nästa hållplats: " + s); koll("Ändstation, " + s + "."); koll(s + ". Ändstation."); koll("Hållplats " + s); koll("Vilken bild är " + s + "?"); koll("Svaret är " + s); }
+  for(const l of TRAM_LINES){ koll(`Linje ${l.ref}, mot ${l.b}`); koll(`Linje ${l.ref} mot ${l.a}`); koll("Svaret är linje " + l.ref); }
+  for(const u of utropAlla()) koll(u);
+  const p = { name: "Adam", coins: 123, stars: { 1: 3, 2: 2 }, unlocked: 3, settings: {}, spel: [], kopta: [] };
+  for(const t of kompisRepliker(p)) koll(t);
+  for(const L of LEVELS){ koll(L.name); koll(`Bana ${L.id}. ${L.name}.`); koll(`Nästa bana är ${L.name}!`); koll(`Bra åkt! Ny bana öppen: ${L.name}!`); }
+  for(const b of BADGES) koll(`Nytt märke! ${b.name}!`);
+  for(const s of SMASPEL){ koll(s.hur); koll(`Du köpte ${s.name}! Tryck på Spela.`); koll(`Nytt rekord! 12 ${s.enhet}!`); koll(`7 ${s.enhet}!`); }
+  for(const s of Object.keys(SPAR)) if(SPAR[s].last) koll(SPAR[s].last);
+  for(const t of ["Hej Adam! Välkommen till Räknelandet!", "Hej igen, Adam!", "Hej Adam! Kul att du är tillbaka!", "Hej Adam! Ska vi räkna?",
+    "Helt fantastiskt, Adam! Tre stjärnor! Nu är en ny bana öppen!", "Fint jobbat, Adam! Du fick en stjärna!", "Fint jobbat, Adam! Du fick 2 stjärnor!", "Bra kämpat, Adam! Vi provar igen.",
+    "Alla rätt, Adam! Du kan din stad!", "Bra kikat! 4 rätt av 6.", "Uppdrag klart! Du kom till Chalmers! 80 mynt extra!", "Bra åkt! 35 mynt.", "5 rätt i rad!",
+    "Den här banan är låst. Klara banan innan så öppnas den!", "Stigande", "Blandat", "Spårvagn", "Räknelandet", "Skriv siffran!", "Välj bland rutorna!",
+    "Nu läser jag frågorna igen!", "Nu står allt still.", "Nu rör sig allt igen!", "Hej Adam! Så här fort pratar jag nu.", "Nu talar jag med klippen!", "Nu talar jag med plattans röst.",
+    "Du köpte en katt! Den står bredvid dig när du räknar.", "Du köpte flaggor till vagnen! Titta på din vagn under Spårvagn.", "Du köpte en keps! Snyggt!", "Du behöver 70 mynt till.",
+    "Snyggt! Din vagn 421, Gunnar Gren, går på linje 6.", "Nytt vagnkort! Vagn 318, Bebben!", "M31B. Ledvagnen!", "M28. En museivagn!", "318, Bebben!", "Mot Kortedala",
+    "Nytt uppdrag! Ta dig till Chalmers!", "Nytt uppdrag! Ta dig till Chalmers! Men det är spårarbete mellan Valand och Vasaplatsen, så du måste hitta en annan väg.",
+    "Spårarbete! Den vagnen går inte härifrån.", "Stanna vid Chalmers. Det är nästa hållplats.", "Stanna vid Chalmers. Det är 3 hållplatser bort.", "Perfekt stopp!", "Bra stopp!", "Nästan!",
+    "Det här är Valand, inte Chalmers.", "Oj, du körde förbi Chalmers!", "Var är vi?"]) koll(t);
+  for(const t of VAGNTYPER.map(t => `${t.typ}, ${t.smek}. ${t.om}`)) koll(t);
+  assert.deepEqual([...saknas.keys()], [], "det saknas klipp för det som står här");
 });
 
 test("ljudsessionen på iPhone följer ljudknappen om inte Spela även på tyst läge är på", () => {
