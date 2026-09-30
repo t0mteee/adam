@@ -679,10 +679,15 @@ Ligger `ljud/klocka.mp3` eller `ljud/dorr.mp3` bredvid `index.html` spelas de i
 stället för syntesen. På iPhone tystar ljudknappen på sidan både Web Audio och
 uppläsningen så länge sidan bara spelar med i bakgrunden; därför spelar spelet
 en tyst ljudfil en gång i det första trycket, så att sidan blir en riktig
-ljudkälla och hörs även med knappen på tyst, som andra spel. Uppläsningen
-går däremot genom iPhones egen talsyntes, som följer ljudknappen och inte går
-att låsa upp från en webbsida: står knappen på tyst är rösten tyst även när
-plingen hörs. Inställningarna säger det under *Läs upp frågan* på en iPhone. Ljudmotorn väcks
+ljudkälla och hörs även med knappen på tyst, som andra spel. Sedan Safari
+16.4 begär spelet dessutom en riktig uppspelningssession (`navigator.audioSession`),
+som gör att varken plingen eller uppläsningen tystas av knappen; på äldre iOS
+spelas i stället en kvarts sekund tystnad i trycket. Två saker till som iPhone
+kräver: tal får bara startas efter ett tryck, och `cancel()` följt av `speak()`
+i samma varv ger tystnad – spelet väntar därför en liten stund efter varje
+avbrott innan nästa utsaga. Hörs plingen men inte rösten står oftast ljudknappen
+på tyst på en äldre iPhone, eller så saknar telefonen en svensk röst; listan
+under *Vilken röst* visar vad telefonen rapporterar. Ljudmotorn väcks
 också ur Safaris läge *interrupted* efter ett samtal eller ett appbyte. Typsnitten hämtas från Google Fonts med
 rundade systemtypsnitt som reserv om sidan är offline.
 

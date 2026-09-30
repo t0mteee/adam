@@ -1574,7 +1574,7 @@ const pick = (arr) => arr[rnd(arr.length)];
 const INK = "#2E1A66";
 /* Syns under Inställningar, så man kan se vilken version telefonen kör.
    Höjs tillsammans med VERSION i sw.js. */
-const SPELVERSION = "31";
+const SPELVERSION = "32";
 function shuffle(a){ for(let i = a.length - 1; i > 0; i--){ const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
 function store(key, val){
@@ -3334,15 +3334,22 @@ const SFX = {
      det första trycket gör sidan till en riktig ljudkälla, och sedan hörs
      spelet även med knappen på tyst – som andra spel. Utanför ett tryck nekas
      spelningen, och då försöker nästa tryck igen. */
-  iosUpplast: false,
+  iosSpelat: 0,
   lasUppIos(){
-    if(this.iosUpplast || !APPLE || typeof Audio === "undefined") return;
-    this.iosUpplast = true;
+    if(!APPLE) return;
+    /* Safari 16.4 och senare: be om en riktig uppspelningssession, då tystar
+       ljudknappen på sidan varken Web Audio eller talsyntesen */
+    try{ if(navigator.audioSession && navigator.audioSession.type !== "playback") navigator.audioSession.type = "playback"; }catch(e){}
+    if(navigator.audioSession || typeof Audio === "undefined") return;
+    /* Äldre iOS: en kort tyst fil i trycket gör samma sak, högst var halvminut */
+    const nu = performance.now();
+    if(this.iosSpelat && nu - this.iosSpelat < 30000) return;
+    this.iosSpelat = nu;
     try{
-      if(!this.iosLjud){ this.iosLjud = new Audio(TYST_WAV); this.iosLjud.setAttribute("playsinline", ""); }
+      if(!this.iosLjud){ this.iosLjud = new Audio(TYST_WAV_LANG); this.iosLjud.setAttribute("playsinline", ""); this.iosLjud.preload = "auto"; }
       const pr = this.iosLjud.play();
-      if(pr && pr.catch) pr.catch(() => { this.iosUpplast = false; });
-    }catch(e){ this.iosUpplast = false; }
+      if(pr && pr.catch) pr.catch(() => { this.iosSpelat = 0; });
+    }catch(e){ this.iosSpelat = 0; }
   },
   tone(freq, at, dur, type, vol){
     const c = this.ensure(); if(!c) return;
@@ -3432,6 +3439,8 @@ const SFX = {
   }
 };
 SFX.provaFiler();
+/* Ljudsessionen kan begäras redan vid start – det kräver inget tryck */
+try{ if(APPLE && navigator.audioSession) navigator.audioSession.type = "playback"; }catch(e){}
 
 /* ── Rösten ─────────────────────────────────────────────────────────────
    Plattan kan ha flera svenska röster. På iPad följer en liten "Alva" med,
@@ -3516,9 +3525,20 @@ function nyUtsaga(p, text){
 }
 /* Pågående tal avbryts bara när det finns något att avbryta. På iPad tappar en
    utsaga som avbryter en annan sin valda röst, så det görs så sällan det går. */
+/* Avbryter pågående tal och minns när. På iPhone ger cancel() och speak() i
+   samma varv tystnad, så nästa utsaga får vänta en liten stund efter ett avbrott. */
+let avbrutetVid = 0;
 function tystna(){
   utropStopp();
-  try{ if(speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel(); }catch(e){}
+  try{
+    if(speechSynthesis.speaking || speechSynthesis.pending){ speechSynthesis.cancel(); avbrutetVid = performance.now(); return true; }
+  }catch(e){}
+  return false;
+}
+function sagUtsaga(u){
+  const kvar = 150 - (performance.now() - avbrutetVid);
+  if(APPLE && avbrutetVid && kvar > 0) setTimeout(() => { try{ speechSynthesis.speak(u); }catch(e){} }, kvar);
+  else speechSynthesis.speak(u);
 }
 /* Hållplatsutrop läses lite lugnare än matteuppgifterna, så att det låter
    mer som ett utrop och mindre som en lekkamrat. */
@@ -3537,7 +3557,7 @@ function speakUtrop(text){
     if(speechSynthesis.paused) speechSynthesis.resume();
     const u = nyUtsaga(p, text);
     u.rate = Math.max(0.55, RATES[p.settings.rate != null ? p.settings.rate : 1].v - 0.12);
-    speechSynthesis.speak(u);
+    sagUtsaga(u);
   }catch(e){}
 }
 
@@ -3553,7 +3573,7 @@ function speak(text, force){
     if(speechSynthesis.paused) speechSynthesis.resume();
     const u = nyUtsaga(p, text);
     u.rate = RATES[(p && p.settings.rate) != null ? p.settings.rate : 1].v;
-    speechSynthesis.speak(u);
+    sagUtsaga(u);
   }catch(e){}
 }
 
@@ -3625,6 +3645,9 @@ function utropTaBort(fras){
 /* Uppspelning: ett enda ljudelement, låst upp vid första trycket (iPad
    spelar annars inget ljud som inte startar i ett tryck) */
 const TYST_WAV = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=";
+/* En kvarts sekund riktig tystnad. Den tomma filen ovan har inga sampel alls,
+   och en fil som aldrig spelar byter inte ljudsession på iPhone. */
+const TYST_WAV_LANG = "data:audio/wav;base64,UklGRvQHAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YdAHAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgA==";
 let utropAudio = null, utropKo = [];
 function utropElement(){ if(!utropAudio){ utropAudio = new Audio(); utropAudio.preload = "auto"; } return utropAudio; }
 function utropLasUpp(){
