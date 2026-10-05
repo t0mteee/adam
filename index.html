@@ -19,6 +19,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600..800&family=Lilita+One&family=Nunito:wght@700;800&display=swap">
+<link rel="stylesheet" href="utflykt.css">
 <style>
 /* ─────────────────────────────────────────────
    RÄKNELANDET — leksaksvärld i klistermärkesstil
@@ -1425,11 +1426,24 @@ body.stilla *, body.stilla *::before, body.stilla *::after{
 
   <!-- ── RÄKNELANDETS KARTA ─────────────── -->
   <section id="screen-map" class="screen">
+    <nav class="world-shortcuts" aria-label="Välj vad du vill göra">
+      <button class="btn" type="button" data-world-shortcut="land" aria-current="page">Räknebanor</button>
+      <button class="btn" type="button" data-world-shortcut="tram">Åka vagn</button>
+      <button class="btn" type="button" data-lekstuga>Lekstugan</button>
+    </nav>
+    <button class="btn utf-entry" id="continueLevel" type="button" data-continue-level style="background:#C6EDDA"></button>
+    <button class="btn utf-entry" type="button" data-utflykt><span class="utf-entry-art" aria-hidden="true">🎟️</span><span><b>Konduktörens utflykt</b><small>Släpp på kompisar, stämpla biljetter och laga bron!</small></span></button>
     <div class="map" id="map"></div>
   </section>
 
   <!-- ── SPÅRVAGN: VÄLJ LINJE ───────────── -->
   <section id="screen-lines" class="screen">
+    <nav class="world-shortcuts" aria-label="Välj vad du vill göra">
+      <button class="btn" type="button" data-world-shortcut="land">Räknebanor</button>
+      <button class="btn" type="button" data-world-shortcut="tram" aria-current="page">Åka vagn</button>
+      <button class="btn" type="button" data-lekstuga>Lekstugan</button>
+    </nav>
+    <button class="btn utf-entry" type="button" data-utflykt><span class="utf-entry-art" aria-hidden="true">🎟️</span><span><b>Konduktörens utflykt</b><small>Släpp på kompisar, stämpla biljetter och laga bron!</small></span></button>
     <div id="startTram"></div>
     <p class="footnote" id="tramCredit"></p>
   </section>
@@ -1515,6 +1529,7 @@ body.stilla *, body.stilla *::before, body.stilla *::after{
   </section>
 
   <!-- ── RESULTAT ───────────────────────── -->
+  <section id="screen-utflykt" class="screen"></section>
   <section id="screen-result" class="screen">
     <div class="panel result-card" id="resultLand">
       <div class="result-buddy" id="resultBuddy" aria-hidden="true"></div>
@@ -1524,6 +1539,7 @@ body.stilla *, body.stilla *::before, body.stilla *::after{
       <div class="score-row" id="resultScore"></div>
       <div id="resultUnlock"></div>
       <div class="result-actions">
+        <button class="btn" id="nextBtn" type="button" hidden>Nästa bana</button>
         <button class="btn again" id="againBtn" type="button">Spela igen</button>
         <button class="btn home" id="backBtn" type="button">Till kartan</button>
       </div>
@@ -1575,7 +1591,7 @@ const pick = (arr) => arr[rnd(arr.length)];
 const INK = "#2E1A66";
 /* Syns under Inställningar, så man kan se vilken version telefonen kör.
    Höjs tillsammans med VERSION i sw.js. */
-const SPELVERSION = "35";
+const SPELVERSION = "36";
 function shuffle(a){ for(let i = a.length - 1; i > 0; i--){ const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
 function store(key, val){
@@ -2269,7 +2285,7 @@ function vagnAv(p, ref){
 }
 function vagnBild(p, o){
   const a = vagnAv(p, o && o.ref);
-  return vagnSidoSVG(a.typ, Object.assign({ nr: a.nr, linje: a.linje, mot: a.mot, flaggor: a.flaggor, jul: a.jul }, o || {}));
+  return vagnSidoSVG(a.typ, Object.assign({ nr: a.nr, linje: a.linje, mot: a.mot, flaggor: a.flaggor, jul: a.jul, stjarna:!!a.v.utflyktstjarna }, o || {}));
 }
 function vagnkortFor(nr){
   const typ = vagntypFor(nr); if(!typ) return null;
@@ -2357,6 +2373,7 @@ function vagnSidoSVG(typ, o){
     s += `<path d="M${fx} ${y - 11.5}h11M${fx + 3.5} ${y - 15}v7" stroke="#FFC42E" stroke-width="1.6"/>`;
   }
   /* julbelysning längs taket */
+  if(o.stjarna) s += `<path d="M0-9 2.7-3 9-2.7 4.5 2 5.7 8 0 5-5.7 8-4.5 2-9-2.7-2.7-3Z" transform="translate(${(fram - 43).toFixed(1)} ${y + h - 10}) scale(.65)" fill="#FFC42E" stroke="${INK}" stroke-width="1.5"/>`;
   if(o.jul){
     const farger = ["#FF6B6B", "#FFC42E", "#57C96B", "#62CDF2", "#FF8AD0"];
     for(let k = 0, gx = x0 + 8; gx < fram - 6; gx += 8, k++) s += `<circle cx="${gx.toFixed(1)}" cy="${y - 3.5}" r="2" fill="${farger[k % farger.length]}" stroke="${INK}" stroke-width=".8"/>`;
@@ -2723,13 +2740,46 @@ const qNyckel = (q) => q.kind + ":" + [q.count, q.a, q.b, q.c, q.sum, q.storst].
    det är de senaste tjugo som gäller, inte allt som någonsin blev fel. */
 const KLURIGA_MAX = 20;
 const KLURING_FALT = ["kind", "op", "a", "b", "c", "sum", "count", "tal", "tior", "ental", "steg", "upp", "answer", "text", "niva", "utanHjalp", "opts",
-                      "halv", "form", "lagst", "hogst", "val", "rader", "ref", "mot"];
+                      "halv", "form", "lagst", "hogst", "val", "rader", "ref", "mot", "storst", "lucka", "ner"];
+/* Äldre sparfiler tappade störst/minst och luckans läge. Återskapa bara när
+   facit gör betydelsen entydig; en oläsbar fråga får aldrig visas för barnet. */
+function lagaKluring(q){
+  if(!q || typeof q !== "object" || Array.isArray(q) || !Number.isInteger(q.answer) || q.answer < 0 || q.answer > 200 || !levelById(q.niva)) return null;
+  if(!Object.prototype.hasOwnProperty.call(SHOWN, q.kind)) return null;
+  const k = { ...q };
+  const krav = {count:["count"],tiotal:["count","tior","ental"],add:["a","b"],sub:["a","b"],missing:["a","sum"],add3:["a","b","c"],mul:["a","b"],div:["a","b"],half:["a"],flera:[],jamfor:[],lucka:[],serie:["steg"],linje:["a","b"],hopp:["a","b"],klocka:["a"],urtavla:["a"],digital:["a"],vanta:["a","b"],forst:["a"],saga:["a","b"]};
+  if(!krav[k.kind] || !krav[k.kind].every(f => Number.isFinite(k[f]))) return null;
+  if(k.kind === "saga" && (typeof k.text !== "string" || !["add","sub","mul","div"].includes(k.op))) return null;
+  if(k.kind === "forst" && (!Array.isArray(k.rader) || !k.rader.length || !k.rader.every(r => r && typeof r.ref === "string" && typeof r.mot === "string" && Number.isFinite(r.kod)))) return null;
+  if(k.val != null && (!Array.isArray(k.val) || !k.val.every(Number.isFinite))) return null;
+  for(const f of ["a", "b", "c", "sum", "count", "tior", "ental", "steg", "lagst", "hogst"])
+    if(k[f] != null && (!Number.isInteger(k[f]) || k[f] < 0 || k[f] > 200)) return null;
+  if(["jamfor", "lucka", "serie", "flera"].includes(k.kind)){
+    if(!Array.isArray(k.tal) || !k.tal.length || k.tal.length > 6 || !k.tal.every(v => Number.isInteger(v) && v >= 0 && v <= 200)) return null;
+  }
+  if(k.kind === "jamfor"){
+    const stor = Math.max(...k.tal), liten = Math.min(...k.tal);
+    if(stor === liten) return null;
+    if(typeof k.storst !== "boolean"){
+      if(k.answer !== stor && k.answer !== liten) return null;
+      k.storst = k.answer === stor;
+    }
+    if(k.answer !== (k.storst ? stor : liten)) return null;
+  }
+  if(k.kind === "lucka"){
+    if(!Number.isInteger(k.lucka)) k.lucka = k.c;
+    if(!Number.isInteger(k.lucka) || k.lucka < 0 || k.lucka >= k.tal.length || k.tal[k.lucka] !== k.answer) return null;
+    if(typeof k.ner !== "boolean") k.ner = k.tal[0] > k.tal[k.tal.length - 1];
+  }
+  return k;
+}
 function laggKluring(p, q){
   /* Resefrågor och vagnsfrågor hör till resan man gjorde, inte till en bana */
   if(!p || !q || q.niva == null || q.fast) return;
+  q = lagaKluring(q); if(!q) return;
   const nyckel = qNyckel(q);
   const kopia = {};
-  for(const f of KLURING_FALT) if(q[f] !== undefined) kopia[f] = Array.isArray(q[f]) ? q[f].slice() : q[f];
+  for(const f of KLURING_FALT) if(q[f] !== undefined) kopia[f] = JSON.parse(JSON.stringify(q[f]));
   p.kluriga = (p.kluriga || []).filter(k => qNyckel(k) !== nyckel).concat(kopia).slice(-KLURIGA_MAX);
 }
 /* En kluring som klaras direkt är avklarad; annars får den en ny chans senare */
@@ -4090,8 +4140,48 @@ function kopiaData(){
 }
 /* Är det här en fil vi kan läsa in? Ger datan tillbaka, eller null. */
 function granskaKopia(data){
-  if(!data || data.raknelandet !== 1 || !Array.isArray(data.profiles) || !data.profiles.length) return null;
-  if(!data.profiles.every(p => p && typeof p.id === "string" && typeof p.name === "string")) return null;
+  const obj = v => !!v && typeof v === "object" && !Array.isArray(v);
+  const tal = (v, min = 0, max = 1e9) => Number.isFinite(v) && v >= min && v <= max;
+  const heltal = (v, min = 0, max = 1e9) => Number.isInteger(v) && tal(v, min, max);
+  const text = v => typeof v === "string" && v.length <= 500;
+  const lista = (v, fn = text) => Array.isArray(v) && v.length <= 1000 && v.every(fn);
+  const tabell = (v, fn) => obj(v) && Object.keys(v).length <= 2000 && Object.values(v).every(fn);
+  const saker = (v, djup = 0) => {
+    if(djup > 12) return false;
+    if(v === null || typeof v === "boolean" || text(v) || tal(v, -1e9)) return true;
+    if(Array.isArray(v)) return v.length <= 2000 && v.every(x => saker(x, djup + 1));
+    return obj(v) && Object.keys(v).every(k => !["__proto__", "constructor", "prototype"].includes(k) && saker(v[k], djup + 1));
+  };
+  if(!obj(data) || !saker(data) || data.raknelandet !== 1 || !Array.isArray(data.profiles) || !data.profiles.length || data.profiles.length > 100) return null;
+  if(data.version != null && (!/^\d+$/.test(String(data.version)) || Number(data.version) > Number(SPELVERSION))) return null;
+  if(data.active != null && !text(data.active)) return null;
+  const ids = new Set();
+  for(const p of data.profiles){
+    if(!obj(p) || !text(p.id) || !p.id || !text(p.name) || !p.name.trim() || ids.has(p.id)) return null;
+    ids.add(p.id);
+    for(const f of ["coins", "bestStreak", "perfect", "rounds", "stopsRidden", "tramPerfect", "fotoRatt", "quizSpelade", "vagnarLasta", "uppdragKlara", "sparrKlara", "kluringarKlarade", "utflykter"])
+      if(p[f] != null && !heltal(p[f])) return null;
+    for(const f of ["unlocked", "sidoUpp", "gangerUpp", "talradUpp", "linjeUpp", "klockaUpp", "tramLevel"])
+      if(p[f] != null && !heltal(p[f], f === "tramLevel" ? -1 : f === "unlocked" ? 1 : 0, 52)) return null;
+    for(const f of ["skill", "golv"]) if(p[f] != null && !tal(p[f], 1, 52)) return null;
+    for(const f of ["badges", "kopta", "spel", "linesDone", "vagnar"]) if(p[f] != null && !lista(p[f])) return null;
+    if(p.vagnkort != null && !lista(p.vagnkort, v => heltal(v, 1, 9999))) return null;
+    if(p.stars != null && !tabell(p.stars, v => heltal(v, 0, 3))) return null;
+    for(const f of ["best", "rekord", "tram"]) if(p[f] != null && !tabell(p[f], v => tal(v))) return null;
+    if(p.besokta != null && !tabell(p.besokta, v => lista(v))) return null;
+    if(p.lage != null && !tabell(p.lage, v => ["choice", "type"].includes(v))) return null;
+    if(p.settings != null && (!obj(p.settings) || !Object.entries(p.settings).every(([k,v]) =>
+      k === "rate" ? heltal(v, 0, 2) : k === "rost" ? v === null || text(v) : k === "rorelse" ? ["auto", "pa", "av"].includes(v) : typeof v === "boolean"))) return null;
+    for(const f of ["tvaSpar", "frittAventyr", "stigandeFlytt"]) if(p[f] != null && typeof p[f] !== "boolean") return null;
+    if(p.world != null && !["land", "tram"].includes(p.world)) return null;
+    if(p.tramMode != null && !["choice", "type"].includes(p.tramMode)) return null;
+    if(p.stat != null && (!obj(p.stat) || !["sorter", "dagar"].every(f => p.stat[f] == null || tabell(p.stat[f], r => tabell(r, v => tal(v)))))) return null;
+    if(p.kluriga != null && (!Array.isArray(p.kluriga) || p.kluriga.length > 20 || !p.kluriga.every(q => obj(q) && typeof q.kind === "string" && Number.isFinite(q.answer) && Number.isInteger(q.niva)))) return null;
+    if(p.kluriga != null && !p.kluriga.every(q => lagaKluring(q) !== null)) return null;
+    if(p.resa != null && (!obj(p.resa) || !ALLA_STOPP.includes(p.resa.pos) || !lineByRef(p.resa.ref) || ![-1, 1].includes(p.resa.rikt))) return null;
+    if(p.uppdrag != null && (!obj(p.uppdrag) || !ALLA_STOPP.includes(p.uppdrag.mal) || !heltal(p.uppdrag.beloning) || (p.uppdrag.sparr != null && (!Array.isArray(p.uppdrag.sparr) || p.uppdrag.sparr.length !== 2 || !p.uppdrag.sparr.every(n => ALLA_STOPP.includes(n)))))) return null;
+    if(p.vagn != null && (!obj(p.vagn) || !text(p.vagn.typ) || !heltal(p.vagn.nr, 1, 9999) || !text(p.vagn.linje) || !["a", "b"].includes(p.vagn.mot))) return null;
+  }
   return data;
 }
 const kopiaDatum = (iso) => { const d = new Date(iso); return isNaN(d) ? "okänt datum" : d.toLocaleDateString("sv-SE", { day: "numeric", month: "long", year: "numeric" }); };
@@ -4176,10 +4266,12 @@ function later(fn, ms){
 }
 function clearTimers(){ timers.forEach(clearTimeout); timers = []; }
 
-const SCREENS = ["profiles", "create", "map", "lines", "trip", "game", "result", "lek"];
+const SCREENS = ["profiles", "create", "map", "lines", "trip", "game", "result", "lek", "utflykt"];
+let utflyktStopp = null;
 let aktivSkarm = null, spelStart = null;
 function show(name){
   clearTimers();
+  if(name !== "utflykt" && utflyktStopp){ utflyktStopp(); utflyktStopp = null; }
   /* Speltiden bokförs när spelskärmen lämnas, vart man än går */
   if(aktivSkarm === "game" && name !== "game" && spelStart && P()){
     statTid(P(), (Date.now() - spelStart) / 1000);
@@ -4199,6 +4291,53 @@ function show(name){
 }
 
 const overlay = el("overlay"), sheet = el("sheet");
+function belonaUtflykt(p){
+  p.vagn = p.vagn || standardVagn(p);
+  const first = !p.vagn.utflyktstjarna;
+  p.vagn.utflyktstjarna = true;
+  p.utflykter = (p.utflykter || 0) + 1;
+  if(first) p.coins += 30;
+  return { first };
+}
+async function openUtflykt(){
+  const p = P(); if(!p) return;
+  if(!p.vagn){ p.vagn = standardVagn(p); saveProfiles(); }
+  SFX.ensure(); SFX.tap();
+  if(utflyktStopp){ utflyktStopp(); utflyktStopp = null; }
+  show("utflykt");
+  el("screen-utflykt").innerHTML = '<div class="panel utf-panel"><h1>Utflykten görs redo…</h1></div>';
+  try{
+    const { startUtflykt } = await import("./utflykt.mjs");
+    if(aktivSkarm !== "utflykt" || P() !== p) return;
+    utflyktStopp = startUtflykt(el("screen-utflykt"), {
+      vagn:() => vagnBild(p, {stor:true}), kompis:() => kompisSVG(p, "happy"),
+      sag:(text, force) => speak(text, force), ljud:namn => SFX[namn](),
+      lamna:() => enterWorld(false),
+      belona:() => {
+        const resultat = belonaUtflykt(p);
+        saveProfiles(); renderHeader();
+        return resultat;
+      }
+    });
+  }catch(e){
+    if(aktivSkarm === "utflykt") el("screen-utflykt").innerHTML = '<div class="panel utf-panel"><h1>Utflykten kunde inte laddas</h1><p>Försök igen när spelet har laddats färdigt.</p><button class="btn" data-world-shortcut="land">Till menyn</button></div>';
+  }
+}
+document.addEventListener("click", e => {
+  if(!P()) return;
+  if(e.target.closest("[data-continue-level]")){
+    const L = levelById(nextLevelId(P()));
+    if(L && !arLast(P(), L)){ SFX.ensure(); SFX.tap(); startRound(L, lageFor(P(), L)); }
+    return;
+  }
+  if(e.target.closest("[data-utflykt]")){ openUtflykt(); return; }
+  const val = e.target.closest("[data-world-shortcut]");
+  if(val){ P().world = val.dataset.worldShortcut; saveProfiles(); SFX.tap(); enterWorld(false); return; }
+  if(e.target.closest("[data-lekstuga]")){
+    SFX.tap(); const p = P();
+    openSheet(`<div class="sheet-head"><div><h2>Lekstugan</h2><p class="sheet-sub">${p.coins} mynt · köp en gång, spela när du vill</p></div>${CLOSE_BTN}</div><div class="butik">${SMASPEL.map(v => spelRadHTML(v, p)).join("")}</div>`);
+  }
+});
 let fokusFore = null;
 const FOKUSERBARA = 'button:not([disabled]), input, select, textarea, a[href], [tabindex]:not([tabindex="-1"])';
 
@@ -4392,6 +4531,8 @@ function renderHeader(){
 function renderMap(){
   const p = P(); if(!p) return;
   renderHeader();
+  const nasta = levelById(nextLevelId(p));
+  el("continueLevel").innerHTML = `<span class="utf-entry-art" aria-hidden="true">${nasta.id}</span><span><b>${totalStars(p) ? "Fortsätt räkna" : "Börja räkna"}</b><small>${escapeHtml(nasta.name)} · ${escapeHtml(REGIONS[nasta.r].name)}</small></span>`;
   const map = el("map");
   const banor = synligaBanor(p);
   const height = nodeY(banor.length - 1) + 120;
@@ -4826,7 +4967,7 @@ function talvalHTML(p){
       <button type="button" data-trammode="type" aria-pressed="${p.tramMode === "type"}">Skriv svar</button>
     </div>
     ${nasta ? `<p class="sheet-sub" style="margin:12px 0 0;text-align:center">
-      Klara fyra av fem på ${vald === -1 ? "Stigande, när nivån står på den svåraste banan," : vald === 0 ? "Blandat" : spelad.name} så öppnas <b>${nasta.name}</b>.</p>` : ""}`;
+      Klara minst 80 procent av mattefrågorna direkt på ${vald === -1 ? "Stigande, när nivån står på den svåraste banan," : vald === 0 ? "Blandat" : spelad.name} så öppnas <b>${nasta.name}</b>. Foto- och vagnbonusar räknas inte.</p>` : ""}`;
 }
 /* ── Spårvagnen: ett eget äventyr ────────────────────────────────────────
    Spelaren står på en hållplats, väljer vagn och riktning, åker en hållplats
@@ -5974,8 +6115,8 @@ function enterWorld(halsa, isNew){
     renderStart(); show("lines");
   }else{
     renderMap(); show("map");
-    const cur = el("node-" + nextLevelId(p));
-    if(cur) later(() => cur.scrollIntoView({ block:"center", behavior: reduceMotion ? "auto" : "smooth" }), 120);
+    /* Huvudvalen ska också synas för den som kommit långt ned på kartan. */
+    window.scrollTo({top:0,behavior:"auto"});
   }
   if(halsa){
     const h = isNew ? `Hej ${p.name}! Välkommen till Räknelandet!`
@@ -7331,6 +7472,14 @@ function nextQuestion(){
   speak((g.q.kluring ? "Kluring! " : "") + speechFor(g.q));
 }
 
+/* Foto- och vagnbonusar är roliga, men mäter inte om mattebanan behärskas. */
+const matteFraga = q => !["fotonamn", "fotobild", "vagn"].includes(q.kind);
+function matteResultat(queue, results){
+  const tal = queue.map((q, i) => matteFraga(q) ? results[i] === "first" : null).filter(v => v !== null);
+  return { antal: tal.length, ratt: tal.filter(Boolean).length,
+    perfekt: tal.length > 0 && tal.every(Boolean), oppnar: tal.length > 0 && tal.filter(Boolean).length >= Math.ceil(tal.length * 0.8) };
+}
+
 function setBuddy(mood, anim){
   const p = P();
   buddy.innerHTML = kompisSVG(p, mood);
@@ -7413,7 +7562,7 @@ function labelFor(q){
 }
 function equationHTML(q){
   const op = (s) => `<span class="op">${s}</span>`;
-  if(q.kind === "saga")    return `<span class="saga">${q.text}</span>`;
+  if(q.kind === "saga")    return `<span class="saga">${escapeHtml(q.text)}</span>`;
   if(q.kind === "jamfor")  return q.tal.map(v => `<span class="tal" data-tal="${v}">${v}</span>`).join(op("·"));
   if(q.kind === "lucka")   return `<span class="rad">${q.tal.map((v, i) => `<span class="ruta">${i === q.lucka ? '<span class="slot">?</span>' : v}</span>`).join("")}</span>`;
   if(q.kind === "count")   return `<span class="slot">?</span>`;
@@ -7893,7 +8042,7 @@ function renderAnswerArea(){
     g.opts = makeOptions(q, n);
     const cls = q.kind === "fotobild" ? " foto" : q.svarNamn || q.form === "vantetid" ? " namn" : q.form === "urtavla" ? " klocka" : q.form === "linje" ? " linje" : q.form ? " tid" : "";
     answerArea.innerHTML = `<div class="options ${n === 3 ? "three" : n === 6 ? "six" : ""}">` +
-      g.opts.map((v, i) => `<button type="button" class="btn opt c${i}${cls}" data-val="${v}">${optHTML(q, v)}</button>`).join("") + `</div>`;
+      g.opts.map((v, i) => `<button type="button" class="btn opt c${i}${cls}" data-val="${v}"${q.kind === "fotobild" ? ` aria-label="Bildalternativ ${i + 1}"` : ""}>${optHTML(q, v)}</button>`).join("") + `</div>`;
   }else{
     answerArea.innerHTML = `
       <div class="typed">
@@ -7955,7 +8104,7 @@ function answer(value, sourceEl){
     if(firstTry){ g.streak++; g.firstTry++; g.bestStreak = Math.max(g.bestStreak, g.streak); }
     else g.streak = 0;
 
-    if(g.tram && g.level.id === -1) justeraSkill(P(), firstTry ? "ratt" : "hjalp");
+    if(g.tram && g.level.id === -1 && matteFraga(q)) justeraSkill(P(), firstTry ? "ratt" : "hjalp");
     const mult = g.streak >= 6 ? 3 : g.streak >= 3 ? 2 : 1;
     /* En klarad kluring är värd lite extra – ett läst vagnsnummer också */
     const bonus = (q.kluring || q.kind === "vagn") && firstTry ? 5 : 0;
@@ -7999,6 +8148,7 @@ function answer(value, sourceEl){
   }
 
   /* Fel svar — mjukt, aldrig minuspoäng, men spelet säger vad som blev fel */
+  g.streak = 0;
   SFX.wrong();
   setBuddy("sad", "oops");
   const varfor = varforFel(q, value);
@@ -8007,13 +8157,16 @@ function answer(value, sourceEl){
     const d = el("display");
     /* Vid sista felet skrivs facit in i rutan strax nedan – då får den inte
        nollställas av den här fördröjningen. */
-    if(d){ d.classList.add("wrong"); if(g.tries < forsok) later(() => { g.typed = ""; updateDisplay(); }, 550); }
+    if(d){ d.classList.add("wrong"); if(g.tries < forsok) later(() => {
+      if(g.q !== q || g.locked) return; /* gamla försök får inte sudda facit eller nästa svar */
+      g.typed = ""; updateDisplay();
+    }, 550); }
   }
 
   if(g.tries >= forsok){
     g.locked = true;
     g.results[g.qIndex] = "help";
-    if(g.tram && g.level.id === -1) justeraSkill(P(), "ned");
+    if(g.tram && g.level.id === -1 && matteFraga(q)) justeraSkill(P(), "ned");
     if(q.kluring) kluringUtfall(P(), q, false); else laggKluring(P(), q);
     statSvar(P(), q, "visat");
     saveProfiles();
@@ -8041,9 +8194,9 @@ function answer(value, sourceEl){
       qVisual.className = "q-visual" + (q.answer > 12 ? " packed" : q.answer > 6 ? "" : " stor");
     }
     const svar = visaFacit(q);
-    feedback.innerHTML = `<span class="bubble soft">${varfor} Svaret är ${escapeHtml(svar)}.</span>`;
+    feedback.innerHTML = `<span class="bubble soft">${varfor} Svaret är ${escapeHtml(svar)}.</span><button class="btn" type="button" data-next-question style="margin-top:12px;background:var(--sun)">Nästa fråga</button>`;
     speak(varfor + " Svaret är " + svar);
-    later(() => { g.qIndex++; nextQuestion(); }, 2600);
+    /* Ingen timer: barnet får höra hela förklaringen och välja när det är redo. */
     return;
   }
   /* Första felet tänder hjälpbilderna på banorna som har dem */
@@ -8052,6 +8205,11 @@ function answer(value, sourceEl){
   feedback.innerHTML = `<span class="bubble soft">${varfor}${saker ? " Räkna sakerna!" : scenTips(q)}</span>`;
   speak(varfor);
 }
+
+feedback.addEventListener("click", e => {
+  if(!e.target.closest("[data-next-question]") || !g.locked || aktivSkarm !== "game") return;
+  tystna(); g.qIndex++; nextQuestion();
+});
 
 /* Att trycka på ett tal eller en hållplats på linjen är också ett svar */
 qVisual.addEventListener("click", (e) => {
@@ -8118,6 +8276,9 @@ function finishRound(){
   let unlocked = stars > 0 ? oppnaEfter(p, L) : null;
   /* Berget klart öppnar sidospåret – det är också en ny bana */
   if(!unlocked && stars > 0) unlocked = sidosparEfter(p, L);
+  const nasta = unlocked || nastaBana(L);
+  el("nextBtn").hidden = !nasta || arLast(p, nasta);
+  el("nextBtn").dataset.level = nasta ? nasta.id : "";
   saveProfiles();
   const nya = newBadges(p);
 
@@ -8162,6 +8323,7 @@ function finishRound(){
 
 /* Fotoquizen är slut: hur många bilder kändes igen, och rekordet */
 function finishQuiz(p, perfect){
+  el("nextBtn").hidden = true;
   const rek = p.quizBast || 0, nytt = perfect > rek;
   p.quizBast = Math.max(rek, perfect);
   p.quizSpelade = (p.quizSpelade || 0) + 1;
@@ -8194,19 +8356,18 @@ function finishQuiz(p, perfect){
 /* Framme vid en hållplats: kort summering och en enda knapp vidare */
 function finishTramStop(p, perfect){
   const { l, rikt, at, slut } = resLage(p);
+  const matte = matteResultat(g.queue, g.results);
 
   /* Att åka spårvagn ska också föra spelaren framåt: en felfri hållplats på
      den svåraste banan man har öppen (eller på Blandat) öppnar nästa bana.
      Annars vore man tvungen att spela Räknelandet för att få svårare tal. */
   let nyBana = null;
-  if(perfect === g.len){
-    p.tramPerfect = (p.tramPerfect || 0) + 1;
-    /* En felfri hållplats på Stigande är ett bevis – då tar nivån ett extra kliv */
-    if(g.level && g.level.id === -1) justeraSkill(p, "perfekt");
-  }
+  if(perfect === g.len) p.tramPerfect = (p.tramPerfect || 0) + 1;
+  /* Märket ovan gäller hela resan. Mattenivåns extra kliv gäller bara matte. */
+  if(matte.perfekt && g.level && g.level.id === -1) justeraSkill(p, "perfekt");
   /* Fyra av fem räcker. Ett enda feltryck ska inte stoppa en fyraåring.
      Stigande och Blandat för huvudspåret framåt; en vald bana för sitt spår. */
-  if(perfect >= g.len - 1){
+  if(matte.oppnar){
     const spelad = banaSomOppnar(p, p.tramLevel, g.stigandeNiva);
     if(spelad) nyBana = oppnaEfter(p, spelad);
     if(!nyBana && spelad) nyBana = sidosparEfter(p, spelad);
@@ -8325,6 +8486,11 @@ function celebrateBadges(list){
 
 el("againBtn").addEventListener("click", () => { SFX.tap(); startRound(g.level, g.mode); });
 el("backBtn").addEventListener("click", () => { SFX.tap(); enterWorld(false); });
+el("nextBtn").addEventListener("click", () => {
+  const L = levelById(Number(el("nextBtn").dataset.level));
+  if(!L || !P() || arLast(P(), L) || g.tram || g.level.quiz) return;
+  SFX.ensure(); SFX.tap(); startRound(L, lageFor(P(), L));
+});
 el("homeBtn").addEventListener("click", () => {
   SFX.tap();
   tystna();
@@ -8428,6 +8594,8 @@ function flyttaTillTvaSpar(p){
     if(!p.stigandeFlytt){ if(p.tramLevel == null || p.tramLevel === 0) p.tramLevel = -1; p.stigandeFlytt = true; }
     p.linesDone = p.linesDone || [];
     p.kluriga = p.kluriga || [];
+    const kluringar = p.kluriga.map(lagaKluring).filter(Boolean);
+    if(JSON.stringify(kluringar) !== JSON.stringify(p.kluriga)){ p.kluriga = kluringar; p.nyssFlyttad = true; }
     p.uppdragKlara = p.uppdragKlara || 0;
     p.spel = p.spel || []; p.rekord = p.rekord || {};
     p.settings = Object.assign({ sound:true, voice:true, dots:true, rate:1, ganger:true, klocka:true, egnaUtrop:true,

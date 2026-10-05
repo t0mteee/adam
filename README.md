@@ -1,15 +1,39 @@
 # Räknelandet
 
-Ett färgglatt mattespel på svenska för barn från ungefär fyra år. Byggt som en
-enda HTML-fil utan byggsteg – öppna `index.html` i valfri webbläsare så är det
-igång. Fungerar på mobil, surfplatta och dator, och behöver inget internet efter
-att sidan laddats en gång.
+Ett färgglatt mattespel på svenska för barn från ungefär fyra år. Byggt med
+vanlig HTML, CSS och JavaScript utan byggsteg. Kör på GitHub Pages eller med
+en lokal webbserver: `python3 -m http.server 8769`. Öppna sedan
+`http://localhost:8769/`. Fungerar på mobil, surfplatta och dator.
+
+Spelets grund och utflykten sparas för offlinebruk efter första laddningen.
+Foton och röstklipp sparas när de används; sådant som inte hämtats kan saknas
+utan nät. För att dela en enda HTML-fil, använd `verktyg/bygg-fristaende.py`;
+det bakar in både foton, utflyktens kod och dess stil.
+
+### Nytt i version 36: Konduktörens utflykt
+
+Ett kort äventyr nås direkt från båda världarnas startsidor. Barnet släpper
+på passagerare, stämplar biljetter och lägger rälsbitar på en bro. Handlingarna
+förändrar bilden och kopplas till räkneuttrycket. Välj Små tal eller Lite större
+tal, få hjälp, ångra och försök igen utan timer eller minuspoäng.
+
+Första avslutade utflykten ger 30 mynt och en bestående guldstjärna på spelarens
+egna vagn. Omspel ger nya tal men inte samma myntbelöning igen. En utflykt som
+lämnas före slutet startas om nästa gång; befintliga banor och resor påverkas inte.
+
+Versionen reparerar också äldre sparade Kluringar, låter förklaringar ligga kvar
+tills barnet väljer Nästa fråga, bryter sviter vid fel och håller foto-/vagnbonusar
+utanför den adaptiva mattenivån. Import av säkerhetskopior kontrollerar typer och
+värden innan någon spelare ersätts. Ofullständiga Kluringar som inte kan repareras
+filtreras bort vid start; stjärnor och mynt lämnas orörda.
+
+Tester: `node --test test/*.test.mjs` (61 tester, inklusive regressioner och utflykten).
 
 ## Så funkar det
 
 Barnet skapar en egen spelare med namn och kompisfigur. Spelet har två
-världar, **Räknelandet** och **Spårvagn**; vilken som spelas väljs överst i
-inställningarna (kugghjulet), så huvudskärmen slipper en växlare. Båda öppnar
+världar, **Räknelandet** och **Spårvagn**; vilken som spelas väljs direkt på
+startsidan. Där finns även Utflykten och Lekstugan. Båda världarna öppnar
 nya banor, så man kan börja i vilken som helst. Pillen i topplisten visar
 stjärnor i Räknelandet och besökta hållplatser i spårvagnen.
 
@@ -20,7 +44,7 @@ blommor på Ängen, granar i Skogen, kristaller och droppstenar i Grottan,
 snöklädda toppar på Berget, moln högre upp, spårvagnar och
 kontaktledningsstolpar i Vagnhallen, stoppbockar och stationsklockor vid
 Ändstationen, räls och plustecken på Tallinjen, klockor på stolpar på Klockan. En bana i taget låses upp genom att klaras med minst en stjärna –
-eller genom fyra rätt av fem på en hållplats i spårvagnsvärlden – och klarade
+eller genom minst 80 procent av mattefrågorna rätt direkt på en hållplats i spårvagnsvärlden (foto- och vagnbonusar påverkar inte mattenivån) – och klarade
 banor går att spela om.
 
 Stigen har sex spår. **Huvudspåret** går från Ängen till Ändstationen, 27 banor,

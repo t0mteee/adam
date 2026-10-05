@@ -37,6 +37,12 @@ def baka_in(källa):
         rader.append('"%s":"data:image/jpeg;base64,%s"'
                      % (namn[:-4], base64.b64encode(buf.getvalue()).decode("ascii")))
     print(f"{len(rader)} bilder ({tot/1048576:.2f} MB) inbakade")
+    # Utflykten ska också fungera när bara HTML-filen delas utan webbserver.
+    css = io.open(os.path.join(ROT, "utflykt.css"), encoding="utf-8").read()
+    modul = io.open(os.path.join(ROT, "utflykt.mjs"), encoding="utf-8").read()
+    modul = modul.replace("export function ", "function ")
+    källa = källa.replace('<link rel="stylesheet" href="utflykt.css">', '<style>' + css + '</style>')
+    källa = källa.replace('import("./utflykt.mjs")', '(async () => {\n' + modul + '\nreturn { startUtflykt };\n})()')
     return källa.replace("const FOTO_DATA = {};",
                          "const FOTO_DATA = {\n" + ",\n".join(rader) + "\n};")
 

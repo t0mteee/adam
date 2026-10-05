@@ -35,7 +35,7 @@ const kalla = [
   block(/function varforFel\(q, v\)\{[\s\S]*?\n\}/, "varforFel"),
   block(/function makeOptions\(q, n\)\{[\s\S]*?\n\}/, "makeOptions"),
   block(/const qNyckel = [^\n]*/, "qNyckel"),
-  block(/const KLURIGA_MAX = [^\n]*\nconst KLURING_FALT = [\s\S]*?\];\nfunction laggKluring[\s\S]*?\nfunction blandaInKluring\(p, L, queue\)\{[\s\S]*?\n\}/, "kluringarna"),
+  block(/const KLURIGA_MAX = [^\n]*\nconst KLURING_FALT = [\s\S]*?\];[\s\S]*?\nfunction laggKluring[\s\S]*?\nfunction blandaInKluring\(p, L, queue\)\{[\s\S]*?\n\}/, "kluringarna"),
   block(/const SKILL_UPP = [^\n]*/, "skill-konstanter"),
   block(/function stjarnGolv\(p\)\{[\s\S]*?\n\}/, "stjarnGolv"),
   block(/function skillGolv\(p\)\{[\s\S]*?\n\}/, "skillGolv"),
