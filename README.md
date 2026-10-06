@@ -10,9 +10,29 @@ Foton och röstklipp sparas när de används; sådant som inte hämtats kan sakn
 utan nät. För att dela en enda HTML-fil, använd `verktyg/bygg-fristaende.py`;
 det bakar in både foton, utflyktens kod och dess stil.
 
+### Nytt i version 37: Fri resa och kartan i centrum
+
+Spårvagnsstarten fokuserar på **Börja åka** eller **Fortsätt resan**. Ett enkelt
+val av tre startplatser hjälper nya spelare; alla hållplatser och linjer finns
+kvar under **Välj en annan startplats**. **Min vagn** samlar byggandet och
+vagnkorten. Fotoquiz, Konduktörens utflykt och småspelen ligger i **Lekstugan**.
+
+Kartan ligger överst i resevyn, med **Nu**, **Nästa**, en liten vagn och gul
+markering av nästa sträcka. Efter frågorna rullar vagnen direkt på kartan till
+nästa hållplats. Hela nätet förblir utzoomat om barnet valt det; kartan följer
+färdriktningen i närbild. Mynt, nya banor och samlarbelöningar visas diskret
+under reseknapparna utan att avbryta resan. Hållplatsbild och linjelista finns
+kvar som hopfällbara delar.
+
+Uppdrag kallas nu **resmål**, förklaras när de väljs och är alltid frivilliga.
+En befintlig sparad resa eller ett uppdrag kan fortsätta som vanligt. Fem
+räknefrågor per sträcka, mattenivåer och upplåsning är oförändrade.
+
+Tester: `node --test test/*.test.mjs` (69 tester, inklusive kartresor och regressioner).
+
 ### Nytt i version 36: Konduktörens utflykt
 
-Ett kort äventyr nås direkt från båda världarnas startsidor. Barnet släpper
+Ett kort äventyr nås från Lekstugan i båda världarna. Barnet släpper
 på passagerare, stämplar biljetter och lägger rälsbitar på en bro. Handlingarna
 förändrar bilden och kopplas till räkneuttrycket. Välj Små tal eller Lite större
 tal, få hjälp, ångra och försök igen utan timer eller minuspoäng.
@@ -33,7 +53,7 @@ Tester: `node --test test/*.test.mjs` (61 tester, inklusive regressioner och utf
 
 Barnet skapar en egen spelare med namn och kompisfigur. Spelet har två
 världar, **Räknelandet** och **Spårvagn**; vilken som spelas väljs direkt på
-startsidan. Där finns även Utflykten och Lekstugan. Båda världarna öppnar
+startsidan. Via Lekstugan finns även Utflykten och smålekar. Båda världarna öppnar
 nya banor, så man kan börja i vilken som helst. Pillen i topplisten visar
 stjärnor i Räknelandet och besökta hållplatser i spårvagnen.
 
@@ -305,9 +325,9 @@ kvar i webbläsaren precis som resten av sparfilen.
 ## Spårvagn — Göteborgs linjenät
 
 Andra världen i spelet – ett eget äventyr i Göteborgs spårvagnsnät. Barnet
-väljer var resan ska börja (ändstationerna först, alla 132 hållplatser eller en
-linjes hållplatser, som bildkort med foto och linjenummer – hopfällt under
-*Börja någon annanstans* så länge en resa pågår), går ut på perrongen
+väljer **Börja åka** och en av tre startplatser eller **Fortsätt resan**.
+Alla 132 hållplatser och varje linjes hållplatser finns som bildkort under
+**Välj en annan startplats**. Barnet går ut på perrongen
 och väljer vagn och riktning bland dem som går därifrån – varje avgång visas
 som en vagnsfront i linjens färg med skylten *mot Angered* och nästa hållplats.
 Sedan åker man en hållplats i taget och kan vid varje hållplats byta vagn,
@@ -329,7 +349,7 @@ låter som ett utrop och inte som en lekkamrat.
   1902. Linje 6 har 46 hållplatser, linje 10 bara 13 – bra att veta när man
   väljer hur lång resa det ska bli.
 - **Riktiga foton på hållplatserna.** 105 av hållplatserna har ett eget foto,
-  och det är det man ser när vagnen rullat in. Kameraknappen bredvid
+  som kan öppnas under **Se hållplatsen**. Kameraknappen bredvid
   hållplatsnamnet – eller ett tryck på bilden – växlar till spelets egen tecknade
   version och tillbaka igen. De 27 hållplatser som saknar eget foto visar en
   spårvagn från Göteborg i stället; vilken av de sexton avgörs av hållplatsens
@@ -342,9 +362,9 @@ låter som ett utrop och inte som en lekkamrat.
   Briljantgatan), sol och moln i Biskopsgården (Väderilsgatan,
   Vårväderstorget), hav vid Saltholmen, pariserhjul vid Liseberg, vagnhall vid
   Vagnhallen Majorna. Övriga får sin bild av namnets ändelse.
-- **Nätkartan.** Under hållplatsens bild ligger hela spårvagnsnätet, inzoomat
+- **Nätkartan.** Överst i resevyn ligger hela spårvagnsnätet, inzoomat
   kring hållplatsen man står vid: den egna linjen i sin färg ovanpå de andra,
-  dämpade, en pulserande ring och linjens nummer där man är, åkta hållplatser
+  dämpade, en liten vagn med linjenumret där man är, åkta hållplatser
   fyllda och kommande vita. Namn visas på hållplatsen, grannarna och
   ändstationerna, och lägger sig där de inte krockar. När vagnen rullar
   panorerar kartan med till nästa hållplats. Ett tryck på en hållplats säger
@@ -354,8 +374,9 @@ låter som ett utrop och inte som en lekkamrat.
   så Brunnsparken–Valand får lika mycket plats som Saltholmen–Långedrag medan
   kartan ändå liknar staden. Där flera linjer delar sträcka ritas de bredvid
   varandra. Listan med alla hållplatser finns kvar, hopfälld under kartan.
-- **Kort summering.** När hållplatsen är avklarad visas bara mynten och en enda
-  knapp: *Åk vidare!* Sedan rullar vagnen in på nästa hållplats.
+- **Kort summering.** Efter frågorna rullar vagnen till nästa hållplats direkt
+  på kartan. Mynt och nya banor visas under reseknapparna. Nya kort och märken
+  öppnas bara om barnet väljer **Se nya vagnkort och märken**.
 - **Svårigheten anpassar sig.** Standardläget **Stigande** håller reda på var
   barnet ligger med ett flyttal som börjar på den svåraste upplåsta banan,
   höjs vid rätt svar (0,25 per tal, plus ett halvt steg för en felfri
@@ -399,7 +420,7 @@ låter som ett utrop och inte som en lekkamrat.
   gånger och delat på sitt spår, små tal på räknebanorna. Blir det fel på en
   bana med hjälpbilder ritas sagan upp som saker, och när svaret visas står
   talet utskrivet under sagan: `4 + 7 = 11`.
-- **Uppdrag i nätet.** Under hållplatskortet finns *Vill du ha ett uppdrag?*
+- **Resmål i nätet.** Under reseknapparna finns *Välj ett resmål* – frivilligt.
   Spelet väljer då ett mål några hållplatser bort – tre till att börja med,
   längre bort ju fler uppdrag som är klarade, som mest åtta – helst en
   hållplats med foto som barnet inte stått vid, och rösten säger *Ta dig till
@@ -455,7 +476,7 @@ låter som ett utrop och inte som en lekkamrat.
   inte läser kan spela själv. Hållplatserna tas bland dem barnet stått vid
   när det är minst sex med foto, annars bland alla 105, och de tre felsvaren
   ligger helst på samma linje som den rätta. Frågan smyger in i var tredje
-  spårvagnsomgång, och på startskärmen finns *Var är vi?* som en egen runda
+  spårvagnsomgång, och i Lekstugan finns *Var är vi?* som en egen runda
   om sex bilder med rekord. Märke: *Stadskännare*, 25 bilder rätt direkt.
 - **Egna utrop.** Under kugghjulet, *Spela in utrop*, läser man in
   hållplatsnamnen och de fasta fraserna (*Nästa hållplats*, *Ändstation*,
@@ -467,7 +488,7 @@ låter som ett utrop och inte som en lekkamrat.
   *Egna utrop* stänger av. Inspelning kräver Safari eller Chrome på en egen
   adress (inte inbäddat i en visare), och en Safari-flik som inte öppnats på
   sju dagar kan bli av med sina klipp – hemskärmsappen behåller dem.
-- **Min egen vagn.** Kortet *Min egen vagn* på startskärmen bygger en spårvagn
+- **Min egen vagn.** Kortet *Min vagn* på startskärmen bygger en spårvagn
   av dem som rullar i Göteborg: M28 (museivagnen, ur trafik 2021), M29, M31,
   den ombyggda M31B (Škoda, i trafik sedan december 2025), M32 Sirio, M33
   Flexity och den 45 meter långa M34. Varje modell ritas med sina delar, sina
@@ -477,20 +498,17 @@ låter som ett utrop och inte som en lekkamrat.
   numret – och namnet, om vagnen har ett: 318 heter *Bebben*. Linjen på
   skylten väljs bland de tolv, med riktning. Flaggor (som på flaggdagar) och
   julbelysning köps i skattkistan. Vagnen står bakom kompisen på kartan,
-  syns på startskärmen och rullar mellan hållplatserna. Märke: *Egen vagn*.
+  syns på startskärmen och i hållplatslistan. Kartans vagn visar linjen.
+  Märke: *Egen vagn*.
   Under *Mina vagnkort* finns nu också alla sju modellerna som kort att läsa,
   även de som ännu inte har några foton i nätet.
-- **Resan.** När man tryckt *Åk till Storås!* rullar den egna vagnen in
-  från vänster med klockan ringande, utropet *Nästa hållplats: Storås* hörs,
-  och vagnen bromsar och stannar vid perrongen med hållplatsens skylt. Där
-  öppnas dörrarna med dörrsignalen och knappen *Hoppa på och räkna!* dyker
-  upp; först när barnet trycker kommer frågorna. Trycket är med flit: på
-  iPad får rösten bara börja tala i ett tryck, så frågan läses i barnets
-  eget tryck och inte i en timer. Under åkturen gör tryck ingenting, så ett
-  extra tryck hoppar inte över något; kommer inget tryck på sex sekunder
-  fortsätter spelet ändå. Står *Rörelse* på Av under kugghjulet – eller på
-  Automatiskt när plattan har *Minska rörelse* påslaget – står vagnen still
-  vid perrongen från början. Klockan är byggd av deltoner som i en slagen
+- **Resan.** *Åk till Storås!* ringer klockan och startar frågorna direkt i
+  barnets tryck. När de är klara kommer kartan tillbaka och vagnen rullar
+  längs den markerade sträckan medan *Nästa hållplats: Storås* ropas ut.
+  Texten visar avfärd, inbromsning och ankomst. Vid hållplatsen hörs
+  dörrsignalen och nästa reseknapp blir tillgänglig. Mynt och nya samlarsaker
+  visas under kartan utan en separat resultatskärm. Vid *Minska rörelse*
+  visas ankomsten direkt, utan förflyttningsanimation. Klockan är byggd av deltoner som i en slagen
   metallklocka, inte en ren ton – lägger man en riktig inspelning i
   `ljud/klocka.mp3` (och `ljud/dorr.mp3`) används den i stället; spelet
   frågar servern en gång vid start om filerna finns och rör annars inga

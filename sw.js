@@ -1,6 +1,6 @@
 /* Räknelandets servicearbetare — gör att spelet fungerar utan nätverk.
    Höj versionen när spelet ändras, så hämtas det nya vid nästa start. */
-const VERSION = "raknelandet-v36-r2";
+const VERSION = "raknelandet-v37-r1";
 const SKAL = [
   "./", "./index.html", "./manifest.webmanifest", "./utflykt.mjs", "./utflykt.css",
   "./apple-touch-icon.png", "./ikon-192.png", "./ikon-512.png"

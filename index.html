@@ -912,6 +912,29 @@ body.poster-visning{ overflow: hidden; }
 .fortsatt .scen-mini svg{ width: 100%; height: 100%; display: block; }
 .fortsatt b{ font-family: "Baloo 2", system-ui, sans-serif; font-size: var(--t-md); display: block; line-height: 1.1; }
 .fortsatt small{ font-size: var(--t-xs); color: var(--ink-2); display: block; margin-top: 2px; }
+.world-shortcuts{ margin: 0 0 14px; }
+.tram-start h1{ font-size: var(--t-xl); margin: 8px 0 4px; }
+.tram-start p{ color: var(--ink-2); font-size: var(--t-sm); margin: 0 0 18px; }
+.fortsatt[data-fortsatt], .btn.borja-aka{ background: var(--sun); }
+.btn.borja-aka{ display: flex; align-items: center; justify-content: center; gap: 18px; width: 100%; padding: 16px; text-align: left; }
+.borja-aka > svg{ width: 90px; height: 68px; flex: none; }
+.borja-aka small{ display: block; font-family: "Nunito", system-ui, sans-serif; font-size: var(--t-xs); margin-top: 3px; }
+.tram-sidoval{ display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 22px 0 10px; }
+.tram-sidoval .btn{ padding: 12px 8px; font-size: var(--t-sm); background: var(--paper); }
+.tram-sidoval svg{ display: block; width: 62px; height: 42px; margin: 0 auto 5px; }
+.tram-sidoval b, .tram-sidoval small{ display: block; }
+.tram-sidoval small{ font-size: var(--t-xs); color: var(--ink-2); margin-top: 2px; }
+.start-knapp.resor-knapp{ padding: 10px 14px; box-shadow: none; }
+.resor-knapp b{ font-size: var(--t-sm); }
+.land-lek{ display: block; margin: 18px auto; font-size: var(--t-sm); }
+.alla-startplatser{ width: 100%; margin-top: 16px; font-size: var(--t-sm); }
+.vagn-flikar{ display: flex; gap: 8px; margin: 0 0 18px; }
+.vagn-flikar .btn{ flex: 1; padding: 10px 6px; font-size: var(--t-sm); }
+.vagn-flikar .btn[aria-current="page"]{ background: var(--sun); }
+.lek-val{ display: grid; gap: 12px; margin-bottom: 20px; }
+.lek-val .btn{ text-align: left; padding: 14px; font-size: var(--t-sm); }
+.lek-val b, .lek-val small{ display: block; }
+.lek-val small{ margin-top: 4px; color: var(--ink-2); font-size: var(--t-xs); }
 /* Startskärmens hopfällda delar: en knapp med rubrik och en pil som vänder */
 .start-knapp{
   display: flex; align-items: center; gap: 10px; width: 100%; margin-top: 12px; padding: 12px 14px;
@@ -970,14 +993,15 @@ body.poster-visning{ overflow: hidden; }
 }
 .avgang small{ display: block; font-size: var(--t-xs); color: var(--ink-2); margin-top: 2px; }
 .avgang .pil{ font-size: 1.6rem; line-height: 1; }
-/* Uppdraget: en flagga med målet, mellan hållplatskortet och kartan */
+/* Frivilligt resmål ligger efter kartan och reseknapparna */
 .uppdrag{
   display: flex; align-items: center; gap: 10px; width: 100%; text-align: left;
   background: #FFF3CF; color: var(--ink); border: var(--stroke); border-radius: 18px;
   box-shadow: var(--lift-sm); padding: 9px 12px; margin-bottom: 14px;
   font-family: inherit; cursor: pointer; touch-action: manipulation;
 }
-.uppdrag.ny{ background: var(--paper); }
+.uppdrag.ny{ background: transparent; box-shadow: none; border: 2px dashed #B9B2CC; }
+.uppdrag.ny b{ font-family: inherit; font-size: var(--t-sm); }
 .uppdrag:active{ transform: translateY(3px); box-shadow: 0 0 0 var(--ink); }
 .uppdrag > svg{ width: 30px; height: 30px; flex: none; }
 .uppdrag > span{ min-width: 0; flex: 1; }
@@ -1138,8 +1162,7 @@ body.poster-visning{ overflow: hidden; }
 .trip-head{
   display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 11px;
   background: var(--paper); border: var(--stroke); border-radius: 20px;
-  box-shadow: var(--lift-sm); padding: 9px 11px; margin-bottom: 12px;
-  position: sticky; top: 0; z-index: 20;
+  box-shadow: var(--lift-sm); padding: 9px 11px; margin-bottom: 10px;
 }
 .trip-mid{ min-width: 0; display: grid; gap: 4px; justify-items: start; width: 100%; }
 .trip-mid .line-meta{ max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
@@ -1150,6 +1173,13 @@ body.poster-visning{ overflow: hidden; }
 .trip-bar{ display: block; width: 100%; height: 11px; border-radius: 999px; background: var(--paper-2); border: 2.5px solid var(--ink); overflow: hidden; }
 .trip-mid .line-ends{ white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 .trip-bar span{ display: block; height: 100%; background: var(--linecol); transition: width .6s cubic-bezier(.3,1.1,.5,1); }
+.trip-status{ display: grid; gap: 2px; margin: 0 3px 10px; font-size: var(--t-sm); line-height: 1.3; }
+.trip-status strong{ font-family: "Baloo 2", system-ui, sans-serif; font-size: var(--t-md); }
+.rese-beloning:empty{ display: none; }
+.rese-beloning{ padding: 10px 13px; margin: 12px 0; background: #E4F7DC; border-radius: 14px; font-size: var(--t-xs); }
+.rese-beloning p{ margin: 3px 0; }
+.rese-beloning .btn{ margin-top: 8px; padding: 8px 10px; font-size: var(--t-xs); }
+.hallplats-bild .stop-card{ margin-bottom: 0; }
 
 /* Ett riktigt foto ligger över teckningen och tonar bort, så att man först
    ser platsen och sedan spelets egen bild av den. Saknas fotot – eller går det
@@ -1185,7 +1215,7 @@ body.poster-visning{ overflow: hidden; }
 /* Linjediagram i kollektivtrafikstil */
 /* Nätkartan: hela nätet, inzoomat kring hållplatsen man står vid */
 .natkarta{
-  width: 100%; aspect-ratio: 1 / 1; max-height: 48vh;
+  width: 100%; height: clamp(280px, 44vh, 460px); height: clamp(280px, 44svh, 460px);
   background: #F4F1FA; border: var(--stroke); border-radius: 24px;
   box-shadow: var(--lift); overflow: hidden; margin-bottom: 14px;
   position: relative;
@@ -1265,8 +1295,7 @@ body.poster-visning{ overflow: hidden; }
 @keyframes skaka{ 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-1.5px); } }
 
 .go-btn{
-  position: sticky; bottom: max(10px, env(safe-area-inset-bottom)); z-index: 22;
-  display: block; width: 100%; margin-top: 14px;
+  display: block; width: 100%; margin-top: 0; margin-bottom: 12px;
   padding: 17px; font-size: clamp(1.3rem, 5vw, 1.9rem);
   background: var(--sun); border-radius: 24px;
 }
@@ -1305,31 +1334,6 @@ body.poster-visning{ overflow: hidden; }
   .stage{ grid-template-columns: minmax(70px, 22%) 1fr; }
   .badge-grid{ grid-template-columns: repeat(2, 1fr); }
 }
-/* Resan: himmel, mark och den egna vagnen som rullar från vänster till höger */
-#resa{ position: fixed; inset: 0; z-index: 55; overflow: hidden; cursor: pointer; display: flex; flex-direction: column; }
-#resa[hidden]{ display: none; }
-.resa-himmel{ flex: 1 1 0; background: linear-gradient(180deg, #A6E7FF 0%, #62CDF2 100%); display: grid; align-items: end; justify-items: center; }
-.resa-text{ text-align: center; padding-bottom: 5vh; display: grid; gap: 4px; }
-.resa-text .resa-nasta{ font-family: "Baloo 2", system-ui, sans-serif; font-weight: 800; font-size: var(--t-lg); color: var(--ink-2); }
-.resa-text b{ font-family: "Lilita One", system-ui, sans-serif; font-weight: 400; font-size: var(--t-2xl); color: var(--ink); line-height: 1; text-shadow: 0 4px 0 #FFFDF7; }
-/* Spåret: slipers längst ner i himlen, vagnen står med hjulen på dem */
-.resa-spar{ width: 100%; height: clamp(130px, 28vw, 250px); position: relative; background: #62CDF2; border-bottom: 3px solid var(--ink); }
-.resa-spar::after{ content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 12px; background: repeating-linear-gradient(90deg, #B9A98A 0 22px, #D9D2C0 22px 44px); border-top: 3px solid var(--ink); }
-/* Perrongen med skylten står där vagnen stannar */
-.resa-perrong{ position: absolute; left: 50%; bottom: 12px; width: min(84vw, 660px); height: 10px; transform: translateX(-50%); background: #E9E2D2; border: 3px solid var(--ink); border-bottom: none; border-radius: 6px 6px 0 0; }
-.resa-skylt{ position: absolute; right: 12px; bottom: 22px; display: grid; justify-items: center; }
-.resa-skylt::after{ content: ""; width: 5px; height: clamp(40px, 9vw, 80px); background: var(--ink); border-radius: 2px; }
-.resa-skylt span{ background: #FFFDF7; border: 3px solid var(--ink); border-radius: 10px; padding: 4px 12px; font-family: "Baloo 2", system-ui, sans-serif; font-weight: 800; font-size: var(--t-sm); white-space: nowrap; }
-.resa-vagn{ position: absolute; bottom: 8px; left: 50%; width: min(80vw, 620px); transform: translateX(-190%); }
-.resa-vagn svg{ width: 100%; height: auto; display: block; filter: drop-shadow(0 10px 8px rgba(46,26,102,.25)); }
-/* Vagnen rullar in från vänster, bromsar och stannar mitt på perrongen */
-#resa.kor .resa-vagn{ animation: resa-in 3.2s cubic-bezier(.3,.15,.2,1) forwards; }
-@keyframes resa-in{ from{ transform: translateX(-190%); } to{ transform: translateX(-50%); } }
-#resa.stilla .resa-vagn{ transform: translateX(-50%); animation: none; }
-.resa-mark{ flex: 1 1 0; background: linear-gradient(180deg, #8FE07E 0%, #57C96B 100%); display: grid; place-items: center; }
-.resa-ga{ width: min(84vw, 460px); animation: right-pop .5s cubic-bezier(.3,1.6,.5,1); }
-.resa-ga[hidden]{ display: none; }
-body.stilla #resa .resa-vagn{ transform: translateX(-50%); animation: none; }
 /* Kartan till väggen: en egen vy ovanpå allt, och det enda som skrivs ut */
 #poster{ position: fixed; inset: 0; z-index: 70; background: #EEF2F6; overflow: auto; padding: 12px; }
 #poster[hidden]{ display: none; }
@@ -1429,10 +1433,9 @@ body.stilla *, body.stilla *::before, body.stilla *::after{
     <nav class="world-shortcuts" aria-label="Välj vad du vill göra">
       <button class="btn" type="button" data-world-shortcut="land" aria-current="page">Räknebanor</button>
       <button class="btn" type="button" data-world-shortcut="tram">Åka vagn</button>
-      <button class="btn" type="button" data-lekstuga>Lekstugan</button>
     </nav>
     <button class="btn utf-entry" id="continueLevel" type="button" data-continue-level style="background:#C6EDDA"></button>
-    <button class="btn utf-entry" type="button" data-utflykt><span class="utf-entry-art" aria-hidden="true">🎟️</span><span><b>Konduktörens utflykt</b><small>Släpp på kompisar, stämpla biljetter och laga bron!</small></span></button>
+    <button class="btn land-lek" type="button" data-lekstuga>Lekstugan</button>
     <div class="map" id="map"></div>
   </section>
 
@@ -1441,9 +1444,7 @@ body.stilla *, body.stilla *::before, body.stilla *::after{
     <nav class="world-shortcuts" aria-label="Välj vad du vill göra">
       <button class="btn" type="button" data-world-shortcut="land">Räknebanor</button>
       <button class="btn" type="button" data-world-shortcut="tram" aria-current="page">Åka vagn</button>
-      <button class="btn" type="button" data-lekstuga>Lekstugan</button>
     </nav>
-    <button class="btn utf-entry" type="button" data-utflykt><span class="utf-entry-art" aria-hidden="true">🎟️</span><span><b>Konduktörens utflykt</b><small>Släpp på kompisar, stämpla biljetter och laga bron!</small></span></button>
     <div id="startTram"></div>
     <p class="footnote" id="tramCredit"></p>
   </section>
@@ -1451,9 +1452,9 @@ body.stilla *, body.stilla *::before, body.stilla *::after{
   <!-- ── SPÅRVAGN: RESAN ────────────────── -->
   <section id="screen-trip" class="screen">
     <div class="trip-head" id="tripHead"></div>
-    <div id="stopCard"></div>
-    <div id="uppdrag"></div>
+    <div class="trip-status" id="tripStatus" role="status"></div>
     <div class="natkarta" id="natkarta" aria-label="Spårvagnskarta"></div>
+    <button class="btn go-btn" id="goBtn" type="button">Åk till nästa hållplats!</button>
     <div class="trip-knappar">
       <button class="btn" data-trip="byt" type="button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg>
@@ -1464,11 +1465,16 @@ body.stilla *, body.stilla *::before, body.stilla *::after{
         Kör vagnen själv
       </button>
     </div>
+    <div class="rese-beloning" id="reseBeloning"></div>
+    <div id="uppdrag"></div>
+    <details class="alla-stopp hallplats-bild" id="hallplatsBild">
+      <summary>Se hållplatsen</summary>
+      <div id="stopCard"></div>
+    </details>
     <details class="alla-stopp" id="allaStopp">
       <summary>Alla hållplatser på linjen</summary>
       <div class="route" id="route"></div>
     </details>
-    <button class="btn go-btn" id="goBtn" type="button">Åk till nästa hållplats!</button>
   </section>
 
   <!-- ── LEKSTUGAN: SMÅSPEL ─────────────── -->
@@ -1551,17 +1557,6 @@ body.stilla *, body.stilla *::before, body.stilla *::after{
 
 <input type="file" id="kopiaFil" accept=".json,application/json" hidden>
 
-<!-- ── Resan: vagnen rullar mellan hållplatserna ── -->
-<div id="resa" hidden>
-  <div class="resa-himmel"><div class="resa-text"><span class="resa-nasta">Nästa hållplats</span><b id="resaMal"></b></div></div>
-  <div class="resa-spar">
-    <div class="resa-perrong"></div>
-    <div class="resa-skylt"><span id="resaSkylt"></span></div>
-    <div class="resa-vagn" id="resaVagn"></div>
-  </div>
-  <div class="resa-mark"><button class="btn btn-big resa-ga" id="resaGa" type="button" hidden>Hoppa på och räkna!</button></div>
-</div>
-
 <!-- ── Kartan till väggen ─────────────────── -->
 <div id="poster" hidden>
   <div class="poster-knappar">
@@ -1591,7 +1586,7 @@ const pick = (arr) => arr[rnd(arr.length)];
 const INK = "#2E1A66";
 /* Syns under Inställningar, så man kan se vilken version telefonen kör.
    Höjs tillsammans med VERSION i sw.js. */
-const SPELVERSION = "36";
+const SPELVERSION = "37";
 function shuffle(a){ for(let i = a.length - 1; i > 0; i--){ const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
 function store(key, val){
@@ -2404,6 +2399,9 @@ function openKortSheet(nr, lista){
     ${kortHTML(k)}
     <button class="btn" data-action="${lista ? "vagnkort" : "close"}" type="button" style="width:100%;margin-top:12px;background:var(--paper-2)">${lista ? "Alla mina kort" : "Toppen!"}</button>`);
 }
+function vagnFlikar(val){
+  return `<nav class="vagn-flikar" aria-label="Min vagn och samlingen"><button class="btn" data-action="minvagn" ${val === "bygga" ? 'aria-current="page"' : ""} type="button">Bygg min vagn</button><button class="btn" data-action="vagnkort" ${val === "kort" ? 'aria-current="page"' : ""} type="button">Mina vagnkort</button></nav>`;
+}
 /* ── Min egen vagn ────────────────────────────────────────────────────
    Barnet väljer modell bland dem som rullar i Göteborg, ett nummer ur den
    riktiga serien, linjen på skylten och pynt som köpts i kistan. Vagnen syns
@@ -2414,6 +2412,7 @@ function openMinVagn(){
   if(!p.vagn){ p.vagn = standardVagn(p); saveProfiles(); }
   openSheet(`
     <div class="sheet-head"><div><h2>Min vagn</h2><p class="sheet-sub">Bygg din egen spårvagn</p></div>${CLOSE_BTN}</div>
+    ${vagnFlikar("bygga")}
     <div class="vagn-scen" id="vagnScen"></div>
     <p class="vagn-info" id="vagnInfo"></p>
     <p class="sheet-sub vagn-rubrik">Modell</p>
@@ -2542,6 +2541,7 @@ function openVagnkort(){
   const grupper = VAGNTYPER.map(t => ({ t, nr: VAGNKORT_ALLA.filter(n => vagntypFor(n) === t) })).filter(g => g.nr.length);
   openSheet(`
     <div class="sheet-head"><div><h2>Mina vagnkort</h2><p class="sheet-sub">${har.size} av ${VAGNKORT_ALLA.length} kort. Läs numret på vagnen i ett foto så får du kortet.</p></div>${CLOSE_BTN}</div>
+    ${vagnFlikar("kort")}
     <div class="vk-lista">
       ${grupper.map(g => `
         <div class="vk-typrubrik">${g.t.typ} <small>${g.t.smek} · ${g.nr.filter(n => har.has(n)).length} av ${g.nr.length}</small></div>
@@ -4271,6 +4271,7 @@ let utflyktStopp = null;
 let aktivSkarm = null, spelStart = null;
 function show(name){
   clearTimers();
+  if(name !== "trip"){ stoppaKartAnimation(); tripRullar = false; }
   if(name !== "utflykt" && utflyktStopp){ utflyktStopp(); utflyktStopp = null; }
   /* Speltiden bokförs när spelskärmen lämnas, vart man än går */
   if(aktivSkarm === "game" && name !== "game" && spelStart && P()){
@@ -4301,6 +4302,7 @@ function belonaUtflykt(p){
 }
 async function openUtflykt(){
   const p = P(); if(!p) return;
+  closeSheet();
   if(!p.vagn){ p.vagn = standardVagn(p); saveProfiles(); }
   SFX.ensure(); SFX.tap();
   if(utflyktStopp){ utflyktStopp(); utflyktStopp = null; }
@@ -4333,11 +4335,15 @@ document.addEventListener("click", e => {
   if(e.target.closest("[data-utflykt]")){ openUtflykt(); return; }
   const val = e.target.closest("[data-world-shortcut]");
   if(val){ P().world = val.dataset.worldShortcut; saveProfiles(); SFX.tap(); enterWorld(false); return; }
-  if(e.target.closest("[data-lekstuga]")){
-    SFX.tap(); const p = P();
-    openSheet(`<div class="sheet-head"><div><h2>Lekstugan</h2><p class="sheet-sub">${p.coins} mynt · köp en gång, spela när du vill</p></div>${CLOSE_BTN}</div><div class="butik">${SMASPEL.map(v => spelRadHTML(v, p)).join("")}</div>`);
-  }
+  if(e.target.closest("[data-lekstuga]")){ SFX.tap(); openLekstuga(); }
 });
+function openLekstuga(){
+  const p = P(); if(!p) return;
+  openSheet(`<div class="sheet-head"><div><h2>Lekstugan</h2><p class="sheet-sub">Små lekar när du vill ta en paus från resan</p></div>${CLOSE_BTN}</div>
+    <div class="lek-val"><button class="btn" data-action="fotoquiz" type="button"><b>Var är vi? Fotoquiz</b><small>Känn igen hållplatserna på bild · gratis</small></button>
+    <button class="btn" data-utflykt type="button"><b>Konduktörens utflykt</b><small>Passagerare, biljetter och en bro · gratis</small></button></div>
+    <h3>Småspel</h3><p class="sheet-sub">${p.coins} mynt · köp en gång, spela när du vill</p><div class="butik">${SMASPEL.map(v => spelRadHTML(v, p)).join("")}</div>`);
+}
 let fokusFore = null;
 const FOKUSERBARA = 'button:not([disabled]), input, select, textarea, a[href], [tabindex]:not([tabindex="-1"])';
 
@@ -5112,9 +5118,14 @@ function stoppBildHTML(namn, cls){
 }
 
 let startFilter = "and";   /* "and" = ändstationer, "alla", eller ett linjenummer */
-/* Vad som är utfällt på startskärmen. Pågår en resa är allt hopfällt utom
-   korten överst; utan resa står hållplatsväljaren öppen. */
-let startVisa = { annanstans: null, resor: false };
+/* Alla startplatser finns kvar, men det enkla resevalet har huvudfokus. */
+let startVisa = { annanstans: false, resor: false };
+const START_STOPP = ["Saltholmen", "Angered Centrum", "Aprilgatan"];
+function openResestart(){
+  openSheet(`<div class="sheet-head"><div><h2>Var vill du börja åka?</h2><p class="sheet-sub">Välj en hållplats, sedan en vagn. Du bestämmer vägen.</p></div>${CLOSE_BTN}</div>
+    <div class="stoppgrid">${START_STOPP.map(namn => `<button class="stopp-tile" data-startstopp="${namn}" type="button">${stoppBildHTML(namn)}<span>${namn}</span></button>`).join("")}</div>
+    <button class="btn alla-startplatser" data-action="alla-startplatser" type="button">Välj bland alla hållplatser</button>`);
+}
 
 function renderStart(){
   const p = P();
@@ -5125,33 +5136,16 @@ function renderStart(){
               : startFilter === "and" ? ANDSTATIONER.slice().sort((a, b) => a.localeCompare(b, "sv"))
               : (lineByRef(startFilter) || TRAM_LINES[0]).stops;
   el("startTram").innerHTML = `
+    <div class="tram-start"><h1>Åk vart du vill</h1><p>Välj vagn, följ kartan och byt linje när du vill.</p></div>
     ${r ? `<button class="fortsatt" data-fortsatt type="button">
         ${stoppBildHTML(r.pos)}
-        <span style="min-width:0"><b>Fortsätt från ${r.pos}</b><small>Linje ${r.ref} mot ${r.rikt === 1 ? rl.b : rl.a}</small></span>
+        <span style="min-width:0"><b>Fortsätt resan</b><small>Från ${r.pos} · linje ${r.ref} mot ${r.rikt === 1 ? rl.b : rl.a}</small></span>
         ${roundel(rl)}
-      </button>` : ""}
-    <button class="fortsatt quiz" data-quiz type="button">
-      <span class="scen-mini" style="display:grid;place-items:center;background:#FFF3CF"><svg class="kamera" viewBox="0 0 24 24" fill="none" stroke="#2E1A66" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.7h3.4L8.2 6h7.6l1.8 2.7H21v9.6H3z" fill="#FFC42E"/><circle cx="12" cy="13.2" r="3.3" fill="#FFFDF7"/></svg></span>
-      <span style="min-width:0"><b>Var är vi? Fotoquiz</b><small>Känn igen hållplatserna på bild${p.quizBast ? ` · rekord ${p.quizBast} av 6` : ""}</small></span>
-      <span class="roundel" style="background:var(--sun)">?</span>
-    </button>
-    <div class="minvagn-rad">
-      <button class="fortsatt quiz" data-minvagn type="button">
-        <span class="scen-mini" style="display:grid;place-items:center;background:#EAF6FF;padding:4px">${vagnBild(p)}</span>
-        <span style="min-width:0"><b>${p.vagn ? `Min vagn · ${vagnAv(p).typ.typ} ${p.vagn.nr}` : "Min egen vagn"}</b><small>${p.vagn ? `${vagnAv(p).namn ? "heter " + escapeHtml(vagnAv(p).namn) + " · " : ""}linje ${vagnAv(p).linje.ref} mot ${escapeHtml(vagnAv(p).mot)}` : "Bygg din egen spårvagn – modell, nummer och linje"}</small></span>
-        ${p.vagn ? roundel(vagnAv(p).linje) : `<span class="roundel" style="background:var(--sun)">+</span>`}
-      </button>
-      <button class="kompis-start" data-kompis type="button" aria-label="Din kompis – tryck så säger den något">${kompisSVG(p, "idle")}</button>
-    </div>
-    <button class="fortsatt quiz" data-vagnkort type="button">
-      <span class="scen-mini" style="display:grid;place-items:center;background:#EAF6FF;padding:4px">${vagnSidoSVG(vagnTypAv("M32"))}</span>
-      <span style="min-width:0"><b>Mina vagnkort</b><small>${(p.vagnkort || []).length} av ${VAGNKORT_ALLA.length} · läs numret på vagnarna i fotona</small></span>
-      <span class="roundel" style="background:#EAF6FF">${(p.vagnkort || []).length}</span>
-    </button>
+      </button>` : `<button class="btn btn-big borja-aka" data-borja-aka type="button">${tramSVG("#62CDF2", "")}<span>Börja åka<small>Välj din första hållplats</small></span></button>`}
     ${(() => {
-      const oppen = startVisa.annanstans == null ? !r : startVisa.annanstans;
+      const oppen = startVisa.annanstans;
       return `<button class="start-knapp" data-visa="annanstans" type="button" aria-expanded="${oppen}">
-        <span><b>${r ? "Börja någon annanstans" : "Var vill du börja?"}</b><small>Ändstationerna, en linje eller alla ${ALLA_STOPP.length} hållplatser</small></span>
+        <span><b>Välj en annan startplats</b><small>Alla hållplatser och linjer finns kvar här</small></span>
       </button>
       ${oppen ? `<div class="start-sektion" id="sektionAnnanstans">
     <div class="linjechips">
@@ -5167,7 +5161,11 @@ function renderStart(){
           <span class="linjer" style="padding-top:0">${linjerVid(namn).map(l => `<i style="background:${l.col};color:${ljusFarg(l.col) ? INK : "#FFFDF7"}">${l.ref}</i>`).join("")}</span>
         </button>`).join("")}
     </div></div>` : ""}`; })()}
-    <button class="start-knapp" data-visa="resor" type="button" aria-expanded="${startVisa.resor}">
+    <div class="tram-sidoval">
+      <button class="btn" data-minvagn type="button">${vagnBild(p)}<b>Min vagn</b><small>Bygg och samla vagnkort</small></button>
+      <button class="btn" data-lekstuga type="button"><span class="lek-symbol" aria-hidden="true">★</span><b>Lekstugan</b><small>Fotoquiz och små lekar</small></button>
+    </div>
+    <button class="start-knapp resor-knapp" data-visa="resor" type="button" aria-expanded="${startVisa.resor}">
       <span><b>Mina resor</b><small>${besoktaAlla(p).size} av ${ALLA_STOPP.length} hållplatser · ${(p.linesDone || []).length} hela linjer · kartan till väggen</small></span>
     </button>
     ${startVisa.resor ? `<div class="start-sektion" id="sektionResor">
@@ -5184,7 +5182,7 @@ function renderStart(){
       <svg viewBox="0 0 24 24" fill="none" stroke="#2E1A66" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:24px;height:24px;flex:none"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="7" rx="1"/></svg>
       Karta till väggen – skriv ut
     </button>
-    ${p.uppdrag ? `<p class="sheet-sub uppdrag-rad">${FLAGGA_SVG} Uppdrag: ta dig till <b>${p.uppdrag.mal}</b></p>` : ""}
+    ${p.uppdrag ? `<p class="sheet-sub uppdrag-rad">${FLAGGA_SVG} Resmål: <b>${p.uppdrag.mal}</b></p>` : ""}
     <h2 class="start-rubrik">Mina linjer</h2>
     <div class="mina-linjer">
       ${TRAM_LINES.map(l => {
@@ -5203,11 +5201,12 @@ function renderStart(){
 }
 
 el("startTram").addEventListener("click", (e) => {
+  if(e.target.closest("[data-borja-aka]")){ SFX.ensure(); SFX.tap(); openResestart(); return; }
   const visa = e.target.closest("[data-visa]");
   if(visa){
     SFX.tap();
     const k = visa.dataset.visa;
-    const oppen = k === "annanstans" && startVisa.annanstans == null ? !(P().resa && lineByRef(P().resa.ref)) : !!startVisa[k];
+    const oppen = !!startVisa[k];
     startVisa[k] = !oppen;
     renderStart();
     if(startVisa[k]){ const s = el(k === "annanstans" ? "sektionAnnanstans" : "sektionResor"); if(s) later(() => s.scrollIntoView({ block: "start", behavior: reduceMotion ? "auto" : "smooth" }), 60); }
@@ -5224,8 +5223,6 @@ el("startTram").addEventListener("click", (e) => {
   }
   const fort = e.target.closest("[data-fortsatt]");
   if(fort){ SFX.ensure(); SFX.tap(); openTrip(false); return; }
-  if(e.target.closest("[data-quiz]")){ SFX.ensure(); SFX.tap(); startRound(FOTOQUIZ, "choice"); return; }
-  if(e.target.closest("[data-vagnkort]")){ SFX.tap(); openVagnkort(); return; }
   if(e.target.closest("[data-minvagn]")){ SFX.tap(); openMinVagn(); return; }
   const kompis = e.target.closest("[data-kompis]");
   if(kompis){ kompisHalsar(kompis); return; }
@@ -5247,7 +5244,7 @@ function openPerrong(namn, andstation){
     .sort((a, b) => (b.narmare ? 1 : 0) - (a.narmare ? 1 : 0) || (a.sparrad ? 1 : 0) - (b.sparrad ? 1 : 0));
   openSheet(`
     <div class="sheet-head">
-      <div><h2>${namn}</h2><p class="sheet-sub">${andstation ? "Ändstation! Vilken vagn tar du nu?" : p.uppdrag ? `Uppdrag: ta dig till ${p.uppdrag.mal}` : "Vilken vagn vill du åka med?"}</p></div>
+      <div><h2>${namn}</h2><p class="sheet-sub">${andstation ? "Ändstation! Vilken vagn tar du nu?" : p.uppdrag ? `Resmål: ${p.uppdrag.mal}` : "Vilken vagn vill du åka med?"}</p></div>
       ${CLOSE_BTN}
     </div>
     <div class="perrong">
@@ -5258,7 +5255,7 @@ function openPerrong(namn, andstation){
           <span class="pil">${a.rikt === 1 ? "→" : "←"}</span>
         </button>`; }).join("")}
     </div>
-    <p class="sheet-sub" style="margin:12px 0 0">Vilka tal du räknar väljer du med <b>byt</b> uppe i resan.</p>`);
+    <p class="sheet-sub" style="margin:12px 0 0">Du väljer vägen själv. Mattenivån kan en vuxen ändra under kugghjulet på startsidan.</p>`);
   speakUtrop(namn + (andstation ? ". Ändstation." : ""));
 }
 
@@ -5269,6 +5266,7 @@ function stigPa(ref, rikt, pos){
     SFX.wrong(); speakUtrop("Spårarbete! Den vagnen går inte härifrån."); return;
   }
   p.resa = { pos, ref, rikt };
+  tripFrom = null; reseBeloning = null;
   /* Den som kliver på mitt på målet har inte åkt dit – uppdraget faller */
   if(p.uppdrag && p.uppdrag.mal === pos) p.uppdrag = null;
   p.besokta = p.besokta || {};
@@ -5277,8 +5275,8 @@ function stigPa(ref, rikt, pos){
   saveProfiles();
   const l = lineByRef(ref);
   SFX.tram();
-  later(() => speakUtrop(`Linje ${ref}, mot ${rikt === 1 ? l.b : l.a}`), 300);
   openTrip(false);
+  later(() => speakUtrop(`Linje ${ref}, mot ${rikt === 1 ? l.b : l.a}`), 300);
 }
 
 /* ── Nätkartan ──────────────────────────────────────────────────────────
@@ -5451,7 +5449,7 @@ function natLinjePath(l){
 
 /* Fönstret kring en hållplats: så stort att grannhållplatserna får plats,
    men aldrig så litet att kartan blir en tom yta. */
-function natFonster(l, i){
+function natFonster(l, i, rikt = 1){
   const P = STOP_XY[l.stops[i]] || [530, 530];
   let r = 0;
   for(const j of [i - 1, i + 1]){
@@ -5461,16 +5459,16 @@ function natFonster(l, i){
   const bredd = Math.max(200, Math.min(420, r * 2.7));
   /* Kartan tittar lite framåt i färdriktningen – vid ändstationen bakåt –
      så fönstret inte är halvtomt när man står i kanten av nätet. */
-  const N = STOP_XY[l.stops[i + 1]] || STOP_XY[l.stops[i - 1]] || P;
+  const N = STOP_XY[l.stops[i + rikt]] || STOP_XY[l.stops[i - rikt]] || P;
   const cx = P[0] + (N[0] - P[0]) * 0.3, cy = P[1] + (N[1] - P[1]) * 0.3;
   return { x: cx - bredd / 2, y: cy - bredd / 2, w: bredd, h: bredd };
 }
 const viewBoxStr = (f) => `${f.x.toFixed(1)} ${f.y.toFixed(1)} ${f.w.toFixed(1)} ${f.h.toFixed(1)}`;
 
-const HELA_NATET = { x: 20, y: 15, w: 1030, h: 1030 };
+const HELA_NATET = { x: -65, y: -65, w: 1180, h: 1180 };
 function natkartaSVG(l, at, o){
   o = o || {};
-  const f = o.utzoomad ? HELA_NATET : natFonster(l, at);
+  const f = o.utzoomad ? HELA_NATET : natFonster(l, at, o.rikt);
   const skala = f.w / 260;                     /* 1 vid normalt fönster */
   const besokta = o.besokta || new Set();
   const stopp = new Set(l.stops);
@@ -5481,6 +5479,11 @@ function natkartaSVG(l, at, o){
   /* Den egna linjen */
   html += `<path class="nat-linje" d="${natLinjePath(l)}" stroke="${INK}" stroke-width="${(9.5 * skala).toFixed(1)}"/>`;
   html += `<path class="nat-linje" d="${natLinjePath(l)}" stroke="${l.col}" stroke-width="${(6 * skala).toFixed(1)}"/>`;
+  const nastaAt = at + (o.rikt || 1), A = STOP_XY[l.stops[at]], B = STOP_XY[l.stops[nastaAt]];
+  if(A && B){
+    html += `<path class="nat-etapp" d="M${A[0]} ${A[1]}L${B[0]} ${B[1]}" fill="none" stroke="#FFC42E" stroke-width="${(12 * skala).toFixed(1)}" opacity=".7" stroke-linecap="round"/>`;
+    html += `<circle class="nat-nasta" cx="${B[0]}" cy="${B[1]}" r="${(10 * skala).toFixed(1)}" fill="none" stroke="${INK}" stroke-width="${(2 * skala).toFixed(1)}" stroke-dasharray="${(3 * skala).toFixed(1)} ${(3 * skala).toFixed(1)}"/>`;
+  }
   /* Andra linjers hållplatser som små prickar */
   for(const [namn, P] of Object.entries(STOP_XY)){
     if(stopp.has(namn)) continue;
@@ -5503,6 +5506,8 @@ function natkartaSVG(l, at, o){
   const krockar = (b) => b.x < f.x || b.x + b.w > f.x + f.w || b.y < f.y || b.y + b.h > f.y + f.h
     || upptaget.some(u => b.x < u.x + u.w && b.x + b.w > u.x && b.y < u.y + u.h && b.y + b.h > u.y);
   l.stops.forEach((namn, i) => { const P = STOP_XY[namn]; if(P) upptaget.push({ x:P[0] - 7 * skala, y:P[1] - 7 * skala, w:14 * skala, h:14 * skala }); });
+  const vagnP = STOP_XY[l.stops[at]];
+  if(vagnP) upptaget.push({x:vagnP[0] - 13 * skala,y:vagnP[1] - 19 * skala,w:26 * skala,h:39 * skala});
   /* Knappen "Hela nätet" ligger ovanpå kartans övre högra hörn – inga namn där */
   upptaget.push({ x: f.x + f.w * 0.58, y: f.y, w: f.w * 0.42, h: f.h * 0.15 });
   /* Spårarbete: sträckan streckas röd och en bom står mitt på den */
@@ -5550,7 +5555,7 @@ function natkartaSVG(l, at, o){
       ${inne ? `<text class="nat-namn mal" y="-27" font-size="11" text-anchor="middle">${o.mal}</text>` : ""}
     </g>`;
   }
-  const ordning = (o.utzoomad ? [at, 0, l.stops.length - 1] : [at, at - 1, at + 1, 0, l.stops.length - 1, at - 2, at + 2])
+  const ordning = (o.utzoomad ? [at, at + (o.rikt || 1), 0, l.stops.length - 1] : [at, at + (o.rikt || 1), at - (o.rikt || 1), 0, l.stops.length - 1, at - 2, at + 2])
     .filter((i, k, arr) => i >= 0 && i < l.stops.length && arr.indexOf(i) === k);
   ordning.forEach(i => {
     const P = STOP_XY[l.stops[i]]; if(!P) return;
@@ -5558,8 +5563,9 @@ function natkartaSVG(l, at, o){
     if(namn === o.mal && !har) return;   /* flaggan bär redan namnet */
     /* Bredden uppskattas grovt – fet Nunito är bred – hellre för stor än för liten */
     const px = (har ? 13 : 11) * skala, w = namn.length * px * 0.7 + 4 * skala, h = px * 1.2;
+    const namnX = Math.max(f.x + 4 * skala, Math.min(f.x + f.w - w - 4 * skala, P[0] - w / 2));
     const lagen = har
-      ? [{ x:P[0] - w / 2, y:P[1] - 20 * skala - h, anchor:"middle", tx:P[0], ty:P[1] - 20 * skala }]
+      ? [{ x:namnX, y:P[1] - 20 * skala - h, anchor:"start", tx:namnX, ty:P[1] - 20 * skala }]
       : [{ x:P[0] + 9 * skala,     y:P[1] - h / 2, anchor:"start",  tx:P[0] + 9 * skala, ty:P[1] + px * 0.35 },
          { x:P[0] - 9 * skala - w, y:P[1] - h / 2, anchor:"end",    tx:P[0] - 9 * skala, ty:P[1] + px * 0.35 },
          { x:P[0] - w / 2, y:P[1] - 10 * skala - h, anchor:"middle", tx:P[0], ty:P[1] - 10 * skala },
@@ -5571,17 +5577,18 @@ function natkartaSVG(l, at, o){
     html += `<text class="nat-namn ${har ? "har" : ""}" x="${lage.tx.toFixed(1)}" y="${lage.ty.toFixed(1)}" font-size="${px.toFixed(1)}" text-anchor="${lage.anchor}">${namn}</text>`;
   });
   html += sparrHtml + malHtml;
-  /* Här är vi: pulserande ring och linjens rundel */
+  /* Här är vi: en liten vagn i linjens färg, med linjenumret och en pulserande ring */
   const H = STOP_XY[l.stops[at]] || [530, 530];
   const text = ljusFarg(l.col) ? INK : "#FFFDF7";
   html += `<g id="natHar" transform="translate(${H[0]},${H[1]})">
     <circle class="nat-ring" r="${(15 * skala).toFixed(1)}" fill="${l.col}" opacity=".5"/>
-    <g class="nat-rundel"><circle r="${(11 * skala).toFixed(1)}" fill="${l.col}" stroke="${INK}" stroke-width="${(2.6 * skala).toFixed(1)}"/>
-    <text font-size="${(11 * skala).toFixed(1)}" fill="${text}">${l.ref}</text></g>
+    <g class="nat-rundel" transform="scale(${skala.toFixed(3)})"><rect x="-11" y="-17" width="22" height="30" rx="6" fill="${l.col}" stroke="${INK}" stroke-width="2.5"/>
+    <rect x="-8" y="-13" width="16" height="8" rx="2" fill="#EAF6FF" stroke="${INK}" stroke-width="1.5"/>
+    <text y="3" font-size="11" fill="${text}">${l.ref}</text><path d="M-7 13l-3 5M7 13l3 5M-11 18h22" stroke="${INK}" stroke-width="2.2" stroke-linecap="round"/></g>
   </g>`;
   return `<svg viewBox="${viewBoxStr(f)}" xmlns="http://www.w3.org/2000/svg" id="natSvg" role="img" aria-label="Linje ${l.ref} vid ${l.stops[at]}">${html}</svg>
     <button class="nat-zoom" type="button">${o.utzoomad ? "Zooma in" : "Hela nätet"}</button>
-    <span class="nat-hint">${o.utzoomad ? "Tryck på kartan för att zooma in" : "Tryck på kartan för hela nätet"}</span>`;
+    <span class="nat-hint">Vagnen visar var du är${B ? " · gul sträcka = nästa hållplats" : ""}</span>`;
 }
 
 /* ── Kartan till väggen ─────────────────────────────────────────────────
@@ -5695,28 +5702,44 @@ el("posterSkriv").addEventListener("click", () => { SFX.tap(); try{ window.print
 el("posterBild").addEventListener("click", () => { SFX.tap(); posterSomBild(); });
 
 /* Vagnen rullar från en hållplats till nästa och kartan följer med */
-function animeraNatkarta(l, fran, till, ms){
-  const svg = el("natSvg"), har = el("natHar");
-  if(!svg || !har) return;
-  const f0 = natFonster(l, fran), f1 = natFonster(l, till);
+let kartAnimation = 0, kartRaf = null;
+function stoppaKartAnimation(){
+  kartAnimation++;
+  if(kartRaf !== null) cancelAnimationFrame(kartRaf);
+  kartRaf = null;
+}
+function kartReseLage(l, fran, till, progress, utzoomad){
+  const t = Math.max(0, Math.min(1, progress));
   const A = STOP_XY[l.stops[fran]], B = STOP_XY[l.stops[till]];
-  if(!A || !B) return;
+  if(!A || !B) return null;
+  const rikt = till > fran ? 1 : -1;
+  const f0 = utzoomad ? HELA_NATET : natFonster(l, fran, rikt), f1 = utzoomad ? HELA_NATET : natFonster(l, till, rikt);
+  return { x:A[0] + (B[0] - A[0]) * t, y:A[1] + (B[1] - A[1]) * t,
+    fonster:{ x:f0.x + (f1.x - f0.x) * t, y:f0.y + (f1.y - f0.y) * t, w:f0.w + (f1.w - f0.w) * t, h:f0.h + (f1.h - f0.h) * t } };
+}
+function animeraNatkarta(l, fran, till, ms, klar){
+  stoppaKartAnimation();
+  const token = kartAnimation;
+  const svg = el("natSvg"), har = el("natHar");
+  if(!svg || !har || !kartReseLage(l, fran, till, 0, natUtzoomad)){ if(klar) klar(); return; }
   const start = performance.now();
   const mjuk = (t) => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
   function steg(nu){
+    if(token !== kartAnimation || !svg.isConnected || aktivSkarm !== "trip") return;
     const t = mjuk(Math.min(1, (nu - start) / ms));
-    svg.setAttribute("viewBox", viewBoxStr({
-      x: f0.x + (f1.x - f0.x) * t, y: f0.y + (f1.y - f0.y) * t,
-      w: f0.w + (f1.w - f0.w) * t, h: f0.h + (f1.h - f0.h) * t }));
-    har.setAttribute("transform", `translate(${(A[0] + (B[0] - A[0]) * t).toFixed(1)},${(A[1] + (B[1] - A[1]) * t).toFixed(1)})`);
-    if(t < 1) requestAnimationFrame(steg);
+    const lage = kartReseLage(l, fran, till, t, natUtzoomad);
+    svg.setAttribute("viewBox", viewBoxStr(lage.fonster));
+    har.setAttribute("transform", `translate(${lage.x.toFixed(1)},${lage.y.toFixed(1)})`);
+    if(t < 1) kartRaf = requestAnimationFrame(steg);
+    else { kartRaf = null; if(klar) klar(); }
   }
-  requestAnimationFrame(steg);
+  kartRaf = requestAnimationFrame(steg);
 }
 
 /* ── Resan längs linjen ─────────────────── */
 let tripRef = null, tripFrom = null;   /* tripFrom: index i linjen man just lämnade */
 let natUtzoomad = false;
+let tripRullar = false, reseBeloning = null;
 /* Kan bilderna inte hämtas alls – i en visare där bildmappen saknas – slutar vi
    be om dem. Ett enstaka misslyckande räcker inte som bevis: då kan det lika
    gärna vara en lucka i nätet, och resten av resan ska inte bli utan foton. */
@@ -5735,12 +5758,10 @@ function openTrip(animera){
   if(!p.tramMode) p.tramMode = "choice";
   if(g.recentLine !== tripRef){ g.recent = []; g.recentLine = tripRef; }
   saveProfiles();
-  /* Skärmen först: show() rensar fördröjda händelser, och renderTrip lägger
-     upp både fotots övergång och autoscrollen som sådana. */
+  /* Skärmen först: show() rensar tidigare timers innan kartresan startas. */
   show("trip");
   renderTrip(animera);
-  /* Framme: dörrarna öppnas när vagnen rullat in på kartan */
-  if(animera) later(() => SFX.dorr(), 1100);
+  window.scrollTo({top:0,behavior:"auto"});
 }
 
 /* Fotot, dess byline och kameraknappen är samma sak för den som tittar,
@@ -5768,12 +5789,14 @@ function resLage(p){
   return { l, rikt, at, ordn, k, slut, mot: rikt === 1 ? l.b : l.a, nasta: slut ? null : ordn[k + 1] };
 }
 
-function renderTrip(animera, visaBilden){
+function renderTrip(animera){
+  stoppaKartAnimation();
+  const renderToken = kartAnimation;
   const p = P();
   const { l, rikt, at, ordn, k, slut, mot, nasta } = resLage(p);
   const n = ordn.length;
-  const talnivå = tramLevelDef(p);
   const besokta = new Set(besoktaPa(p, l.ref));
+  tripRullar = !!(animera && tripFrom != null && tripFrom !== at);
 
   el("tripHead").style.setProperty("--linecol", l.col);
   el("tripHead").innerHTML = `
@@ -5782,12 +5805,16 @@ function renderTrip(animera, visaBilden){
     </button>
     <span class="trip-mid">
       <span class="line-ends">mot ${mot}</span>
-      <span class="trip-stopp" style="background:${l.col};color:${ljusFarg(l.col) ? INK : "#FFFDF7"}" title="${talnivå.name}${talnivå.nuvarande ? " · " + talnivå.nuvarande : ""} – byt under kugghjulet">Hållplats ${k + 1} av ${n}</span>
+      <span class="trip-stopp" style="background:${l.col};color:${ljusFarg(l.col) ? INK : "#FFFDF7"}">${tripRullar ? "Vagnen åker" : "Hållplats " + (k + 1) + " av " + n}</span>
       <span class="trip-bar"><span style="width:${Math.round(k / (n - 1) * 100)}%"></span></span>
     </span>
     ${roundel(l)}`;
 
   const namn = l.stops[at];
+  el("tripStatus").innerHTML = tripRullar
+    ? `<span>Åker från <b>${escapeHtml(l.stops[tripFrom])}</b></span><strong>→ ${escapeHtml(namn)}</strong>`
+    : `<span>Nu: <b>${escapeHtml(namn)}</b></span><strong>${nasta ? "Nästa: " + escapeHtml(nasta) : "Ändstation – välj vagn eller vänd"}</strong>`;
+  el("reseBeloning").innerHTML = !tripRullar && reseBeloning && reseBeloning.player === p.id ? reseBeloningHTML(reseBeloning) : "";
   const egetFoto = fotonAv ? null : STOP_PHOTOS[namn];
   const foto = egetFoto || (fotonAv ? null : vagnFoto(namn));
   const altText = egetFoto ? "Foto på hållplatsen " + namn : "En spårvagn i Göteborg";
@@ -5818,6 +5845,7 @@ function renderTrip(animera, visaBilden){
   const visaAt = animera && tripFrom != null ? tripFrom : at;
   const visaK = ordn.indexOf(l.stops[visaAt]);
   el("uppdrag").innerHTML = uppdragHTML(p);
+  el("uppdrag").querySelector("button").disabled = tripRullar;
   el("natkarta").innerHTML = natkartaSVG(l, visaAt, { besokta, utzoomad: natUtzoomad, rikt, mal: p.uppdrag && p.uppdrag.mal, sparr: p.uppdrag && p.uppdrag.sparr });
   el("route").style.setProperty("--linecol", l.col);
   el("route").innerHTML =
@@ -5845,57 +5873,62 @@ function renderTrip(animera, visaBilden){
   }
 
   const sparradNu = !slut && sparradFram(p);
+  el("goBtn").disabled = tripRullar;
+  const bytKnapp = document.querySelector('[data-trip="byt"]');
+  bytKnapp.hidden = slut || sparradNu;
+  bytKnapp.disabled = tripRullar;
+  el("natkarta").querySelector(".nat-zoom").disabled = tripRullar;
   el("goBtn").className = "btn go-btn" + (slut || sparradNu ? " done" : "");
-  el("goBtn").innerHTML = (sparradNu
+  el("goBtn").innerHTML = (tripRullar ? "Vagnen åker…" : sparradNu
     ? `${SPARR_SVG}Spårarbete! Byt vagn eller vänd`
     : slut
     ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg>Ändstation – välj ny vagn!`
     : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="13" height="13" rx="3.5"/><path d="M3 9.5h13M6 21l2-4M13 21l-2-4"/><circle cx="7" cy="13.5" r="1.1" fill="currentColor"/><circle cx="12" cy="13.5" r="1.1" fill="currentColor"/><path d="M18 10.5h4M20 8.5l2 2-2 2" /></svg>Åk till ${nasta}!`);
 
   el("hyttBtn").hidden = !spelKopt(p, "hytt");
-  if(animera && tripFrom != null && tripFrom !== at){
-    requestAnimationFrame(() => later(() => rullaFram(at), 60));
+  if(tripRullar){
+    kartRaf = requestAnimationFrame(() => {
+      if(renderToken !== kartAnimation || aktivSkarm !== "trip") return;
+      kartRaf = null;
+      later(() => { if(renderToken === kartAnimation && tripRullar) rullaFram(at); }, 60);
+    });
   }else{
     tripFrom = null;
-    if(visaBilden){
-      window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
-    }else if(el("allaStopp").open){
-      const rad = el("route").querySelector(".stop-row.här");
-      if(rad) later(() => rad.scrollIntoView({ block: "center", behavior: reduceMotion ? "auto" : "smooth" }), 120);
-    }
+    /* Fotot och linjelistan tar aldrig över genom autoscroll. Kartan står kvar. */
   }
 }
 
 /* Spårvagnen rullar fram till nästa hållplats */
 function rullaFram(till){
-  const p = P(), { l, ordn } = resLage(p), namn = l.stops[till];
-  const k = ordn.indexOf(namn), fran = tripFrom;
-  const vagn = el("tramMarker"), rader = el("route").querySelectorAll(".stop-row");
-  const del = el("route").querySelector(".done-part");
-  if(!vagn) return;
+  const p = P(), { l } = resLage(p), namn = l.stops[till], fran = tripFrom;
+  if(fran == null || aktivSkarm !== "trip") return;
   SFX.tram();
-  SFX.utrop();
-  later(() => speakUtrop("Nästa hållplats: " + namn), 620);
-  vagn.style.top = (k * 52 + 26) + "px";
-  if(del) del.style.height = (k * 52) + "px";
-  rader.forEach((r, i) => {
-    r.classList.toggle("done", i < k || r.classList.contains("done"));
-    r.classList.toggle("här", i === k);
-  });
-  if(!reduceMotion && fran != null) animeraNatkarta(l, fran, till, 900);
-  el("natkarta").scrollIntoView({ block: "center", behavior: reduceMotion ? "auto" : "smooth" });
-  const rad = rader[k];
-  if(rad && el("allaStopp").open) rad.scrollIntoView({ block: "center", behavior: reduceMotion ? "auto" : "smooth" });
+  speakUtrop("Nästa hållplats: " + namn);
+  const klar = () => {
+    if(aktivSkarm !== "trip" || P() !== p) return;
+    tripFrom = null; tripRullar = false;
+    renderTrip(false);
+    SFX.pling(); SFX.dorr();
+    speakUtrop(resLage(p).slut ? "Ändstation, " + namn + "." : namn);
+  };
+  if(reduceMotion){ klar(); return; }
   later(() => {
-    vagn.classList.remove("rullar");
-    tripFrom = null;
-    SFX.pling();
-    const slut = k >= ordn.length - 1;
-    /* Belöningen kom redan på resultatskärmen – här räcker plinget */
-    speakUtrop(slut ? "Ändstation, " + namn + "." : namn);
-    renderTrip(false, true);
-  }, reduceMotion ? 60 : 950);
+    if(tripRullar) el("tripStatus").innerHTML = `<span>Vagnen bromsar…</span><strong>${escapeHtml(namn)}</strong>`;
+  }, 1750);
+  animeraNatkarta(l, fran, till, 2400, klar);
 }
+function reseBeloningHTML(b){
+  return `<p><b>Framme vid ${escapeHtml(b.stopp)}!</b> +${b.mynt} mynt</p>
+    ${b.resmal ? `<p>Resmålet är nått! +${b.resmal.beloning} mynt extra.</p>` : ""}
+    ${b.bana ? `<p>Ny räknebana: ${escapeHtml(b.bana.name)}</p>` : ""}
+    ${b.kort.length || b.marken.length ? '<button class="btn" data-rese-nytt type="button">Se nya vagnkort och märken</button>' : ""}`;
+}
+el("reseBeloning").addEventListener("click", e => {
+  if(!e.target.closest("[data-rese-nytt]") || !reseBeloning) return;
+  SFX.tap();
+  if(reseBeloning.kort.length) celebrateKort(reseBeloning.kort, reseBeloning.marken);
+  else celebrateBadges(reseBeloning.marken);
+});
 
 el("tripHead").addEventListener("click", (e) => {
   const b = e.target.closest("[data-trip]"); if(!b) return;
@@ -5915,12 +5948,12 @@ function uppdragHTML(p){
   const u = p.uppdrag;
   if(!u) return `
     <button class="uppdrag ny" data-uppdrag="nytt" type="button">
-      ${FLAGGA_SVG}<span><b>Vill du ha ett uppdrag?</b><small>Ta dig till en hållplats i nätet</small></span>
+      ${FLAGGA_SVG}<span><b>Välj ett resmål</b><small>Frivilligt – du kan alltid åka fritt</small></span>
     </button>`;
   const t = uppdragTips(p) || { kvar: "?", text: "" };
   return `
     <button class="uppdrag aktiv ${u.sparr ? "sparr" : ""}" data-uppdrag="visa" type="button">
-      ${u.sparr ? SPARR_SVG : FLAGGA_SVG}<span><b>Ta dig till ${u.mal}!</b><small>${u.sparr ? `Spårarbete ${u.sparr[0]}–${u.sparr[1]}! ` : ""}${t.kvar} hållplats${t.kvar === 1 ? "" : "er"} kvar · ${t.text}</small></span>
+      ${u.sparr ? SPARR_SVG : FLAGGA_SVG}<span><b>Resmål: ${u.mal}</b><small>${u.sparr ? `Spårarbete ${u.sparr[0]}–${u.sparr[1]}! ` : ""}${t.kvar} hållplats${t.kvar === 1 ? "" : "er"} kvar · ${t.text}</small></span>
       <span class="uppdrag-mynt">+${u.beloning}</span>
     </button>`;
 }
@@ -5938,29 +5971,31 @@ function startaUppdrag(){
   p.uppdrag = u; saveProfiles();
   SFX.pling();
   ritaUppdrag();
-  speakUtrop(u.sparr ? `Nytt uppdrag! Ta dig till ${u.mal}! Men det är spårarbete mellan ${u.sparr[0]} och ${u.sparr[1]}, så du måste hitta en annan väg.` : `Nytt uppdrag! Ta dig till ${u.mal}!`);
+  speakUtrop(u.sparr ? `Nytt resmål! Ta dig till ${u.mal}! Men det är spårarbete mellan ${u.sparr[0]} och ${u.sparr[1]}, så du måste hitta en annan väg.` : `Nytt resmål! Ta dig till ${u.mal}!`);
 }
 function openUppdragSheet(){
   const p = P(), u = p.uppdrag; if(!u) return;
   const t = uppdragTips(p) || { kvar: "?", text: "" };
   openSheet(`
     <div class="sheet-head">
-      <div><h2>Ta dig till ${u.mal}!</h2><p class="sheet-sub">${t.kvar} hållplats${t.kvar === 1 ? "" : "er"} kvar · ${t.text}</p></div>
+      <div><h2>Resmål: ${u.mal}</h2><p class="sheet-sub">${t.kvar} hållplats${t.kvar === 1 ? "" : "er"} kvar · ${t.text}</p></div>
       ${CLOSE_BTN}
     </div>
     ${u.sparr ? `<p class="sheet-sub" style="margin:0 0 10px;color:#DD4747"><b>Spårarbete mellan ${u.sparr[0]} och ${u.sparr[1]}!</b> Där går inga vagnar just nu – du måste hitta en annan väg. Bommen på kartan visar var.</p>` : ""}
-    <p class="sheet-sub" style="margin:0 0 12px">Framme vid ${u.mal} väntar <b>${u.beloning} mynt</b>. Perrongen visar vilka vagnar som tar dig närmare, och flaggan på kartan visar vart.</p>
+    <p class="sheet-sub">Kompisen vill se ${u.mal}. Åk dit tillsammans! Följ flaggan på kartan och byt vagn när det behövs. Du räknar som vanligt mellan hållplatserna.</p>
+    <p class="sheet-sub" style="margin:0 0 12px">Framme väntar <b>${u.beloning} mynt extra</b>. Du behöver inte ha ett resmål för att åka.</p>
     <div style="display:grid;gap:8px">
       <button class="btn" data-uppdrag="nytt" type="button" style="background:var(--paper-2)">Nytt mål</button>
-      <button class="btn" data-uppdrag="sluta" type="button" style="background:var(--paper-2)">Sluta med uppdraget</button>
+      <button class="btn" data-uppdrag="sluta" type="button" style="background:var(--paper-2)">Ta bort resmålet – åk fritt</button>
     </div>`);
 }
 function uppdragKlick(b){
+  if(tripRullar) return;
   const p = P();
   SFX.tap();
   if(b.dataset.uppdrag === "visa"){ openUppdragSheet(); return; }
   if(b.dataset.uppdrag === "sluta"){ p.uppdrag = null; saveProfiles(); closeSheet(); ritaUppdrag(); return; }
-  if(b.dataset.uppdrag === "nytt"){ closeSheet(); startaUppdrag(); }
+  if(b.dataset.uppdrag === "nytt"){ closeSheet(); startaUppdrag(); openUppdragSheet(); }
 }
 el("uppdrag").addEventListener("click", (e) => {
   const b = e.target.closest("[data-uppdrag]"); if(b) uppdragKlick(b);
@@ -6038,71 +6073,39 @@ el("natkarta").addEventListener("click", (e) => {
   vaxlaZoom();
 });
 function vaxlaZoom(){
-  const p = P(); if(!p.resa) return;
+  const p = P(); if(!p.resa || tripRullar) return;
+  stoppaKartAnimation();
+  const token = kartAnimation;
   const { l, at, rikt } = resLage(p);
   const svg = el("natSvg");
-  const f0 = natUtzoomad ? HELA_NATET : natFonster(l, at);
+  const f0 = natUtzoomad ? HELA_NATET : natFonster(l, at, rikt);
   natUtzoomad = !natUtzoomad;
-  const f1 = natUtzoomad ? HELA_NATET : natFonster(l, at);
+  const f1 = natUtzoomad ? HELA_NATET : natFonster(l, at, rikt);
   const besokta = new Set(besoktaPa(p, l.ref));
   const klar = () => { el("natkarta").innerHTML = natkartaSVG(l, at, { besokta, utzoomad: natUtzoomad, rikt, mal: p.uppdrag && p.uppdrag.mal, sparr: p.uppdrag && p.uppdrag.sparr }); };
   if(reduceMotion || !svg){ klar(); return; }
   const start = performance.now(), ms = 520;
   const mjuk = (t) => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
   (function steg(nu){
+    if(token !== kartAnimation || !svg.isConnected || aktivSkarm !== "trip") return;
     const t = mjuk(Math.min(1, (nu - start) / ms));
     svg.setAttribute("viewBox", viewBoxStr({
       x: f0.x + (f1.x - f0.x) * t, y: f0.y + (f1.y - f0.y) * t,
       w: f0.w + (f1.w - f0.w) * t, h: f0.h + (f1.h - f0.h) * t }));
-    if(t < 1) requestAnimationFrame(steg); else klar();
+    if(t < 1) kartRaf = requestAnimationFrame(steg); else { kartRaf = null; klar(); }
   })(start);
 }
 
-/* Resan: när man tryckt Åk rullar den egna vagnen in från vänster med
-   klockan och utropet, bromsar och stannar vid perrongen. Där väntar den på
-   ett tryck – "Hoppa på och räkna!" – och först då kommer frågorna. Trycket
-   är viktigt på iPad: rösten får bara börja tala i ett tryck, så frågan läses
-   i barnets eget tryck i stället för i en timer flera sekunder senare. Under
-   åkturen gör tryck ingenting, så ett extra tryck hoppar inte över något.
-   Kommer inget tryck på sex sekunder fortsätter spelet av sig självt. Med
-   reduce-motion står vagnen still vid perrongen från början. */
-let resaToken = 0;
-function resaScen(p, nasta, l, sedan){
-  const box = el("resa");
-  if(!box || !nasta){ sedan(); return; }
-  const tok = ++resaToken;
-  const stilla = reduceMotion;
-  el("resaMal").textContent = nasta;
-  el("resaSkylt").textContent = nasta;
-  el("resaVagn").innerHTML = vagnBild(p, { ref: l.ref, stor: true });
-  const ga = el("resaGa"); ga.hidden = true;
-  box.hidden = false;
-  box.classList.remove("kor", "stilla", "framme"); void box.offsetWidth; box.classList.add(stilla ? "stilla" : "kor");
-  SFX.klocka();
-  /* Utropet börjar i själva trycket på Åk – iPhone tystar ibland tal som startas ur en timer */
-  speakUtrop("Nästa hållplats " + nasta);
-  const timers = [];
-  const om = (fn, ms) => timers.push(setTimeout(() => { if(tok === resaToken) fn(); }, ms));
-  const fortsatt = () => {
-    if(tok !== resaToken) return;
-    resaToken++;
-    timers.forEach(clearTimeout);
-    box.hidden = true; box.classList.remove("kor", "stilla", "framme"); ga.hidden = true; box.onclick = null;
-    sedan();
-  };
-  om(() => {
-    box.classList.add("framme"); ga.hidden = false;
-    SFX.dorr();
-    om(fortsatt, 6000);
-  }, stilla ? 1200 : 3300);
-  box.onclick = () => { if(!box.classList.contains("framme")) return; SFX.tap(); fortsatt(); };
-}
+/* Åk-knappen startar frågorna i barnets tryck (även viktigt för ljud på iPad).
+   Därefter sker den enda förflyttningen på den riktiga spårvagnskartan. */
 el("goBtn").addEventListener("click", () => {
+  if(tripRullar) return;
   const p = P();
   SFX.ensure(); SFX.tap();
-  const { slut, l, nasta } = resLage(p);
+  const { slut } = resLage(p);
   if(slut || sparradFram(p)){ openPerrong(p.resa.pos, slut); return; }
-  resaScen(p, nasta, l, () => startRound(tramLevelDef(p), p.tramMode, tripRef));
+  SFX.klocka();
+  startRound(tramLevelDef(p), p.tramMode, tripRef);
 });
 
 /* ── Byt värld ──────────────────────────── */
@@ -6398,7 +6401,7 @@ ${toggleRad(s, "kluringar", "Kluringar", "Tal som gick fel kommer tillbaka en g�
     ${setGrupp("fragor", "Frågor i spårvagnen", "hållplatser, avgångstavlan, var är vi, vagnsnummer", `
 ${toggleRad(s, "hallplatser", "Hållplatsfrågor", "<i>Vi står vid Chalmers, vagnen åker tre hållplatser till – var är vi då?</i> Kommer när Tallinjen är öppen.")}
 ${toggleRad(s, "tavla", "Avgångstavlan", "<i>Hur länge får vi vänta? Vilken vagn går först?</i> Kommer när Klockan är öppen.")}
-${toggleRad(s, "foton", "Var är vi?", "En bild från resan – vilken hållplats är det? Fotoquizen på startskärmen finns kvar ändå.")}
+${toggleRad(s, "foton", "Var är vi?", "En bild från resan – vilken hållplats är det? Fotoquizen i Lekstugan finns kvar ändå.")}
 ${toggleRad(s, "vagnsnummer", "Vagnsnummer", "<i>Vilket nummer har vagnen på fotot?</i> Så samlar man vagnkort.")}
 `)}
     ${setGrupp("spar", "Sidospår på kartan", "stjärnhimlen, gånger, talraden, tallinjen, klockan", `
@@ -6494,6 +6497,14 @@ sheet.addEventListener("click", (e) => {
   const p = P();
   const close = e.target.closest('[data-action="close"]');
   if(close){ SFX.tap(); closeSheet(); return; }
+  const startstopp = e.target.closest("[data-startstopp]");
+  if(startstopp){ SFX.tap(); openPerrong(startstopp.dataset.startstopp); return; }
+  if(e.target.closest('[data-action="alla-startplatser"]')){
+    SFX.tap(); closeSheet(); startVisa.annanstans = true; renderStart();
+    el("sektionAnnanstans").scrollIntoView({block:"start",behavior:reduceMotion ? "auto" : "smooth"}); return;
+  }
+  if(e.target.closest('[data-action="minvagn"]')){ SFX.tap(); openMinVagn(); return; }
+  if(e.target.closest('[data-action="fotoquiz"]')){ SFX.ensure(); SFX.tap(); closeSheet(); startRound(FOTOQUIZ, "choice"); return; }
 
   const start = e.target.closest("[data-start]");
   if(start){
@@ -7382,6 +7393,7 @@ const g = {
 function startRound(niva, mode, tramRef){
   const L = typeof niva === "object" ? niva : levelById(niva);
   g.level = L; g.mode = mode; g.tram = tramRef || null;
+  if(g.tram) reseBeloning = null;
   g.len = g.tram ? TRAM_LEN : L.quiz ? 6 : ROUND_LEN;
   /* Var Stigande stod när omgången började – det avgör om hållplatsen får öppna en bana */
   g.stigandeNiva = g.tram && L.id === -1 ? Math.round(skillNu(P())) : null;
@@ -8353,7 +8365,7 @@ function finishQuiz(p, perfect){
   if(nya.length) later(() => celebrateBadges(nya), 900);
 }
 
-/* Framme vid en hållplats: kort summering och en enda knapp vidare */
+/* Framme vid en hållplats: spara resan och återvänd direkt till kartan */
 function finishTramStop(p, perfect){
   const { l, rikt, at, slut } = resLage(p);
   const matte = matteResultat(g.queue, g.results);
@@ -8391,34 +8403,10 @@ function finishTramStop(p, perfect){
   saveProfiles();
   tripFrom = at;
   const nya = newBadges(p);
-
-  el("resultLand").hidden = true;
-  el("resultTram").hidden = false;
-  el("resultTram").innerHTML = `
-    ${roundel(l, "lg")}
-    <h2 style="margin-top:8px">Bra åkt!</h2>
-    <p class="sheet-sub" style="margin:4px 0 0">${perfect} av ${g.len} rätt direkt</p>
-    <div class="reward-row">
-      <span class="reward ny">${COIN_SVG}<span><span class="r-num">+${g.score}</span><span class="r-txt">nya mynt</span></span></span>
-      <span class="reward">${KISTA_SVG}<span><span class="r-num">${p.coins}</span><span class="r-txt">i skattkistan</span></span></span>
-    </div>
-    ${klart ? `<span class="unlock-note uppdrag-klart">${FLAGGA_SVG} Uppdrag klart! Du kom till ${klart.mal}${klart.sparr ? " trots spårarbetet" : ""}! +${klart.beloning} mynt</span>` : ""}
-    ${nyBana ? `<span class="unlock-note">${NYCKEL_SVG} Ny bana öppen: ${nyBana.name}!</span>` : ""}
-    <button class="btn btn-big" id="rideOnBtn" type="button">Åk vidare!</button>`;
-  el("rideOnBtn").addEventListener("click", () => {
-    SFX.tap();
-    openTrip(true);
-  }, { once: true });
-
-  show("result");
+  reseBeloning = {player:p.id, stopp:p.resa.pos, mynt:g.score, resmal:klart, bana:nyBana, kort:g.nyaKort.slice(), marken:nya};
+  /* Resan fortsätter på kartan. Belöningar finns kvar utan att lägga sig över den. */
+  openTrip(true);
   SFX.win();
-  confetti(innerWidth / 2, innerHeight * 0.42, klart ? 80 : 34);
-  myntregn(p.coins - g.score - (klart ? klart.beloning : 0), g.score + (klart ? klart.beloning : 0));
-  speak(klart ? `Uppdrag klart! Du kom till ${klart.mal}! ${klart.beloning} mynt extra!`
-      : nyBana ? `Bra åkt! Ny bana öppen: ${nyBana.name}!` : `Bra åkt! ${g.score} mynt.`);
-  /* Fira kortet och märket här, inte när vagnen rullar in – annars skyms hållplatsen */
-  if(g.nyaKort.length) later(() => celebrateKort(g.nyaKort.slice(), nya), 900);
-  else if(nya.length) later(() => celebrateBadges(nya), 900);
 }
 
 /* Mynten flyger ett och ett från "nya mynt" till kistan, och kistans siffra
